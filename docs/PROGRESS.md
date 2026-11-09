@@ -10,7 +10,7 @@
 
 ## In progress
 
-- [ ] Согласовать с ментором UI-библиотеку и state manager
+- [ ] Согласовать с ментором UI-библиотеку, state manager и отказ от Apollo Client (Server Components + `fetch` / Server Actions)
 - [ ] Подключить Tailwind CSS и UI-библиотеку
 
 ## Backlog
@@ -20,9 +20,9 @@
 - [ ] Создать общий layout: шапка, навигация, контейнер
 - [ ] Настроить маршруты: список резюме, редактор, превью
 - [ ] Применить SSR/SSG для страниц, где уместно
-- [ ] Настроить Apollo Client и GraphQLProvider
+- [ ] Настроить GraphQL-клиент для Server Components (`fetch` + кэш Next.js)
 - [ ] Описать схему и поднять локальный GraphQL-бэкенд
-- [ ] Реализовать CRUD-запросы резюме (query/mutation)
+- [ ] Реализовать CRUD-запросы резюме (Server Components / Server Actions) и инвалидацию кэша
 - [ ] Настроить store (Zustand/RTK) — по согласованию
 - [ ] Хранить черновик резюме в глобальном состоянии
 - [ ] Форма личных данных и контактов
