@@ -22,7 +22,9 @@
 
 ## In progress
 
-- [ ] Ветка `feat/auth-sign-in`: страницы и Server Actions авторизации (кода пока нет, стек согласован)
+- [x] Сверстать `/login` по макету: табы sign in / sign up, форма на `Button` / `Input` / `PasswordInput` (`src/views/login`)
+- [x] Сверстать `/signup` по макету: форма email + пароль + подтверждение (`src/views/signup`), общие табы вынесены в `src/widgets/auth-tabs`
+- [ ] Ветка `feat/auth-sign-in`: Server Action `login`, сохранение сессии и обработка `invalidCredentials` (вёрстка `/login` готова)
 - [ ] Согласовать с ментором итоговый стек: Tailwind + shadcn, Zustand, Zod + React Hook Form, отказ от Apollo Client — подтвердить формально
 
 ## Backlog
@@ -40,7 +42,7 @@
 ### Авторизация
 
 - [ ] `/login` — форма входа (`login`), обработка `invalidCredentials`
-- [ ] `/signup` — форма регистрации (`signup`), сохранение токенов до подтверждения почты
+- [ ] `/signup` — Server Action `signup`, сохранение токенов до подтверждения почты (вёрстка готова)
 - [ ] `/verify-email` — ввод 6-значного OTP (`verifyMail`), повторная отправка (`sendVerification`)
 - [ ] `/forgot-password` — запрос письма (`forgotPassword`, вручную выставлять `Origin`)
 - [ ] `/reset-password?token=...` — новый пароль (`resetPassword` с токеном из query)
