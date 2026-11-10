@@ -1,10 +1,14 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { Geist } from "next/font/google";
+import { Roboto } from "next/font/google";
 import { cn } from "@/lib/utils";
 import { Toaster } from "@/shared/ui/toast";
 
-const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
+const roboto = Roboto({
+  subsets: ["latin", "cyrillic"],
+  weight: ["400", "500", "600"],
+  variable: "--font-roboto",
+});
 
 export const metadata: Metadata = {
   title: "CV Builder",
@@ -13,7 +17,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={cn("font-sans", geist.variable)}>
+    <html lang="en" className={cn("font-sans", roboto.variable)}>
       <body>{children}</body>
       <Toaster />
     </html>
