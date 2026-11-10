@@ -7,6 +7,7 @@
 
 - **Маршруты / layout:** `src/app/` — `layout.tsx` (корневой, подключает `Toaster`), `page.tsx` (главная), `globals.css` (Tailwind-тема).
 - **Утилиты:** `src/lib/utils.ts` — `cn()`.
+- **Бэкенд:** отдельный репозиторий `C:\projects\cv-backend` (NestJS + Apollo, GraphQL на `http://localhost:3001/api/graphql`). Контракт API, авторизация, коды ошибок — `docs/BACKEND.md`.
 - **UI-kit:** `src/shared/ui/<component>/`, экспорт через `index.ts`:
   - `button` — `Button` (default / primary / secondary / ghost / icon);
   - `input` — `Input` (default / error, переключатель пароля);

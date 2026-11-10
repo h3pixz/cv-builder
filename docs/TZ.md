@@ -107,4 +107,4 @@
 
 - **Notion (Требования и дизайн):** *[Добавить ссылку на страницу в Notion]*
 - **Дизайн (Figma / UI Kit):** *[Добавить ссылку на макеты, если применимо]*
-- **GraphQL Backend:** *[Добавить ссылку на репозиторий / инструкции по запуску локального бэкенда]*
+- **GraphQL Backend:** https://github.com/innowise-frontend/cv-backend.git — интеграция и контракт API описаны в `docs/BACKEND.md`
