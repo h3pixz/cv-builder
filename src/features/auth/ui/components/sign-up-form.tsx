@@ -4,7 +4,7 @@ import Link from "next/link"
 import { Button } from "@/shared/ui/button"
 import { Input, PasswordInput } from "@/shared/ui/input"
 
-export function SignupForm() {
+export function SignUpForm() {
   return (
     <form
       className="w-full space-y-4"
@@ -65,7 +65,7 @@ export function SignupForm() {
 
       <div className="pt-2 text-center">
         <Link
-          href="/login"
+          href="/sign-in"
           className="text-xs font-semibold tracking-wider text-text-secondary uppercase transition-colors hover:text-foreground"
         >
           I have an account

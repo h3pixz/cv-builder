@@ -4,7 +4,7 @@ import Link from "next/link"
 import { Button } from "@/shared/ui/button"
 import { Input, PasswordInput } from "@/shared/ui/input"
 
-export function LoginForm() {
+export function SignInForm() {
   return (
     <form
       className="w-full space-y-4"

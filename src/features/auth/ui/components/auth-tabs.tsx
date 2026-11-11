@@ -2,11 +2,11 @@ import Link from "next/link"
 import { cn } from "@/lib/utils"
 
 const tabs = [
-  { href: "/login", label: "Sign in", key: "login" },
-  { href: "/signup", label: "Sign up", key: "signup" },
+  { href: "/sign-in", label: "Sign in", key: "sign-in" },
+  { href: "/sign-up", label: "Sign up", key: "sign-up" },
 ] as const
 
-export function AuthTabs({ active }: { active: "login" | "signup" }) {
+export function AuthTabs({ active }: { active: "sign-in" | "sign-up" }) {
   return (
     <header className="flex w-full justify-center pt-6">
       <nav aria-label="Authentication tabs" className="flex items-center gap-12">
