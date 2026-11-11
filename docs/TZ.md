@@ -36,18 +36,16 @@
 
 ### Архитектура фронтенда: Feature-Sliced Design (FSD)
 
-Код организуется по методологии **Feature-Sliced Design**: слои `app` → `views` → `widgets` → `features` → `entities` → `shared`, слой импортирует только нижележащие.
+Код организуется по принципам **Feature-Sliced Design**: `app` → `features/<domain>` → `shared` → `lib`, слой импортирует только нижележащие. Полное дерево — `docs/STRUCTURE.md`.
 
 | Слой | Расположение | Назначение |
 |---|---|---|
-| App | `src/app` | Маршруты и layout'ы Next.js (App Router), тонкие файлы без бизнес-логики |
-| Pages | `src/views` | Композиция страниц из виджетов и фич |
-| Widgets | `src/widgets` | Самостоятельные блоки интерфейса (шапка, превью резюме) |
-| Features | `src/features` | Пользовательские сценарии (редактирование опыта, сохранение резюме) |
-| Entities | `src/entities` | Бизнес-сущности (резюме, пользователь): UI, модель, API |
-| Shared | `src/shared` | Переиспользуемая инфраструктура: UI-kit (shadcn), утилиты, API-клиент |
+| App | `src/app` | Маршруты и layout'ы Next.js (App Router), route groups `(auth)` / `(dashboard)`, тонкие файлы без бизнес-логики |
+| Features | `src/features/<domain>/{ui,api,model}` | Страницы и пользовательские сценарии: UI, запросы / Server Actions, типы и схемы |
+| Shared | `src/shared` | Переиспользуемая инфраструктура: UI-kit, API-клиент и сессия, config, helpers, hooks, types |
+| Lib | `src/lib` | Утилиты библиотек (`cn()` и т.п.) |
 
-Слой `pages` назван `views`, чтобы не конфликтовать с Pages Router Next.js. Работа ведётся **командой из двух человек** (парная разработка, см. раздел «Формат работы»).
+Страницы не выносятся в отдельный слой `views`: они живут в `features/<domain>/ui`, а `src/app` содержит только тонкие маршруты. Работа ведётся **командой из двух человек** (парная разработка, см. раздел «Формат работы»).
 
 ---
 
