@@ -1,5 +1,5 @@
 import { cookies } from "next/headers";
-import { gqlRequest } from "./graphql";
+import { gqlRequest } from "./graphql/client";
 
 export type SessionTokens = {
   access_token: string;
