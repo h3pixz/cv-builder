@@ -27,6 +27,7 @@
 - [x] Сверстать `/sign-up` по макету: форма email + пароль + подтверждение (`src/features/auth/ui`), общие табы — `ui/components/auth-tabs.tsx`
 - [x] Сверстать `/forgot-password` по макету: email + кнопка сброса + ссылка «Cancel» (`src/features/auth/ui`)
 - [x] Сверстать `/reset-password` по макету: новый пароль + подтверждение, `PasswordInput`, кнопка «Submit» и ссылка «Go to sign in» (`src/features/auth/ui`)
+- [x] Сверстать `/verify-email` по макету: OTP на `CodeInput`, кнопка «Confirm», ссылка «Later» (`src/features/auth/ui`)
 - [ ] Ветка `feat/auth-sign-in`: Server Action `login`, сохранение сессии и обработка `invalidCredentials` (вёрстка `/sign-in` готова)
 - [ ] Согласовать с ментором итоговый стек: Tailwind + shadcn, Zustand, Zod + React Hook Form, отказ от Apollo Client — подтвердить формально
 

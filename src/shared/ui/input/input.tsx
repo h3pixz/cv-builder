@@ -248,7 +248,7 @@ const CodeInput = forwardRef<HTMLDivElement, CodeInputProps>(
         ref={ref}
         role="group"
         aria-label="Verification code"
-        className={cn("flex items-center gap-2", className)}
+        className={cn("flex items-center gap-4", className)}
       >
         {codeArray.map((digit, index) => (
           <input
@@ -270,7 +270,7 @@ const CodeInput = forwardRef<HTMLDivElement, CodeInputProps>(
             onPaste={handlePaste}
             onFocus={(e) => handleFocus(e, index)}
             className={cn(
-              "flex size-10 text-center text-sm font-medium rounded-none border bg-background text-foreground shadow-none outline-none transition-colors",
+              "flex size-10 sm:size-12 text-center text-sm font-medium rounded-none border bg-background text-foreground shadow-none outline-none transition-colors",
               "hover:border-control-border focus-visible:border-control-border",
               "disabled:pointer-events-none disabled:cursor-not-allowed disabled:border-disabled disabled:bg-disabled disabled:text-disabled-foreground",
               variant === "error" &&
