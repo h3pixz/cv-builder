@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { gqlRequest } from "./graphql";
+import { gqlRequest } from "./client";
 
 const fetchMock = vi.fn();
 

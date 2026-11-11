@@ -1,0 +1,1 @@
+export { getGraphQLUrl } from "./env";

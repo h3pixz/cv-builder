@@ -27,7 +27,7 @@ const { cookieStore, gqlRequest } = vi.hoisted(() => {
 });
 
 vi.mock("next/headers", () => ({ cookies: async () => cookieStore }));
-vi.mock("./graphql", () => ({ gqlRequest }));
+vi.mock("./graphql/client", () => ({ gqlRequest }));
 
 const tokens = {
   access_token: "access-1",
