@@ -46,7 +46,7 @@
 - [ ] `/sign-in` — форма входа (`login`), обработка `invalidCredentials`
 - [ ] `/sign-up` — Server Action `signup`, сохранение токенов до подтверждения почты (вёрстка готова)
 - [ ] `/verify-email` — ввод 6-значного OTP (`verifyMail`), повторная отправка (`sendVerification`)
-- [ ] `/forgot-password` — запрос письма (`forgotPassword`, вручную выставлять `Origin`)
+- [x] `/forgot-password` — запрос письма: Server Action `forgotPassword` (`src/features/auth/api/forgot-password.ts`), `Origin` из заголовков запроса, тосты успеха/ошибки
 - [ ] `/reset-password?token=...` — новый пароль (`resetPassword` с токеном из query)
 - [ ] Server Action выхода: очистка cookie
 
