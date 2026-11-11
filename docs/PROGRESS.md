@@ -16,15 +16,16 @@
 - [x] Добавить зависимости под данные и формы: `graphql`, `graphql-request`, `zustand`, `zod`, `react-hook-form`, `@hookform/resolvers`, `lucide-react`
 - [x] Описать контракт GraphQL-бэкенда: авторизация, токены, ошибки, модули API (`docs/BACKEND.md`)
 - [x] Добавить карту кода для навигации по FSD-слоям (`CLAUDE.md`)
-- [x] GraphQL-клиент для Server Components: `src/shared/api/graphql.ts` (`gqlRequest`, `GRAPHQL_URL`, заголовки `Authorization` / `Origin`)
+- [x] GraphQL-клиент для Server Components: `src/shared/api/graphql/client.ts` (`gqlRequest`, `GRAPHQL_URL` из `shared/config`, заголовки `Authorization` / `Origin`)
 - [x] Хелпер сессии: `src/shared/api/session.ts` (httpOnly cookie `access_token` / `refresh_token`, `refreshSession` через `updateToken`)
-- [x] Маппинг кодов ошибок бэкенда на русские тексты: `src/shared/api/errors.ts` (`getGraphQLErrorCode`, `getGraphQLErrorMessage`)
+- [x] Маппинг кодов ошибок бэкенда на русские тексты: `src/shared/api/graphql/errors.ts` (`getGraphQLErrorCode`, `getGraphQLErrorMessage`)
+- [x] Привести структуру к канону: `src/features/auth` вместо `views`, route group `(auth)` с `/sign-in` и `/sign-up`, `shared/api/graphql`, `shared/config` (`docs/STRUCTURE.md`)
 
 ## In progress
 
-- [x] Сверстать `/login` по макету: табы sign in / sign up, форма на `Button` / `Input` / `PasswordInput` (`src/views/login`)
-- [x] Сверстать `/signup` по макету: форма email + пароль + подтверждение (`src/views/signup`), общие табы вынесены в `src/widgets/auth-tabs`
-- [ ] Ветка `feat/auth-sign-in`: Server Action `login`, сохранение сессии и обработка `invalidCredentials` (вёрстка `/login` готова)
+- [x] Сверстать `/sign-in` по макету: табы sign in / sign up, форма на `Button` / `Input` / `PasswordInput` (`src/features/auth/ui`)
+- [x] Сверстать `/sign-up` по макету: форма email + пароль + подтверждение (`src/features/auth/ui`), общие табы — `ui/components/auth-tabs.tsx`
+- [ ] Ветка `feat/auth-sign-in`: Server Action `login`, сохранение сессии и обработка `invalidCredentials` (вёрстка `/sign-in` готова)
 - [ ] Согласовать с ментором итоговый стек: Tailwind + shadcn, Zustand, Zod + React Hook Form, отказ от Apollo Client — подтвердить формально
 
 ## Backlog
@@ -41,8 +42,8 @@
 
 ### Авторизация
 
-- [ ] `/login` — форма входа (`login`), обработка `invalidCredentials`
-- [ ] `/signup` — Server Action `signup`, сохранение токенов до подтверждения почты (вёрстка готова)
+- [ ] `/sign-in` — форма входа (`login`), обработка `invalidCredentials`
+- [ ] `/sign-up` — Server Action `signup`, сохранение токенов до подтверждения почты (вёрстка готова)
 - [ ] `/verify-email` — ввод 6-значного OTP (`verifyMail`), повторная отправка (`sendVerification`)
 - [ ] `/forgot-password` — запрос письма (`forgotPassword`, вручную выставлять `Origin`)
 - [ ] `/reset-password?token=...` — новый пароль (`resetPassword` с токеном из query)
