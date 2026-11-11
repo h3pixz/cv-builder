@@ -24,7 +24,7 @@ cv-builder/
 │   │   │   │   └── page.tsx
 │   │   │   ├── reset-password/         # план
 │   │   │   │   └── page.tsx
-│   │   │   └── verify-email/           # план
+│   │   │   └── verify-email/
 │   │   │       └── page.tsx
 │   │   │
 │   │   ├── (dashboard)/                # план
@@ -68,10 +68,12 @@ cv-builder/
 │   │   │   ├── ui/
 │   │   │   │   ├── sign-in-page.tsx
 │   │   │   │   ├── sign-up-page.tsx
+│   │   │   │   ├── verify-email-page.tsx
 │   │   │   │   └── components/
 │   │   │   │       ├── auth-tabs.tsx
 │   │   │   │       ├── sign-in-form.tsx
-│   │   │   │       └── sign-up-form.tsx
+│   │   │   │       ├── sign-up-form.tsx
+│   │   │   │       └── verify-email-form.tsx
 │   │   │   ├── api/                    # план: Server Actions
 │   │   │   ├── model/                  # план: схемы и типы
 │   │   │   └── index.ts
