@@ -1,4 +1,5 @@
-import { request, type RequestDocument, type Variables } from "graphql-request";
+import { request } from "graphql-request";
+import type { TypedDocumentNode } from "@graphql-typed-document-node/core";
 
 export type GraphQLRequestOptions = {
   accessToken?: string;
@@ -6,7 +7,7 @@ export type GraphQLRequestOptions = {
 };
 
 function getGraphQLUrl(): string {
-  const url = process.env.GRAPHQL_URL;
+  const url = process.env.VITE_GRAPHQL_URL;
 
   if (!url) {
     throw new Error("GRAPHQL_URL is not set");
@@ -15,11 +16,15 @@ function getGraphQLUrl(): string {
   return url;
 }
 
-export async function gqlRequest<T, V extends Variables = Variables>(
-  document: RequestDocument,
-  variables?: V,
+export async function gqlRequest<
+  TResult,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  TVariables extends Record<string, any>,
+>(
+  document: TypedDocumentNode<TResult, TVariables>,
+  variables?: TVariables,
   options: GraphQLRequestOptions = {},
-): Promise<T> {
+): Promise<TResult> {
   const headers: Record<string, string> = {};
 
   if (options.accessToken) {
@@ -30,5 +35,10 @@ export async function gqlRequest<T, V extends Variables = Variables>(
     headers.Origin = options.origin;
   }
 
-  return request<T>(getGraphQLUrl(), document, variables, headers);
+  return request<TResult>({
+    url: getGraphQLUrl(),
+    document,
+    variables,
+    requestHeaders: headers,
+  });
 }
