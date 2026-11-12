@@ -1,14 +1,35 @@
 "use client"
 
 import Link from "next/link"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
 import { Button } from "@/shared/ui/button"
 import { PasswordInput } from "@/shared/ui/input"
+import {
+  resetPasswordSchema,
+  type ResetPasswordValues,
+} from "../../model/reset-password-schema"
 
 export function ResetPasswordForm() {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isValid },
+  } = useForm<ResetPasswordValues>({
+    resolver: zodResolver(resetPasswordSchema),
+    mode: "onTouched",
+    reValidateMode: "onChange",
+    defaultValues: { newPassword: "", confirmPassword: "" },
+  })
+
+  const newPasswordError = errors.newPassword?.message
+  const confirmPasswordError = errors.confirmPassword?.message
+
   return (
     <form
       className="w-full"
-      onSubmit={(event) => event.preventDefault()}
+      noValidate
+      onSubmit={handleSubmit(() => undefined)}
     >
       <div className="w-full">
         <label htmlFor="newPassword" className="sr-only">
@@ -16,12 +37,25 @@ export function ResetPasswordForm() {
         </label>
         <PasswordInput
           id="newPassword"
-          name="newPassword"
           autoComplete="new-password"
           placeholder="New password"
-          required
+          variant={newPasswordError ? "error" : "default"}
+          aria-invalid={newPasswordError ? true : undefined}
+          aria-describedby={
+            newPasswordError ? "new-password-error" : undefined
+          }
           className="h-11 pl-4 text-sm"
+          {...register("newPassword")}
         />
+        {newPasswordError && (
+          <p
+            id="new-password-error"
+            role="alert"
+            className="mt-1 text-xs text-error"
+          >
+            {newPasswordError}
+          </p>
+        )}
       </div>
 
       <div className="mt-9 w-full">
@@ -30,18 +64,32 @@ export function ResetPasswordForm() {
         </label>
         <PasswordInput
           id="confirmPassword"
-          name="confirmPassword"
           autoComplete="new-password"
           placeholder="Confirm password"
-          required
+          variant={confirmPasswordError ? "error" : "default"}
+          aria-invalid={confirmPasswordError ? true : undefined}
+          aria-describedby={
+            confirmPasswordError ? "confirm-password-error" : undefined
+          }
           className="h-11 pl-4 text-sm"
+          {...register("confirmPassword")}
         />
+        {confirmPasswordError && (
+          <p
+            id="confirm-password-error"
+            role="alert"
+            className="mt-1 text-xs text-error"
+          >
+            {confirmPasswordError}
+          </p>
+        )}
       </div>
 
       <div className="mt-9 flex justify-center">
         <Button
           type="submit"
           variant="primary"
+          disabled={!isValid}
           className="h-12 w-30 text-xs font-semibold tracking-wider"
         >
           Submit
