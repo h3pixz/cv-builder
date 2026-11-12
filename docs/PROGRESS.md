@@ -24,6 +24,7 @@
 ## In progress
 
 - [x] Сверстать `/sign-in` по макету: табы sign in / sign up, форма на `Button` / `Input` / `PasswordInput` (`src/features/auth/ui`)
+- [x] `/sign-in` — клиентская валидация (Zod + React Hook Form, `src/features/auth/model/sign-in-schema.ts`): inline-сообщения, error-состояния полей, кнопка `disabled` до валидности, тоггл пароля доступен с клавиатуры
 - [x] Сверстать `/sign-up` по макету: форма email + пароль + подтверждение (`src/features/auth/ui`), общие табы — `ui/components/auth-tabs.tsx`
 - [x] Сверстать `/forgot-password` по макету: email + кнопка сброса + ссылка «Cancel» (`src/features/auth/ui`)
 - [x] Сверстать `/reset-password` по макету: новый пароль + подтверждение, `PasswordInput`, кнопка «Submit» и ссылка «Go to sign in» (`src/features/auth/ui`)
@@ -45,7 +46,7 @@
 
 ### Авторизация
 
-- [ ] `/sign-in` — форма входа (`login`), обработка `invalidCredentials`
+- [ ] `/sign-in` — отправка формы и обработка ошибок (в планах): Server Action `login`, сохранение сессии, обработка `invalidCredentials`, серверные ошибки (AC-9, AC-10)
 - [ ] `/sign-up` — Server Action `signup`, сохранение токенов до подтверждения почты (вёрстка готова)
 - [ ] `/verify-email` — ввод 6-значного OTP (`verifyMail`), повторная отправка (`sendVerification`)
 - [x] `/forgot-password` — запрос письма: Server Action `forgotPassword` (`src/features/auth/api/forgot-password.ts`), `Origin` из заголовков запроса, тосты успеха/ошибки
