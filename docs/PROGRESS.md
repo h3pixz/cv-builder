@@ -25,6 +25,9 @@
 - [x] Хелпер сессии: `src/shared/api/session.ts` (httpOnly cookie `access_token` / `refresh_token`, `refreshSession` через `updateToken`)
 - [x] Маппинг кодов ошибок бэкенда на английские тексты: `src/shared/api/graphql/errors.ts` (`getGraphQLErrorCode`, `getGraphQLErrorMessage`)
 - [x] Привести структуру к канону: `src/features/auth` вместо `views`, route group `(auth)` с `/sign-in` и `/sign-up`, `shared/api/graphql`, `shared/config` (`docs/STRUCTURE.md`)
+- [x] Подключить GraphQL Code Generator: `schema.graphql` из бэкенда, `codegen.ts`, типизированные документы в `src/shared/api/graphql/generated`, скрипты `codegen` / `codegen:watch`, зависимости `@graphql-codegen/cli` / `client-preset`
+- [x] `gqlRequest` принимает `TypedDocumentNode` (перегрузка сохраняет поддержку inline-строк), результат и переменные выводятся из сгенерированного документа
+- [x] `refreshSession` читает `refresh_token` из cookie напрямую и использует сгенерированный документ `UpdateToken` — обновление токена не зависит от живого `access_token`; тест обновлён
 
 ### Страницы авторизации
 
