@@ -5,6 +5,7 @@ import {
   refreshSession,
   saveSession,
 } from "./session";
+import { UpdateTokenDocument } from "./graphql/generated/graphql";
 
 const { cookieStore, gqlRequest } = vi.hoisted(() => {
   const store = new Map<string, string>();
@@ -69,7 +70,7 @@ describe("refreshSession", () => {
     await expect(refreshSession()).resolves.toEqual(fresh);
 
     expect(gqlRequest).toHaveBeenCalledWith(
-      expect.stringContaining("UpdateToken"),
+      UpdateTokenDocument,
       undefined,
       { accessToken: "refresh-1" },
     );

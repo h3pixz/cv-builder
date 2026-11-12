@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 import { gqlRequest } from "./graphql/client";
+import { graphql } from "./graphql/generated/gql";
 
 export type SessionTokens = {
   access_token: string;
@@ -11,14 +12,14 @@ const REFRESH_TOKEN_COOKIE = "refresh_token";
 const ACCESS_TOKEN_MAX_AGE = 60 * 10;
 const REFRESH_TOKEN_MAX_AGE = 60 * 60 * 24 * 7;
 
-const UPDATE_TOKEN_MUTATION = `
+export const UpdateTokenDocument = graphql(`
   mutation UpdateToken {
     updateToken {
       access_token
       refresh_token
     }
   }
-`;
+`);
 
 export async function getSession(): Promise<SessionTokens | null> {
   const cookieStore = await cookies();
@@ -59,18 +60,17 @@ export async function clearSession(): Promise<void> {
 }
 
 export async function refreshSession(): Promise<SessionTokens | null> {
-  const session = await getSession();
+  const cookieStore = await cookies();
+  const refreshToken = cookieStore.get(REFRESH_TOKEN_COOKIE)?.value;
 
-  if (!session) {
+  if (!refreshToken) {
     return null;
   }
 
   try {
-    const data = await gqlRequest<{ updateToken: SessionTokens }>(
-      UPDATE_TOKEN_MUTATION,
-      undefined,
-      { accessToken: session.refresh_token },
-    );
+    const data = await gqlRequest(UpdateTokenDocument, undefined, {
+      accessToken: refreshToken,
+    });
 
     await saveSession(data.updateToken);
 

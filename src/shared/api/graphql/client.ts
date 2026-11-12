@@ -1,4 +1,5 @@
 import { request, type RequestDocument, type Variables } from "graphql-request";
+import type { TypedDocumentNode } from "@graphql-typed-document-node/core";
 import { getGraphQLUrl } from "@/shared/config";
 
 export type GraphQLRequestOptions = {
@@ -6,11 +7,21 @@ export type GraphQLRequestOptions = {
   origin?: string;
 };
 
-export async function gqlRequest<T, V extends Variables = Variables>(
+export function gqlRequest<TResult, TVariables extends Variables>(
+  document: TypedDocumentNode<TResult, TVariables>,
+  variables?: TVariables,
+  options?: GraphQLRequestOptions,
+): Promise<TResult>;
+export function gqlRequest<T, V extends Variables = Variables>(
   document: RequestDocument,
   variables?: V,
+  options?: GraphQLRequestOptions,
+): Promise<T>;
+export async function gqlRequest(
+  document: RequestDocument,
+  variables?: Variables,
   options: GraphQLRequestOptions = {},
-): Promise<T> {
+): Promise<unknown> {
   const headers: Record<string, string> = {};
 
   if (options.accessToken) {
@@ -21,5 +32,5 @@ export async function gqlRequest<T, V extends Variables = Variables>(
     headers.Origin = options.origin;
   }
 
-  return request<T>(getGraphQLUrl(), document, variables, headers);
+  return request(getGraphQLUrl(), document, variables, headers);
 }
