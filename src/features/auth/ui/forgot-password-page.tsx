@@ -9,7 +9,7 @@ export function ForgotPasswordPage() {
             <h1 className="mb-3 text-4xl font-normal tracking-tight">
               Forgot password
             </h1>
-            <p className="text-base">
+            <p className="text-base text-text-secondary">
               We will send you an email with further instructions
             </p>
           </div>

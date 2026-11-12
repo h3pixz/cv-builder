@@ -9,7 +9,7 @@ export function VerifyEmailPage() {
             <h1 className="mb-3 text-4xl font-normal tracking-tight">
               Email verification
             </h1>
-            <p className="text-base">
+            <p className="text-base text-text-secondary">
               Enter the verification code we sent to your email.
             </p>
           </div>

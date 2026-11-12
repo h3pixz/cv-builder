@@ -9,7 +9,7 @@ export function ResetPasswordPage() {
             <h1 className="mb-3 text-4xl font-normal tracking-tight">
               Reset password
             </h1>
-            <p className="text-base">
+            <p className="text-base text-text-secondary">
               Here you should write a new password and confirm it
             </p>
           </div>
