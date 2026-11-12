@@ -68,10 +68,10 @@ const PasswordInput = forwardRef<HTMLInputElement, InputProps>(
         />
         <button
           type="button"
-          tabIndex={-1}
           onClick={() => setShowPassword((prev) => !prev)}
-          className="absolute right-2 text-text-tertiary hover:text-foreground transition-colors focus:outline-none"
+          className="absolute right-2 rounded-sm text-text-tertiary hover:text-foreground transition-colors"
           aria-label={showPassword ? "Hide password" : "Show password"}
+          aria-pressed={showPassword}
         >
           {showPassword ? (
             <EyeOffIcon className="size-4" />
