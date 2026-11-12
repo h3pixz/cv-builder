@@ -1,14 +1,9 @@
 import { z } from "zod"
+import { emailSchema, passwordSchema } from "./validation"
 
 export const signInSchema = z.object({
-  email: z
-    .string()
-    .min(1, "Email is required")
-    .pipe(z.email("Please enter a valid email address")),
-  password: z
-    .string()
-    .min(1, "Password is required")
-    .min(6, "Password must be at least 6 characters long"),
+  email: emailSchema,
+  password: passwordSchema,
 })
 
 export type SignInValues = z.infer<typeof signInSchema>
