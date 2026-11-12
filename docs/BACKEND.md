@@ -104,7 +104,7 @@ query Me {
 
 ### Ошибки
 
-Apollo отдаёт `errors[].message` — это код на английском (camelCase), его нужно маппить на русские тексты в UI. `extensions.code` — HTTP-статус (`UNAUTHORIZED`, `BAD_REQUEST`, `CONFLICT`, `FORBIDDEN`, `SERVICE_UNAVAILABLE`, `INTERNAL_SERVER_ERROR`).
+Apollo отдаёт `errors[].message` — это код на английском (camelCase), его нужно маппить на английские тексты в UI. `extensions.code` — HTTP-статус (`UNAUTHORIZED`, `BAD_REQUEST`, `CONFLICT`, `FORBIDDEN`, `SERVICE_UNAVAILABLE`, `INTERNAL_SERVER_ERROR`).
 
 Коды, которые встретятся на страницах авторизации:
 

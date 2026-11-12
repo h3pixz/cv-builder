@@ -32,22 +32,22 @@ describe("getGraphQLErrorCode", () => {
 describe("getGraphQLErrorMessage", () => {
   it("translates a known code", () => {
     expect(getGraphQLErrorMessage(clientError("invalidCredentials"))).toBe(
-      "Неверная почта или пароль",
+      "Invalid email or password",
     );
   });
 
   it("falls back to a generic message", () => {
     expect(getGraphQLErrorMessage(clientError("unknownCode"))).toBe(
-      "Что-то пошло не так. Попробуйте позже",
+      "Something went wrong. Please try again later",
     );
     expect(getGraphQLErrorMessage(new Error("network"))).toBe(
-      "Что-то пошло не так. Попробуйте позже",
+      "Something went wrong. Please try again later",
     );
   });
 
   it("uses a custom fallback", () => {
-    expect(getGraphQLErrorMessage(new Error("network"), "Ошибка входа")).toBe(
-      "Ошибка входа",
+    expect(getGraphQLErrorMessage(new Error("network"), "Sign in failed")).toBe(
+      "Sign in failed",
     );
   });
 });

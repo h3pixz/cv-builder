@@ -1,24 +1,24 @@
 export const ERROR_MESSAGES = {
-  invalidCredentials: "Неверная почта или пароль",
-  userAlreadyExists: "Эта почта уже занята",
-  confirmPasswordMismatch: "Пароли не совпадают",
-  passwordTooShort: "Пароль слишком короткий",
-  confirmPasswordTooShort: "Пароль слишком короткий",
-  passwordIsRequired: "Введите пароль",
-  invalidEmail: "Некорректная почта",
-  otpIsRequired: "Введите код из письма",
-  shouldBe6Digits: "Код должен состоять из 6 цифр",
-  mailNotFound: "Неверный или устаревший код",
-  actionExpired: "Срок действия ссылки истёк",
-  failedToSendEmail: "Не удалось отправить письмо",
-  unauthorized: "Сессия истекла, войдите снова",
-  invalidRefreshToken: "Сессия истекла, войдите снова",
-  insufficientPermissions: "Недостаточно прав",
+  invalidCredentials: "Invalid email or password",
+  userAlreadyExists: "An account with this email already exists",
+  confirmPasswordMismatch: "Passwords do not match",
+  passwordTooShort: "Password must be at least 6 characters long",
+  confirmPasswordTooShort: "Password must be at least 6 characters long",
+  passwordIsRequired: "Password is required",
+  invalidEmail: "Please enter a valid email address",
+  otpIsRequired: "Verification code is required",
+  shouldBe6Digits: "Please enter a valid 6-digit code",
+  mailNotFound: "Invalid verification code",
+  actionExpired: "This password reset link has expired",
+  failedToSendEmail: "Unable to send the email. Please try again later",
+  unauthorized: "Your session has expired. Please sign in again",
+  invalidRefreshToken: "Your session has expired. Please sign in again",
+  insufficientPermissions: "You do not have permission to perform this action",
 } as const;
 
 export type GraphQLErrorCode = keyof typeof ERROR_MESSAGES;
 
-const DEFAULT_ERROR_MESSAGE = "Что-то пошло не так. Попробуйте позже";
+const DEFAULT_ERROR_MESSAGE = "Something went wrong. Please try again later";
 
 type ClientErrorLike = {
   response?: {
