@@ -69,7 +69,8 @@ const PasswordInput = forwardRef<HTMLInputElement, InputProps>(
         <button
           type="button"
           onClick={() => setShowPassword((prev) => !prev)}
-          className="absolute right-2 rounded-sm text-text-tertiary hover:text-foreground transition-colors"
+          disabled={props.disabled}
+          className="absolute right-2 rounded-sm text-text-tertiary hover:text-foreground transition-colors disabled:pointer-events-none disabled:opacity-50"
           aria-label={showPassword ? "Hide password" : "Show password"}
           aria-pressed={showPassword}
         >
@@ -248,7 +249,7 @@ const CodeInput = forwardRef<HTMLDivElement, CodeInputProps>(
         ref={ref}
         role="group"
         aria-label="Verification code"
-        className={cn("flex items-center gap-4", className)}
+        className={cn("flex items-center gap-2 sm:gap-4", className)}
       >
         {codeArray.map((digit, index) => (
           <input
