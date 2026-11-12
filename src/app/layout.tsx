@@ -15,11 +15,29 @@ export const metadata: Metadata = {
   description: "Конструктор резюме",
 };
 
+const themeScript = `
+(function () {
+  try {
+    var stored = localStorage.getItem("theme");
+    var prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    var isDark = stored === "dark" || (stored !== "light" && prefersDark);
+    document.documentElement.classList.toggle("dark", isDark);
+  } catch (error) {}
+})();
+`;
+
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={cn("font-sans", roboto.variable)}>
-      <body>{children}</body>
-      <Toaster />
+    <html
+      lang="en"
+      className={cn("font-sans", roboto.variable)}
+      suppressHydrationWarning
+    >
+      <body>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+        {children}
+        <Toaster />
+      </body>
     </html>
   );
 }
