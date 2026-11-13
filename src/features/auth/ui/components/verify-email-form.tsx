@@ -1,9 +1,10 @@
 "use client"
 
 import { FormEvent, useState } from "react"
-import Link from "next/link"
 import { Button } from "@/shared/ui/button"
 import { CodeInput } from "@/shared/ui/input"
+import { verifyEmail } from "../../api/verify-email"
+import { AuthLink } from "./auth-link"
 
 const CODE_LENGTH = 6
 
@@ -22,8 +23,9 @@ function getCodeError(code: string): string | null {
 export function VerifyEmailForm() {
   const [code, setCode] = useState("")
   const [error, setError] = useState<string | null>(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
 
     const validationError = getCodeError(code)
@@ -34,6 +36,15 @@ export function VerifyEmailForm() {
     }
 
     setError(null)
+    setIsSubmitting(true)
+
+    const result = await verifyEmail(code)
+
+    setIsSubmitting(false)
+
+    if (!result.success) {
+      setError(result.error)
+    }
   }
 
   function handleCodeChange(value: string) {
@@ -56,6 +67,7 @@ export function VerifyEmailForm() {
           onChange={handleCodeChange}
           length={CODE_LENGTH}
           submitOnComplete={false}
+          disabled={isSubmitting}
           variant={error ? "error" : "default"}
         />
         {error && (
@@ -68,18 +80,14 @@ export function VerifyEmailForm() {
       <Button
         type="submit"
         variant="primary"
+        disabled={isSubmitting}
         className="h-11 w-44 text-xs font-semibold tracking-wider"
       >
         Confirm
       </Button>
 
       <div className="mt-6 text-center">
-        <Link
-          href="/"
-          className="text-xs font-semibold tracking-wider text-text-secondary uppercase transition-colors hover:text-foreground"
-        >
-          Later
-        </Link>
+        <AuthLink href="/">Later</AuthLink>
       </div>
     </form>
   )
