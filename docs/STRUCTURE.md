@@ -2,7 +2,7 @@
 
 Каноническая структура репозитория. Подход Feature-Sliced Design: `app` → `features` → `shared`, импорты только вниз. Страницы живут в `features/<domain>/ui`, а маршруты в `app` — тонкие обёртки без бизнес-логики.
 
-Разделы, помеченные `план`, ещё не реализованы: папки и файлы создаются вместе с функционалом, пустые заглушки не держим.
+Разделы, помеченные `план`, ещё не реализованы: файлы создаются вместе с функционалом, в пустых папках лежит только `.gitkeep`.
 
 ```
 cv-builder/
@@ -20,9 +20,9 @@ cv-builder/
 │   │   │   │   └── page.tsx
 │   │   │   ├── sign-up/
 │   │   │   │   └── page.tsx
-│   │   │   ├── forgot-password/        # план
+│   │   │   ├── forgot-password/
 │   │   │   │   └── page.tsx
-│   │   │   ├── reset-password/         # план
+│   │   │   ├── reset-password/
 │   │   │   │   └── page.tsx
 │   │   │   └── verify-email/
 │   │   │       └── page.tsx
@@ -68,14 +68,34 @@ cv-builder/
 │   │   │   ├── ui/
 │   │   │   │   ├── sign-in-page.tsx
 │   │   │   │   ├── sign-up-page.tsx
+│   │   │   │   ├── forgot-password-page.tsx
+│   │   │   │   ├── reset-password-page.tsx
 │   │   │   │   ├── verify-email-page.tsx
 │   │   │   │   └── components/
+│   │   │   │       ├── auth-link.tsx
 │   │   │   │       ├── auth-tabs.tsx
+│   │   │   │       ├── form-error.tsx
+│   │   │   │       ├── forgot-password-form.tsx
+│   │   │   │       ├── reset-password-form.tsx
 │   │   │   │       ├── sign-in-form.tsx
 │   │   │   │       ├── sign-up-form.tsx
-│   │   │   │       └── verify-email-form.tsx
-│   │   │   ├── api/                    # план: Server Actions
-│   │   │   ├── model/                  # план: схемы и типы
+│   │   │   │       ├── verify-email-form.tsx
+│   │   │   │       └── *.test.tsx
+│   │   │   ├── api/                    # Server Actions
+│   │   │   │   ├── action-result.ts
+│   │   │   │   ├── documents.ts
+│   │   │   │   ├── login.ts
+│   │   │   │   ├── signup.ts
+│   │   │   │   ├── verify-email.ts
+│   │   │   │   ├── forgot-password.ts
+│   │   │   │   ├── reset-password.ts
+│   │   │   │   └── request-origin.ts
+│   │   │   ├── model/                  # схемы валидации
+│   │   │   │   ├── validation.ts
+│   │   │   │   ├── sign-in-schema.ts
+│   │   │   │   ├── sign-up-schema.ts
+│   │   │   │   ├── forgot-password-schema.ts
+│   │   │   │   └── reset-password-schema.ts
 │   │   │   └── index.ts
 │   │   │
 │   │   ├── users/                      # план
@@ -120,6 +140,10 @@ cv-builder/
 │   │   │   ├── graphql/
 │   │   │   │   ├── client.ts
 │   │   │   │   ├── errors.ts
+│   │   │   │   ├── generated/          # типы из схемы (codegen)
+│   │   │   │   │   ├── gql.ts
+│   │   │   │   │   ├── graphql.ts
+│   │   │   │   │   └── index.ts
 │   │   │   │   └── index.ts
 │   │   │   ├── session.ts
 │   │   │   └── index.ts
@@ -129,7 +153,8 @@ cv-builder/
 │   │   └── types/                      # общие типы
 │   │
 │   ├── lib/
-│   │   └── utils.ts                    # cn() и утилиты библиотек
+│   │   ├── utils.ts                    # cn() и утилиты библиотек
+│   │   └── utils.test.ts
 │   │
 │   └── store/                          # план: глобальное состояние Zustand
 │       ├── index.ts
@@ -155,3 +180,4 @@ cv-builder/
 - Внутри фичи: `ui` не импортирует `api` вышестоящих слоёв; типы и схемы — в `model`, запросы и Server Actions — в `api`, наружу — только через `index.ts`.
 - Общее переиспользуемое — `shared` (сначала `shared/ui`, затем `shared/helpers`, `hooks`, `types`, `config`).
 - Глобальное клиентское состояние (черновик резюме, UI) — в `src/store` (Zustand); серверные данные в store не дублируются.
+- Тесты — рядом с модулем: `*.test.ts(x)` (Vitest + Testing Library); сквозные — в `e2e/` (Playwright).
