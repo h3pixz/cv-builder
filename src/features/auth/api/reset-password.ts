@@ -45,8 +45,6 @@ export async function resetPassword({
     return toFormError(error)
   }
 
-  // The reset link token carries the account email; reuse it to sign the user
-  // in right after the password change.
   const email = decodeEmail(token)
   let signedIn = false
 

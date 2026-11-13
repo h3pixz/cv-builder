@@ -6,24 +6,18 @@
 
 :root {
   color-scheme: light;
-
-  /* Base surfaces and text */
   --background: #f5f5f7;
   --foreground: #333333;
   --card: #f5f5f7;
   --card-foreground: #333333;
   --popover: #f5f5f7;
   --popover-foreground: #333333;
-
-  /* Brand / primary actions */
   --primary: #c63031;
   --primary-foreground: #f5f5f7;
   --primary-hover: #f5f5f7;
   --primary-hover-foreground: #c63031;
   --primary-active: #e9b0b0;
   --primary-active-foreground: #c63031;
-
-  /* Neutral actions and surfaces */
   --secondary: #e2e2e4;
   --secondary-foreground: #4d4d4d;
   --secondary-hover: #aeaeae;
@@ -37,30 +31,20 @@
   --accent-foreground: #c63031;
   --destructive: #c63031;
   --destructive-foreground: #f5f5f7;
-
-  /* Borders, inputs and focus */
   --border: #bebebe;
   --input: #8f8f90;
   --ring: #c63031;
-
-  /* Disabled controls */
   --disabled: #aeaeae;
   --disabled-foreground: #f5f5f7;
-
-  /* Additional palette values */
   --surface-subtle: #e2e2e4;
   --text-secondary: #626262;
   --text-tertiary: #8f8f90;
   --control-border: #8f8f90;
-
-  /* Data visualization */
   --chart-1: #c63031;
   --chart-2: #e9b0b0;
   --chart-3: #626262;
   --chart-4: #8f8f90;
   --chart-5: #aeaeae;
-
-  /* Toast / status feedback (bg, border, text/icon) */
   --success: #66bb6a;
   --success-border: #2e5a31;
   --success-foreground: #2e5d32;
@@ -76,8 +60,6 @@
   --info: #29b6f6;
   --info-border: #0d5b85;
   --info-foreground: #0f5a80;
-
-  /* Level indicator: fill = achieved part, track = remaining part */
   --level-0-fill: #555555;
   --level-0-track: #555555;
   --level-1-fill: #7a7a7a;
@@ -90,8 +72,6 @@
   --level-4-track: #8a6d1f;
   --level-5-fill: #d14040;
   --level-5-track: #d14040;
-
-  /* Sidebar */
   --sidebar: #f5f5f7;
   --sidebar-foreground: #333333;
   --sidebar-primary: #c63031;
@@ -100,31 +80,23 @@
   --sidebar-accent-foreground: #333333;
   --sidebar-border: #bebebe;
   --sidebar-ring: #c63031;
-
-  /* Shared geometry */
   --radius: 0.625rem;
 }
 
 .dark {
   color-scheme: dark;
-
-  /* Base surfaces and text */
   --background: #2e2e2e;
   --foreground: #e2e2e4;
   --card: #2e2e2e;
   --card-foreground: #e2e2e4;
   --popover: #3d3d3d;
   --popover-foreground: #e2e2e4;
-
-  /* Brand / primary actions */
   --primary: #c63031;
   --primary-foreground: #f5f5f7;
   --primary-hover: #2e2e2e;
   --primary-hover-foreground: #c63031;
   --primary-active: #e9b0b0;
   --primary-active-foreground: #c63031;
-
-  /* Neutral actions and surfaces */
   --secondary: #3d3d3d;
   --secondary-foreground: #e2e2e4;
   --secondary-hover: #e2e2e4;
@@ -138,30 +110,20 @@
   --accent-foreground: #2e2e2e;
   --destructive: #c63031;
   --destructive-foreground: #f5f5f7;
-
-  /* Borders, inputs and focus */
   --border: #454545;
   --input: #808080;
   --ring: #c63031;
-
-  /* Disabled controls */
   --disabled: #626262;
   --disabled-foreground: #aeaeae;
-
-  /* Additional palette values */
   --surface-subtle: #3d3d3d;
   --text-secondary: #aeaeae;
   --text-tertiary: #8f8f90;
   --control-border: #808080;
-
-  /* Data visualization */
   --chart-1: #c63031;
   --chart-2: #e9b0b0;
   --chart-3: #e2e2e4;
   --chart-4: #8f8f90;
   --chart-5: #626262;
-
-  /* Toast / status feedback (bg, border, text/icon) */
   --success: #66bb6a;
   --success-border: #2e5a31;
   --success-foreground: #2e5d32;
@@ -177,8 +139,6 @@
   --info: #29b6f6;
   --info-border: #0d5b85;
   --info-foreground: #0f5a80;
-
-  /* Level indicator: fill = achieved part, track = remaining part */
   --level-0-fill: #626262;
   --level-0-track: #626262;
   --level-1-fill: #9a9a9a;
@@ -191,8 +151,6 @@
   --level-4-track: #8a6d1f;
   --level-5-fill: #d14040;
   --level-5-track: #d14040;
-
-  /* Sidebar */
   --sidebar: #2e2e2e;
   --sidebar-foreground: #e2e2e4;
   --sidebar-primary: #c63031;
@@ -202,8 +160,6 @@
   --sidebar-border: #454545;
   --sidebar-ring: #c63031;
 }
-
-/* Expose semantic tokens as Tailwind utilities (bg-background, text-primary, etc.). */
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);

@@ -87,14 +87,6 @@ const PasswordInput = forwardRef<HTMLInputElement, InputProps>(
 
 PasswordInput.displayName = "PasswordInput";
 
-// -----------------------------------------------------------------------------
-// CodeInput (Verification Code / OTP)
-//
-// `value` is a contiguous string of digits (no gaps). Digits can only be
-// entered at the first empty slot or over an existing digit, so the string
-// never has holes and each digit always renders in the box it was typed in.
-// -----------------------------------------------------------------------------
-
 export interface CodeInputProps {
   length?: number;
   value?: string;
@@ -103,9 +95,7 @@ export interface CodeInputProps {
   variant?: VariantProps<typeof inputVariants>["variant"];
   disabled?: boolean;
   className?: string;
-  /** Focus the first empty box on mount. Default: true. */
   autoFocus?: boolean;
-  /** Submit the parent <form> once every box is filled. Default: true. */
   submitOnComplete?: boolean;
 }
 
@@ -126,7 +116,6 @@ const CodeInput = forwardRef<HTMLDivElement, CodeInputProps>(
   ) => {
     const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
-    // Normalize: digits only, capped at `length`.
     const digits = useMemo(
       () => value.replace(/\D/g, "").slice(0, length),
       [value, length],
@@ -135,13 +124,20 @@ const CodeInput = forwardRef<HTMLDivElement, CodeInputProps>(
     const digitsRef = useRef(digits);
     digitsRef.current = digits;
 
+    const hasFocused = useRef(false);
+
     useEffect(() => {
+      if (hasFocused.current) {
+        return;
+      }
+
+      hasFocused.current = true;
+
       if (autoFocus && !disabled) {
         const first = inputRefs.current[Math.min(digits.length, length - 1)];
         first?.focus();
       }
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [autoFocus, digits.length, disabled, length]);
 
     const wasComplete = useRef(digits.length === length);
     useEffect(() => {
