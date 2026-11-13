@@ -19,7 +19,7 @@ export function AuthTabs({ active }: { active: "sign-in" | "sign-up" }) {
                 href={tab.href}
                 aria-current={isActive ? "page" : undefined}
                 className={cn(
-                  "pb-3.5 text-xs font-semibold tracking-wider uppercase transition",
+                  "pb-3.5 text-xs font-semibold tracking-wider uppercase transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
                   isActive
                     ? "text-primary hover:opacity-80"
                     : "text-foreground hover:text-foreground/80",

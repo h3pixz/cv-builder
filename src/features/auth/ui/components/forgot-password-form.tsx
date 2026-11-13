@@ -1,6 +1,5 @@
 "use client"
 
-import Link from "next/link"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { Button } from "@/shared/ui/button"
@@ -11,6 +10,7 @@ import {
   forgotPasswordSchema,
   type ForgotPasswordValues,
 } from "../../model/forgot-password-schema"
+import { AuthLink } from "./auth-link"
 
 export function ForgotPasswordForm() {
   const {
@@ -86,12 +86,7 @@ export function ForgotPasswordForm() {
       </Button>
 
       <div className="mt-2 text-center">
-        <Link
-          href="/sign-in"
-          className="inline-block text-xs font-semibold tracking-wider text-text-secondary uppercase transition-colors hover:text-foreground"
-        >
-          Cancel
-        </Link>
+        <AuthLink href="/sign-in">Cancel</AuthLink>
       </div>
     </form>
   )
