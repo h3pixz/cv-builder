@@ -25,8 +25,6 @@ function mapUser(user: ApiUser): UserRecord {
   };
 }
 
-// Server component: fetches data on the server and passes plain,
-// serializable props to the client table.
 async function UsersList({ search }: UsersPageProps) {
   const session = await getSession();
 
@@ -45,9 +43,10 @@ async function UsersList({ search }: UsersPageProps) {
 export function UsersPage({ search }: UsersPageProps) {
   return (
     <section className="w-full space-y-3">
-      <UsersToolbar initialSearch={search ?? ""} />
+      <Suspense fallback={<div className="h-10" />}>
+        <UsersToolbar initialSearch={search ?? ""} />
+      </Suspense>
 
-      {/* key={search} re-shows the fallback every time the search changes */}
       <Suspense
         key={search}
         fallback={

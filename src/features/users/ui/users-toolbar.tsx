@@ -54,7 +54,6 @@ export function UsersToolbar({ initialSearch }: UsersToolbarProps) {
 
       <Button
         variant="default"
-        // Adjust the route to your app
         onClick={() => router.push("/users/new")}
         className="h-9 min-w-0 shrink-0 gap-2 rounded-none px-2 text-xs"
       >

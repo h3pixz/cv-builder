@@ -127,7 +127,6 @@ export function UsersTable({ users }: UsersTableProps) {
                     </DropdownMenuTrigger>
 
                     <DropdownMenuContent align="end" className="min-w-24">
-                      {/* Adjust the routes to your app */}
                       <DropdownMenuItem
                         onClick={() => router.push(`/users/${user.id}`)}
                       >
