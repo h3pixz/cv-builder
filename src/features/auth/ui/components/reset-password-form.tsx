@@ -1,20 +1,28 @@
 "use client"
 
-import Link from "next/link"
+import { useState } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { Button } from "@/shared/ui/button"
 import { PasswordInput } from "@/shared/ui/input"
+import { toast } from "@/shared/ui/toast"
 import {
   resetPasswordSchema,
   type ResetPasswordValues,
 } from "../../model/reset-password-schema"
+import { resetPassword } from "../../api/reset-password"
+import { AuthLink } from "./auth-link"
+import { FormError } from "./form-error"
 
-export function ResetPasswordForm() {
+const MISSING_TOKEN_MESSAGE =
+  "This password reset link is expired or invalid"
+
+export function ResetPasswordForm({ token }: { token?: string }) {
+  const [formError, setFormError] = useState<string | null>(null)
   const {
     register,
     handleSubmit,
-    formState: { errors, isValid },
+    formState: { errors, isValid, isSubmitting },
   } = useForm<ResetPasswordValues>({
     resolver: zodResolver(resetPasswordSchema),
     mode: "onTouched",
@@ -22,15 +30,32 @@ export function ResetPasswordForm() {
     defaultValues: { newPassword: "", confirmPassword: "" },
   })
 
+  async function onSubmit(values: ResetPasswordValues) {
+    if (!token) {
+      return
+    }
+
+    setFormError(null)
+
+    const result = await resetPassword({ token, ...values })
+
+    if (!result.success) {
+      setFormError(result.error)
+      toast.add({
+        type: "error",
+        title: "Could not reset the password",
+        description: result.error,
+      })
+    }
+  }
+
   const newPasswordError = errors.newPassword?.message
   const confirmPasswordError = errors.confirmPassword?.message
 
   return (
-    <form
-      className="w-full"
-      noValidate
-      onSubmit={handleSubmit(() => undefined)}
-    >
+    <form className="w-full" noValidate onSubmit={handleSubmit(onSubmit)}>
+      <FormError message={token ? formError : MISSING_TOKEN_MESSAGE} />
+
       <div className="w-full">
         <label htmlFor="newPassword" className="sr-only">
           New password
@@ -89,7 +114,7 @@ export function ResetPasswordForm() {
         <Button
           type="submit"
           variant="primary"
-          disabled={!isValid}
+          disabled={!isValid || isSubmitting || !token}
           className="h-12 w-30 text-xs font-semibold tracking-wider"
         >
           Submit
@@ -97,12 +122,7 @@ export function ResetPasswordForm() {
       </div>
 
       <div className="mt-6 text-center">
-        <Link
-          href="/sign-in"
-          className="text-xs font-semibold tracking-wider text-text-secondary uppercase transition-colors hover:text-foreground"
-        >
-          Go to sign in
-        </Link>
+        <AuthLink href="/sign-in">Go to sign in</AuthLink>
       </div>
     </form>
   )
