@@ -2,6 +2,8 @@ import { render, screen, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { SignUpForm } from "./sign-up-form"
 
+vi.mock("../../api/signup", () => ({ signup: vi.fn() }))
+
 describe("SignUpForm", () => {
   it("keeps submit disabled until all fields are valid", async () => {
     const user = userEvent.setup()

@@ -1,23 +1,53 @@
 "use client"
 
-import Link from "next/link"
+import { useState } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { Button } from "@/shared/ui/button"
 import { Input, PasswordInput } from "@/shared/ui/input"
+import { toast } from "@/shared/ui/toast"
 import { signUpSchema, type SignUpValues } from "../../model/sign-up-schema"
+import { signup } from "../../api/signup"
+import { AuthLink } from "./auth-link"
+import { FormError } from "./form-error"
 
 export function SignUpForm() {
+  const [formError, setFormError] = useState<string | null>(null)
   const {
     register,
     handleSubmit,
-    formState: { errors, isValid },
+    setError,
+    formState: { errors, isValid, isSubmitting },
   } = useForm<SignUpValues>({
     resolver: zodResolver(signUpSchema),
     mode: "onTouched",
     reValidateMode: "onChange",
     defaultValues: { email: "", password: "", confirmPassword: "" },
   })
+
+  async function onSubmit(values: SignUpValues) {
+    setFormError(null)
+
+    const result = await signup(
+      values.email,
+      values.password,
+      values.confirmPassword,
+    )
+
+    if (!result.success) {
+      if (result.code === "userAlreadyExists") {
+        setError("email", { type: "server", message: result.error })
+        return
+      }
+
+      setFormError(result.error)
+      toast.add({
+        type: "error",
+        title: "Could not create the account",
+        description: result.error,
+      })
+    }
+  }
 
   const emailError = errors.email?.message
   const passwordError = errors.password?.message
@@ -27,7 +57,7 @@ export function SignUpForm() {
     <form
       className="w-full space-y-4"
       noValidate
-      onSubmit={handleSubmit(() => undefined)}
+      onSubmit={handleSubmit(onSubmit)}
     >
       <div className="w-full">
         <label htmlFor="email" className="sr-only">
@@ -103,20 +133,17 @@ export function SignUpForm() {
         <Button
           type="submit"
           variant="primary"
-          disabled={!isValid}
+          disabled={!isValid || isSubmitting}
           className="h-11 w-44 text-xs font-semibold tracking-wider"
         >
           Create account
         </Button>
       </div>
 
+      <FormError message={formError} />
+
       <div className="pt-2 text-center">
-        <Link
-          href="/sign-in"
-          className="text-xs font-semibold tracking-wider text-text-secondary uppercase transition-colors hover:text-foreground"
-        >
-          I have an account
-        </Link>
+        <AuthLink href="/sign-in">I have an account</AuthLink>
       </div>
     </form>
   )
