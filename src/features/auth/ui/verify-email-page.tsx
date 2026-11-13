@@ -1,6 +1,14 @@
+import { redirect } from "next/navigation"
+import { getSession } from "@/shared/api"
 import { VerifyEmailForm } from "./components/verify-email-form"
 
-export function VerifyEmailPage() {
+export async function VerifyEmailPage() {
+  const session = await getSession()
+
+  if (!session) {
+    redirect("/sign-in")
+  }
+
   return (
     <div className="flex min-h-screen flex-col">
       <main className="flex flex-1 flex-col items-center justify-center px-4">

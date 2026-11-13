@@ -2,6 +2,8 @@ import { render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { VerifyEmailForm } from "./verify-email-form"
 
+vi.mock("../../api/verify-email", () => ({ verifyEmail: vi.fn() }))
+
 describe("VerifyEmailForm", () => {
   it("shows a required error when confirming an empty code", async () => {
     const user = userEvent.setup()
