@@ -1,6 +1,6 @@
 import { ResetPasswordForm } from "./components/reset-password-form"
 
-export function ResetPasswordPage() {
+export function ResetPasswordPage({ token }: { token?: string }) {
   return (
     <div className="flex min-h-screen flex-col">
       <main className="flex flex-1 flex-col items-center justify-center px-4">
@@ -14,7 +14,7 @@ export function ResetPasswordPage() {
             </p>
           </div>
 
-          <ResetPasswordForm />
+          <ResetPasswordForm token={token} />
         </div>
       </main>
     </div>
