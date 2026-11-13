@@ -62,6 +62,8 @@ cv-builder/
 │   │   ├── not-found.tsx               # план
 │   │   └── error.tsx                   # план
 │   │
+│   ├── proxy.ts                        # проверка сессии для приватных маршрутов
+│   │
 │   ├── features/
 │   │   │
 │   │   ├── auth/
@@ -89,6 +91,7 @@ cv-builder/
 │   │   │   │   ├── verify-email.ts
 │   │   │   │   ├── forgot-password.ts
 │   │   │   │   ├── reset-password.ts
+│   │   │   │   ├── logout.ts
 │   │   │   │   └── request-origin.ts
 │   │   │   ├── model/                  # схемы валидации
 │   │   │   │   ├── validation.ts
@@ -144,8 +147,10 @@ cv-builder/
 │   │   │   │   │   ├── gql.ts
 │   │   │   │   │   ├── graphql.ts
 │   │   │   │   │   └── index.ts
+│   │   │   │   ├── documents.ts        # общие документы (UpdateToken)
 │   │   │   │   └── index.ts
 │   │   │   ├── session.ts
+│   │   │   ├── session-cookies.ts      # имена cookie и настройки сессии
 │   │   │   └── index.ts
 │   │   ├── config/                     # переменные окружения и настройки
 │   │   ├── helpers/                    # переиспользуемые чистые функции

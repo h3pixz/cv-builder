@@ -28,6 +28,7 @@
 - [x] Подключить GraphQL Code Generator: `schema.graphql` из бэкенда, `codegen.ts`, типизированные документы в `src/shared/api/graphql/generated`, скрипты `codegen` / `codegen:watch`, зависимости `@graphql-codegen/cli` / `client-preset`
 - [x] `gqlRequest` принимает `TypedDocumentNode` (перегрузка сохраняет поддержку inline-строк), результат и переменные выводятся из сгенерированного документа
 - [x] `refreshSession` читает `refresh_token` из cookie напрямую и использует сгенерированный документ `UpdateToken` — обновление токена не зависит от живого `access_token`; тест обновлён
+- [x] Proxy (middleware Next 16, `src/proxy.ts`) для приватных маршрутов дашборда: проверка access-токена, авто-refresh через `updateToken`, редирект на `/sign-in` без сессии; cookie-настройки вынесены в `shared/api/session-cookies.ts`
 
 ### Страницы авторизации
 
@@ -52,16 +53,13 @@
 - [x] Общие `FormError` (form-level ошибки) и `AuthLink` (ссылки с `focus-visible`) для auth-форм
 - [x] Next 16: auth-маршруты с `cookies` / `searchParams` помечены `instant = false` (blocking prerender)
 - [x] Тесты auth-форм (Vitest + RTL): `sign-in`, `sign-up`, `verify-email`, `forgot-password`, `reset-password` — валидация, disabled-состояния, вызовы Server Actions, тосты, ссылки-переходы
+- [x] Server Action выхода `logout` — очистка cookie и редирект на `/sign-in`
 
 ## In progress
 
 - [ ] Согласовать с ментором итоговый стек: Tailwind + shadcn, Zustand, Zod + React Hook Form, отказ от Apollo Client — подтвердить формально
 
 ## Backlog
-
-### Инфраструктура
-
-- [ ] Middleware для защиты приватных маршрутов (редактор, список резюме)
 
 ### Маршруты и layout
 
@@ -73,7 +71,6 @@
 
 - [ ] `/verify-email` — повторная отправка кода через `sendVerification`
 - [ ] `/forgot-password` — отдельное сообщение «почта не найдена» невозможно: бэкенд отдаёт `failedToSendEmail` и для отсутствующей почты, и для сбоя отправки
-- [ ] Server Action выхода: очистка cookie
 - [ ] Ручной переключатель темы (сейчас тема следует системной настройке)
 
 ### Резюме
