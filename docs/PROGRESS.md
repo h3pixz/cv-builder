@@ -43,10 +43,18 @@
 - [x] `/verify-email` — клиентская валидация кода (required / ровно 6 цифр) с inline-ошибкой; «Later» ведёт на главную `/`
 - [x] Общие Zod-схемы для auth-форм: `model/validation.ts` (`emailSchema`, `passwordSchema`)
 - [x] `PasswordInput` — disabled-состояние тоггла; `CodeInput` — адаптивные отступы на узких экранах
+- [x] Типизированные GraphQL-документы auth-операций (`Login`, `Signup`, `ForgotPassword`, `ResetPassword`, `VerifyMail`) — `src/features/auth/api/documents.ts`
+- [x] `/sign-in` — Server Action `login`: сохранение сессии, inline-ошибка + тост `invalidCredentials`, disabled/loading кнопки
+- [x] `/sign-up` — Server Action `signup`: `Origin` для ссылки в письме, сохранение токенов, `userAlreadyExists` inline на поле email, редирект на `/verify-email`
+- [x] `/verify-email` — проверка сессии перед рендером, `verifyMail` с access-токеном и refresh-ретраем при `unauthorized`, ошибки `mailNotFound` / `shouldBe6Digits` / истёкшая сессия, редирект на `/`
+- [x] `/reset-password?token=...` — чтение `token` из query, `resetPassword` с токеном в `Authorization`, ошибки `actionExpired` / `confirmPasswordMismatch`, сообщение для отсутствующего токена
+- [x] Авто-вход после сброса пароля: email берётся из payload reset-токена, затем `login` с новым паролем; при сбое — редирект на `/sign-in`
+- [x] Общие `FormError` (form-level ошибки) и `AuthLink` (ссылки с `focus-visible`) для auth-форм
+- [x] Next 16: auth-маршруты с `cookies` / `searchParams` помечены `instant = false` (blocking prerender)
+- [x] Тесты auth-форм (Vitest + RTL): `sign-in`, `sign-up`, `verify-email`, `forgot-password`, `reset-password` — валидация, disabled-состояния, вызовы Server Actions, тосты, ссылки-переходы
 
 ## In progress
 
-- [ ] Ветка `feat/auth-sign-in`: Server Action `login`, сохранение сессии и обработка `invalidCredentials` (вёрстка и валидация `/sign-in` готовы)
 - [ ] Согласовать с ментором итоговый стек: Tailwind + shadcn, Zustand, Zod + React Hook Form, отказ от Apollo Client — подтвердить формально
 
 ## Backlog
@@ -61,16 +69,11 @@
 - [ ] Настроить маршруты: список резюме, редактор, превью
 - [ ] Применить SSR/SSG для страниц, где уместно
 
-### Авторизация — остаётся на бэкенд-интеграцию
+### Авторизация — остатки
 
-- [ ] `/sign-in` — Server Action `login`, сохранение сессии, обработка `invalidCredentials`, показ серверной ошибки (AC-9, AC-10), loading-состояние кнопки
-- [ ] `/sign-up` — Server Action `signup`, сохранение токенов до подтверждения почты, обработка `userAlreadyExists` / `confirmPasswordMismatch`, редирект на `/verify-email`, loading-состояние
-- [ ] `/verify-email` — мутация `verifyMail` (активация аккаунта), обработка `mailNotFound` / `otpIsRequired` / `shouldBe6Digits`, повторная отправка через `sendVerification`, редирект на главную после успеха, loading-состояние
-- [ ] `/reset-password?token=...` — чтение токена из query, мутация `resetPassword` с токеном в `Authorization`, обработка `actionExpired` / `confirmPasswordMismatch`; уточнить с бэкендом авто-вход после сброса (в `docs/BACKEND.md` описан редирект на логин)
-- [ ] `/forgot-password` — обработать кейс «почта не найдена» (`failedToSendEmail`) отдельным сообщением, если бэкенд различает
+- [ ] `/verify-email` — повторная отправка кода через `sendVerification`
+- [ ] `/forgot-password` — отдельное сообщение «почта не найдена» невозможно: бэкенд отдаёт `failedToSendEmail` и для отсутствующей почты, и для сбоя отправки
 - [ ] Server Action выхода: очистка cookie
-- [ ] Общий компонент/место для form-level серверных ошибок (inline под формой + тост) и блокировка полей во время запроса
-- [ ] Проверка валидной сессии у `/verify-email` (доступ только после регистрации)
 - [ ] Ручной переключатель темы (сейчас тема следует системной настройке)
 
 ### Резюме

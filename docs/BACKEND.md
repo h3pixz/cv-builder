@@ -88,7 +88,7 @@ mutation SendVerification($email: String!) {
 
 1. `forgotPassword({ email })` — письмо со ссылкой `${origin}/reset-password?token=<jwt 10 мин>`.
 2. На странице `/reset-password` взять `token` из query, вызвать `resetPassword` с этим токеном в `Authorization`.
-3. После успеха — редирект на логин.
+3. После успеха фронтенд делает авто-вход: декодирует `email` из payload reset-токена и вызывает `login` с новым паролем, сохраняя сессию. Если `login` не удался — редирект на `/sign-in`.
 
 `origin` для ссылок бэкенд берёт из заголовка `Origin` запроса. Браузер шлёт его сам, но **`fetch` из Server Components — нет**: для `signup` и `forgotPassword` с сервера заголовок `Origin: http://localhost:3000` (или адрес приложения) нужно выставлять вручную, иначе ссылка в письме будет битой.
 
