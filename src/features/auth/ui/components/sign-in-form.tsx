@@ -1,23 +1,43 @@
 "use client"
 
-import Link from "next/link"
+import { useState } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { Button } from "@/shared/ui/button"
 import { Input, PasswordInput } from "@/shared/ui/input"
+import { toast } from "@/shared/ui/toast"
 import { signInSchema, type SignInValues } from "../../model/sign-in-schema"
+import { login } from "../../api/login"
+import { AuthLink } from "./auth-link"
+import { FormError } from "./form-error"
 
 export function SignInForm() {
+  const [formError, setFormError] = useState<string | null>(null)
   const {
     register,
     handleSubmit,
-    formState: { errors, isValid },
+    formState: { errors, isValid, isSubmitting },
   } = useForm<SignInValues>({
     resolver: zodResolver(signInSchema),
     mode: "onTouched",
     reValidateMode: "onChange",
     defaultValues: { email: "", password: "" },
   })
+
+  async function onSubmit(values: SignInValues) {
+    setFormError(null)
+
+    const result = await login(values.email, values.password)
+
+    if (!result.success) {
+      setFormError(result.error)
+      toast.add({
+        type: "error",
+        title: "Could not sign in",
+        description: result.error,
+      })
+    }
+  }
 
   const emailError = errors.email?.message
   const passwordError = errors.password?.message
@@ -26,7 +46,7 @@ export function SignInForm() {
     <form
       className="w-full space-y-4"
       noValidate
-      onSubmit={handleSubmit(() => undefined)}
+      onSubmit={handleSubmit(onSubmit)}
     >
       <div className="w-full">
         <label htmlFor="email" className="sr-only">
@@ -75,20 +95,17 @@ export function SignInForm() {
         <Button
           type="submit"
           variant="primary"
-          disabled={!isValid}
+          disabled={!isValid || isSubmitting}
           className="h-11 w-44 text-xs font-semibold tracking-wider"
         >
           Sign in
         </Button>
       </div>
 
+      <FormError message={formError} />
+
       <div className="pt-4 text-center">
-        <Link
-          href="/forgot-password"
-          className="text-xs font-semibold tracking-wider text-text-secondary uppercase transition-colors hover:text-foreground"
-        >
-          Forgot password
-        </Link>
+        <AuthLink href="/forgot-password">Forgot password</AuthLink>
       </div>
     </form>
   )
