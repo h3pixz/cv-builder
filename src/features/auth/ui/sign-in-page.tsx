@@ -1,7 +1,7 @@
 import { AuthTabs } from "./components/auth-tabs"
 import { SignInForm } from "./components/sign-in-form"
 
-export function SignInPage() {
+export function SignInPage({ next }: { next?: string }) {
   return (
     <div className="flex min-h-screen flex-col">
       <AuthTabs active="sign-in" />
@@ -17,7 +17,7 @@ export function SignInPage() {
             </p>
           </div>
 
-          <SignInForm />
+          <SignInForm next={next} />
         </div>
       </main>
     </div>

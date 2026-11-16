@@ -11,7 +11,7 @@ import { login } from "../../api/login"
 import { AuthLink } from "./auth-link"
 import { FormError } from "./form-error"
 
-export function SignInForm() {
+export function SignInForm({ next }: { next?: string }) {
   const [formError, setFormError] = useState<string | null>(null)
   const {
     register,
@@ -27,7 +27,7 @@ export function SignInForm() {
   async function onSubmit(values: SignInValues) {
     setFormError(null)
 
-    const result = await login(values.email, values.password)
+    const result = await login(values.email, values.password, next)
 
     if (!result.success) {
       setFormError(result.error)

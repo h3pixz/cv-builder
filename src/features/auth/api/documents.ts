@@ -3,6 +3,12 @@ import { graphql } from "@/shared/api/graphql/generated/gql"
 export const LoginMutation = graphql(`
   mutation Login($auth: AuthInput!) {
     login(auth: $auth) {
+      user {
+        id
+        email
+        is_verified
+        role
+      }
       access_token
       refresh_token
     }
