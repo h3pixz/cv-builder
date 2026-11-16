@@ -1,61 +1,127 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { gqlRequest } from "@/shared/api/graphql";
 import { UpdateTokenDocument } from "@/shared/api/graphql/documents";
+import { isTokenExpired } from "@/shared/api/jwt";
 import {
   ACCESS_TOKEN_COOKIE,
   ACCESS_TOKEN_MAX_AGE,
+  ACCESS_TOKEN_REFRESH_SKEW,
   REFRESH_TOKEN_COOKIE,
   REFRESH_TOKEN_MAX_AGE,
   sessionCookieOptions,
 } from "@/shared/api/session-cookies";
+import { GUEST_ROUTES, HOME_ROUTE, SIGN_IN_ROUTE } from "@/shared/config";
 
-const SIGN_IN_URL = "/sign-in";
+type Tokens = { access_token: string; refresh_token: string };
 
-function redirectToSignIn(request: NextRequest) {
-  const response = NextResponse.redirect(new URL(SIGN_IN_URL, request.url));
-
-  response.cookies.delete(ACCESS_TOKEN_COOKIE);
-  response.cookies.delete(REFRESH_TOKEN_COOKIE);
-
-  return response;
+function isGuestRoute(pathname: string) {
+  return GUEST_ROUTES.some(
+    (route) => pathname === route || pathname.startsWith(`${route}/`),
+  );
 }
 
-export async function proxy(request: NextRequest) {
-  if (request.cookies.get(ACCESS_TOKEN_COOKIE)?.value) {
-    return NextResponse.next();
-  }
+function clearSessionCookies(response: NextResponse) {
+  response.cookies.delete(ACCESS_TOKEN_COOKIE);
+  response.cookies.delete(REFRESH_TOKEN_COOKIE);
+}
 
-  const refreshToken = request.cookies.get(REFRESH_TOKEN_COOKIE)?.value;
+function persistTokens(response: NextResponse, tokens: Tokens) {
+  response.cookies.set(
+    ACCESS_TOKEN_COOKIE,
+    tokens.access_token,
+    sessionCookieOptions(ACCESS_TOKEN_MAX_AGE),
+  );
+  response.cookies.set(
+    REFRESH_TOKEN_COOKIE,
+    tokens.refresh_token,
+    sessionCookieOptions(REFRESH_TOKEN_MAX_AGE),
+  );
+}
 
-  if (!refreshToken) {
-    return redirectToSignIn(request);
-  }
-
+async function refreshTokens(refreshToken: string): Promise<Tokens | null> {
   try {
     const data = await gqlRequest(UpdateTokenDocument, undefined, {
       accessToken: refreshToken,
     });
+
+    return data.updateToken;
+  } catch {
+    return null;
+  }
+}
+
+function redirectToSignIn(request: NextRequest) {
+  const url = new URL(SIGN_IN_ROUTE, request.url);
+  const { pathname, search } = request.nextUrl;
+
+  url.searchParams.set("next", `${pathname}${search}`);
+
+  const response = NextResponse.redirect(url);
+  clearSessionCookies(response);
+
+  return response;
+}
+
+function redirectHome(request: NextRequest) {
+  return NextResponse.redirect(new URL(HOME_ROUTE, request.url));
+}
+
+export async function proxy(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+  const accessToken = request.cookies.get(ACCESS_TOKEN_COOKIE)?.value;
+  const refreshToken = request.cookies.get(REFRESH_TOKEN_COOKIE)?.value;
+  const hasFreshAccessToken = accessToken
+    ? !isTokenExpired(accessToken, ACCESS_TOKEN_REFRESH_SKEW)
+    : false;
+
+  if (isGuestRoute(pathname)) {
+    if (hasFreshAccessToken) {
+      return redirectHome(request);
+    }
+
+    if (refreshToken) {
+      const tokens = await refreshTokens(refreshToken);
+
+      if (tokens) {
+        const response = redirectHome(request);
+        persistTokens(response, tokens);
+        return response;
+      }
+    }
+
     const response = NextResponse.next();
 
-    response.cookies.set(
-      ACCESS_TOKEN_COOKIE,
-      data.updateToken.access_token,
-      sessionCookieOptions(ACCESS_TOKEN_MAX_AGE),
-    );
-    response.cookies.set(
-      REFRESH_TOKEN_COOKIE,
-      data.updateToken.refresh_token,
-      sessionCookieOptions(REFRESH_TOKEN_MAX_AGE),
-    );
+    if (accessToken || refreshToken) {
+      clearSessionCookies(response);
+    }
 
     return response;
-  } catch {
-    return redirectToSignIn(request);
   }
+
+  if (hasFreshAccessToken) {
+    return NextResponse.next();
+  }
+
+  if (refreshToken) {
+    const tokens = await refreshTokens(refreshToken);
+
+    if (tokens) {
+      const response = NextResponse.next();
+      persistTokens(response, tokens);
+      return response;
+    }
+  }
+
+  return redirectToSignIn(request);
 }
 
 export const config = {
   matcher: [
+    "/",
+    "/sign-in",
+    "/sign-up",
+    "/forgot-password",
+    "/verify-email",
     "/users/:path*",
     "/profile/:path*",
     "/cvs/:path*",
