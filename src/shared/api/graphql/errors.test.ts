@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { getGraphQLErrorCode, getGraphQLErrorMessage } from "./errors";
+import {
+  getGraphQLErrorCode,
+  getGraphQLErrorMessage,
+  isUnauthorizedError,
+} from "./errors";
 
 function clientError(...messages: string[]) {
   return { response: { errors: messages.map((message) => ({ message })) } };
@@ -26,6 +30,47 @@ describe("getGraphQLErrorCode", () => {
     expect(getGraphQLErrorCode(new Error("network"))).toBeNull();
     expect(getGraphQLErrorCode(null)).toBeNull();
     expect(getGraphQLErrorCode(undefined)).toBeNull();
+  });
+});
+
+describe("isUnauthorizedError", () => {
+  it("detects the backend unauthorized code", () => {
+    expect(isUnauthorizedError(clientError("unauthorized"))).toBe(true);
+  });
+
+  it("detects an unauthorized extension code", () => {
+    expect(
+      isUnauthorizedError({
+        response: { errors: [{ message: "denied", extensions: { code: "UNAUTHORIZED" } }] },
+      }),
+    ).toBe(true);
+    expect(
+      isUnauthorizedError({
+        response: { errors: [{ message: "denied", extensions: { code: "UNAUTHENTICATED" } }] },
+      }),
+    ).toBe(true);
+  });
+
+  it("detects a 401 status", () => {
+    expect(isUnauthorizedError({ response: { status: 401 } })).toBe(true);
+  });
+
+  it("detects a 401 inside the original error", () => {
+    expect(
+      isUnauthorizedError({
+        response: {
+          errors: [
+            { message: "denied", extensions: { originalError: { statusCode: 401 } } },
+          ],
+        },
+      }),
+    ).toBe(true);
+  });
+
+  it("ignores other errors", () => {
+    expect(isUnauthorizedError(clientError("invalidCredentials"))).toBe(false);
+    expect(isUnauthorizedError(new Error("network"))).toBe(false);
+    expect(isUnauthorizedError(null)).toBe(false);
   });
 });
 
