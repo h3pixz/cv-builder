@@ -20,13 +20,20 @@
 
 ## Переменная окружения фронтенда
 
-README бэкенда написан под Vite (`VITE_GRAPHQL_URL`). У нас Next.js и запросы из Server Components / Server Actions, поэтому нужна серверная переменная, например:
+Фронтенд читает серверную переменную `VITE_GRAPHQL_URL` (имя унаследовано от Vite, несмотря на то что проект на Next.js):
 
 ```sh
-GRAPHQL_URL="http://localhost:3001/api/graphql"
+VITE_GRAPHQL_URL="http://localhost:3001/api/graphql"
 ```
 
-`NEXT_PUBLIC_` не нужен, пока весь доступ к API идёт с сервера.
+Её читают `src/shared/api/graphql.ts`, `src/features/users/api/raw-request.ts` и `scripts/export-schema.mjs`. `NEXT_PUBLIC_` не нужен, пока весь доступ к API идёт с сервера.
+
+Обновить `schema.graphql` и `introspectionSchema.full.json` с запущенного бэкенда:
+
+```sh
+node scripts/export-schema.mjs
+npm run codegen
+```
 
 ## Аутентификация
 
@@ -104,7 +111,7 @@ query Me {
 
 ### Ошибки
 
-Apollo отдаёт `errors[].message` — это код на английском (camelCase), его нужно маппить на русские тексты в UI. `extensions.code` — HTTP-статус (`UNAUTHORIZED`, `BAD_REQUEST`, `CONFLICT`, `FORBIDDEN`, `SERVICE_UNAVAILABLE`, `INTERNAL_SERVER_ERROR`).
+Apollo отдаёт `errors[].message` — это код на английском (camelCase), его нужно маппить на русские тексты в UI. `extensions.code` — HTTP-статус (`UNAUTHORIZED`, `BAD_REQUEST`, `CONFLICT`, `FORBIDDEN`, `SERVICE_UNAVAILABLE`, `INTERNAL_SERVER_ERROR`). `src/features/users/api/raw-request.ts` считает ошибкой авторизации и `UNAUTHORIZED`, и `UNAUTHENTICATED`, а также HTTP 401.
 
 Коды, которые встретятся на страницах авторизации:
 
@@ -161,11 +168,18 @@ type User {
 
 Схема: все `src/**/*.graphql` в репозитории бэкенда; единого `schema.graphql` нет — удобнее всего смотреть через Playground/introspection.
 
-## Что это значит для страницы авторизации
+## Что уже есть во фронтенде
 
-Фронтенду нужны маршруты, на которые бэкенд ссылается из писем:
+- `src/shared/api/session.ts` — сессия в httpOnly-cookie `access_token` / `refresh_token` (10 минут / 7 дней), функции `getSession`, `saveSession`, `clearSession`, `refreshSession`.
+- `src/features/users/api/raw-request.ts` — `loginRequest`, `refreshRequest` и `authedRequest` с автоматическим обновлением access-токена и повтором запроса.
+- `src/app/(platform)/layout.tsx` — `AuthGate`: при отсутствии сессии редиректит на `/login`.
 
+## Что ещё нужно реализовать
+
+Маршруты, на которые бэкенд ссылается из писем:
+
+- `/login` — вход (`login`, затем `saveSession`).
 - `/verify-email` — ввод 6-значного OTP; доступен только с валидным access-токеном (сохранить после `signup`).
 - `/reset-password?token=...` — новый пароль, токен из query уходит в `Authorization`.
 
-Рекомендуемая схема сессии: токены в httpOnly cookie, `updateToken` на сервере при истечении access-токена (через ~10 минут), middleware для защиты редактора. Подробный план по слоям FSD — в обсуждении задачи.
+Все три маршрута пока отсутствуют. Также нет middleware для защиты редактора — сейчас проверка сессии выполняется в layout route group `(platform)`.

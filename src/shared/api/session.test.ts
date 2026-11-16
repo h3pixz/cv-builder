@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
+  UpdateTokenDocument,
   clearSession,
   getSession,
   refreshSession,
@@ -69,7 +70,7 @@ describe("refreshSession", () => {
     await expect(refreshSession()).resolves.toEqual(fresh);
 
     expect(gqlRequest).toHaveBeenCalledWith(
-      expect.stringContaining("UpdateToken"),
+      UpdateTokenDocument,
       undefined,
       { accessToken: "refresh-1" },
     );

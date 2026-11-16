@@ -1,8 +1,16 @@
 import "server-only";
 
-import { gqlRequest, type GraphQLRequestOptions } from "@/shared/api/graphql";
-import { graphql } from "@/shared/api/graphql/generated/gql";
+import { cache } from "react";
 import type { VariablesOf } from "@graphql-typed-document-node/core";
+
+import {
+  getSession,
+  gqlRequest,
+  type GraphQLRequestOptions,
+} from "@/shared/api";
+import { graphql } from "@/shared/api/graphql/generated/gql";
+
+import { authedRequest } from "./raw-request";
 
 export const GetUsersDocument = graphql(`
   query GetUsers($params: SearchPaginationInput) {
@@ -79,14 +87,69 @@ export const GetUserDocument = graphql(`
   }
 `);
 
-export async function getUser(
-  userId: VariablesOf<typeof GetUserDocument>["userId"],
-  options?: GraphQLRequestOptions,
-) {
-  const data = await gqlRequest(GetUserDocument, { userId }, options);
+type UserDetails = {
+  user: {
+    id: string;
+    email: string;
+    created_at: string;
+    is_verified: boolean;
+    department: { id: string; name: string } | null;
+    position: { id: string; name: string } | null;
+    profile: {
+      first_name: string | null;
+      last_name: string | null;
+      full_name: string | null;
+      avatar: string | null;
+    };
+  } | null;
+};
+
+const USER = /* GraphQL */ `
+  query User($userId: ID!) {
+    user(userId: $userId) {
+      id
+      email
+      created_at
+      is_verified
+      department {
+        id
+        name
+      }
+      position {
+        id
+        name
+      }
+      profile {
+        first_name
+        last_name
+        full_name
+        avatar
+      }
+    }
+  }
+`;
+
+export const getUser = cache(async (userId: string) => {
+  const session = await getSession();
+  if (!session) return null;
+
+  const data = await authedRequest<UserDetails>(
+    USER,
+    { userId },
+    session.access_token,
+  );
 
   return data.user;
-}
+});
+
+// export async function getUser(
+//   userId: VariablesOf<typeof GetUserDocument>["userId"],
+//   options?: GraphQLRequestOptions,
+// ) {
+//   const data = await gqlRequest(GetUserDocument, { userId }, options);
+
+//   return data.user;
+// }
 
 // Current authenticated user's profile
 
@@ -193,14 +256,6 @@ export const GetUserCvsDocument = graphql(`
         languages {
           name
           proficiency
-        }
-        projects {
-          id
-          name
-          internal_name
-          domain
-          start_date
-          end_date
         }
       }
       total

@@ -10,7 +10,7 @@ function getGraphQLUrl(): string {
   const url = process.env.VITE_GRAPHQL_URL;
 
   if (!url) {
-    throw new Error("GRAPHQL_URL is not set");
+    throw new Error("VITE_GRAPHQL_URL is not set");
   }
 
   return url;
@@ -19,7 +19,7 @@ function getGraphQLUrl(): string {
 export async function gqlRequest<
   TResult,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  TVariables extends Record<string, any>,
+  TVariables extends Record<string, any> = Record<string, never>,
 >(
   document: TypedDocumentNode<TResult, TVariables>,
   variables?: TVariables,

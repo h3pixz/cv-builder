@@ -1,37 +1,39 @@
 # Прогресс CV Builder
 
-Источник требований: `docs/TZ.md`.
+Источник требований: `docs/TZ.md`. Статус ниже соответствует коду в репозитории.
 
 ## Done
 
-- [x] Инициализировать Next.js (App Router) + TypeScript
-- [x] Настроить ESLint и алиас `@/*`
-- [x] Добавить корневой `layout.tsx` и стартовую `page.tsx`
+- [x] Инициализировать Next.js 16 (App Router) + TypeScript + React 19
+- [x] Настроить ESLint, alias `@/*`, Tailwind CSS 4
+- [x] Корневой `layout.tsx`, `Toaster`, `globals.css`
+- [x] UI-kit в `src/shared/ui`: button, input (`Input` / `PasswordInput` / `CodeInput`), textarea, select (`SelectField` / `MultiselectField`), level, avatar, breadcrumb, dropdown-menu, table, toast
+- [x] Vitest + React Testing Library + coverage; `vitest.setup.ts` мокает `server-only`
+- [x] GraphQL-слой: `graphql-request` (`gqlRequest`), `graphql-codegen` (`codegen.ts`), `schema.graphql`, скрипт экспорта схемы
+- [x] Сессия в httpOnly-cookie: `getSession` / `saveSession` / `clearSession` / `refreshSession`
+- [x] Маппинг кодов ошибок GraphQL на русские тексты
+- [x] Документация контракта бэкенда (`docs/BACKEND.md`)
+- [x] Route group `(platform)`: сайдбар и `AuthGate` с редиректом на `/login`
+- [x] Сайдбар с collapse и подсветкой активного пункта
+- [x] Список пользователей: таблица, поиск через `searchParams`, переход в профиль
+- [x] Layout пользователя: breadcrumbs, табы, редирект `/users/[id]` → `/profile`
+- [x] Страница профиля пользователя (read-only)
+- [x] API-запросы и мутации пользователей, профиля, навыков, языков; `authedRequest` с авто-обновлением токена
 
 ## In progress
 
-- [ ] Согласовать с ментором UI-библиотеку, state manager и отказ от Apollo Client (Server Components + `fetch` / Server Actions)
-- [ ] Подключить Tailwind CSS и UI-библиотеку
+- [ ] Форма редактирования профиля — `profile/user-profile-form.tsx` пока пустой файл-заготовка
+- [ ] Загрузка/удаление аватара — `profile/avatar-upload.tsx` пока пустой файл-заготовка
+- [ ] Страницы авторизации: `/login`, `/verify-email`, `/reset-password`
 
 ## Backlog
 
-- [ ] Настроить npm-скрипты: `typecheck`, `test`, `test:coverage`
-- [ ] Настроить Vitest + React Testing Library + coverage
-- [ ] Создать общий layout: шапка, навигация, контейнер
-- [ ] Настроить маршруты: список резюме, редактор, превью
-- [ ] Применить SSR/SSG для страниц, где уместно
-- [ ] Настроить GraphQL-клиент для Server Components (`fetch` + кэш Next.js)
-- [ ] Описать схему и поднять локальный GraphQL-бэкенд
-- [ ] Реализовать CRUD-запросы резюме (Server Components / Server Actions) и инвалидацию кэша
-- [ ] Настроить store (Zustand/RTK) — по согласованию
-- [ ] Хранить черновик резюме в глобальном состоянии
-- [ ] Форма личных данных и контактов
-- [ ] Форма опыта работы
-- [ ] Форма образования и навыков
-- [ ] Валидация полей формы
-- [ ] Живое превью резюме
-- [ ] Сохранение и загрузка резюме через API
+- [ ] Разделы пользователя `skills`, `languages`, `cvs` (табы уже ссылаются на них)
+- [ ] CRUD пользователей в UI: создание (`/users/new`), редактирование, удаление, смена роли
+- [ ] Смена пароля через UI
+- [ ] Разделы `departments`, `positions`, `projects`, `skills`, `languages` (пункты сайдбара пока ведут на несуществующие маршруты)
+- [ ] Формы резюме: личные данные, опыт, образование, навыки
+- [ ] Живое превью резюме и PDF-экспорт
 - [ ] Адаптивная вёрстка: mobile / tablet / desktop
-- [ ] Unit-тесты компонентов и стора, покрытие > 80%
+- [ ] Покрытие unit-тестами > 80%
 - [ ] Extra: E2E-тесты ключевых сценариев (Playwright)
-- [ ] README: функционал, зависимости, установка, запуск тестов

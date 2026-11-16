@@ -65,18 +65,13 @@ export async function clearSession(): Promise<void> {
 export async function refreshSession(): Promise<SessionTokens | null> {
   const cookieStore = await cookies();
   const refreshToken = cookieStore.get(REFRESH_TOKEN_COOKIE)?.value;
-
-  if (!refreshToken) {
-    return null;
-  }
+  if (!refreshToken) return null;
 
   try {
     const data = await gqlRequest(UpdateTokenDocument, undefined, {
       accessToken: refreshToken,
     });
-
     await saveSession(data.updateToken);
-
     return data.updateToken;
   } catch {
     return null;

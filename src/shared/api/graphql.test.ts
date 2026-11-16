@@ -1,4 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { parse } from "graphql";
+import type { TypedDocumentNode } from "@graphql-typed-document-node/core";
 import { gqlRequest } from "./graphql";
 
 const fetchMock = vi.fn();
@@ -12,8 +14,18 @@ function jsonResponse(data: unknown) {
   };
 }
 
+// graphql-request accepts a DocumentNode; tests build one from a query string.
+function document<TResult>(
+  source: string,
+): TypedDocumentNode<TResult, Record<string, never>> {
+  return parse(source) as unknown as TypedDocumentNode<
+    TResult,
+    Record<string, never>
+  >;
+}
+
 beforeEach(() => {
-  vi.stubEnv("GRAPHQL_URL", "http://localhost:3001/api/graphql");
+  vi.stubEnv("VITE_GRAPHQL_URL", "http://localhost:3001/api/graphql");
   vi.stubGlobal("fetch", fetchMock);
 });
 
@@ -24,10 +36,10 @@ afterEach(() => {
 });
 
 describe("gqlRequest", () => {
-  it("sends the document to GRAPHQL_URL", async () => {
+  it("sends the document to VITE_GRAPHQL_URL", async () => {
     fetchMock.mockResolvedValueOnce(jsonResponse({ data: { ok: true } }));
 
-    await gqlRequest("query { ok }");
+    await gqlRequest(document("query { ok }"));
 
     const [url, init] = fetchMock.mock.calls[0];
     expect(String(url)).toBe("http://localhost:3001/api/graphql");
@@ -39,7 +51,7 @@ describe("gqlRequest", () => {
   it("adds authorization and origin headers", async () => {
     fetchMock.mockResolvedValueOnce(jsonResponse({ data: { ok: true } }));
 
-    await gqlRequest("query { ok }", undefined, {
+    await gqlRequest(document("query { ok }"), undefined, {
       accessToken: "token",
       origin: "http://localhost:3000",
     });
@@ -52,16 +64,18 @@ describe("gqlRequest", () => {
   it("returns the response data", async () => {
     fetchMock.mockResolvedValueOnce(jsonResponse({ data: { ok: true } }));
 
-    await expect(gqlRequest<{ ok: boolean }>("query { ok }")).resolves.toEqual({
+    await expect(
+      gqlRequest<{ ok: boolean }>(document("query { ok }")),
+    ).resolves.toEqual({
       ok: true,
     });
   });
 
-  it("throws when GRAPHQL_URL is not set", async () => {
-    vi.stubEnv("GRAPHQL_URL", "");
+  it("throws when VITE_GRAPHQL_URL is not set", async () => {
+    vi.stubEnv("VITE_GRAPHQL_URL", "");
 
-    await expect(gqlRequest("query { ok }")).rejects.toThrow(
-      "GRAPHQL_URL is not set",
+    await expect(gqlRequest(document("query { ok }"))).rejects.toThrow(
+      "VITE_GRAPHQL_URL is not set",
     );
     expect(fetchMock).not.toHaveBeenCalled();
   });

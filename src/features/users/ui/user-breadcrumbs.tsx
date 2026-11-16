@@ -17,9 +17,9 @@ export async function UserBreadcrumbs({ userId }: { userId: string }) {
   if (!user) notFound();
 
   const name =
-    user.profile.full_name ||
-    `${user.profile.first_name ?? ""} ${user.profile.last_name ?? ""}`.trim() ||
-    user.email;
+    user?.profile.full_name ||
+    `${user?.profile.first_name ?? ""} ${user?.profile.last_name ?? ""}`.trim() ||
+    user?.email;
 
   return (
     <Breadcrumb>
