@@ -141,6 +141,7 @@ cv-builder/
 │   │   ├── ui/                         # UI-kit: button, input, textarea, select, level, toast
 │   │   ├── api/
 │   │   │   ├── graphql/
+│   │   │   │   ├── authed-request.ts   # запросы с access-токеном и refresh-ретраем
 │   │   │   │   ├── client.ts
 │   │   │   │   ├── errors.ts
 │   │   │   │   ├── generated/          # типы из схемы (codegen)
@@ -149,11 +150,16 @@ cv-builder/
 │   │   │   │   │   └── index.ts
 │   │   │   │   ├── documents.ts        # общие документы (UpdateToken)
 │   │   │   │   └── index.ts
+│   │   │   ├── jwt.ts                  # проверка срока access-токена (exp)
 │   │   │   ├── session.ts
 │   │   │   ├── session-cookies.ts      # имена cookie и настройки сессии
 │   │   │   └── index.ts
-│   │   ├── config/                     # переменные окружения и настройки
+│   │   ├── config/                     # env и константы маршрутов
+│   │   │   ├── env.ts
+│   │   │   ├── routes.ts
+│   │   │   └── index.ts
 │   │   ├── helpers/                    # переиспользуемые чистые функции
+│   │   │   └── redirect-path.ts        # безопасный next-редирект
 │   │   ├── hooks/                      # общие React-хуки
 │   │   └── types/                      # общие типы
 │   │

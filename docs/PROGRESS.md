@@ -28,7 +28,13 @@
 - [x] Подключить GraphQL Code Generator: `schema.graphql` из бэкенда, `codegen.ts`, типизированные документы в `src/shared/api/graphql/generated`, скрипты `codegen` / `codegen:watch`, зависимости `@graphql-codegen/cli` / `client-preset`
 - [x] `gqlRequest` принимает `TypedDocumentNode` (перегрузка сохраняет поддержку inline-строк), результат и переменные выводятся из сгенерированного документа
 - [x] `refreshSession` читает `refresh_token` из cookie напрямую и использует сгенерированный документ `UpdateToken` — обновление токена не зависит от живого `access_token`; тест обновлён
-- [x] Proxy (middleware Next 16, `src/proxy.ts`) для приватных маршрутов дашборда: проверка access-токена, авто-refresh через `updateToken`, редирект на `/sign-in` без сессии; cookie-настройки вынесены в `shared/api/session-cookies.ts`
+- [x] Proxy (Next 16, `src/proxy.ts`): `/` и `/verify-email` приватные, `/sign-in` / `/sign-up` / `/forgot-password` уводят авторизованного на `/`; refresh по `exp` access-токена (запас 30 с) и при отсутствии access-cookie; редирект на `/sign-in?next=...` без сессии; cookie-настройки — `shared/api/session-cookies.ts`
+- [x] Хелперы авторизованных запросов: `authedGqlRequest` (Server Components) и `authedGqlRequestWithRefresh` (Server Actions: refresh + один ретрай) — `shared/api/graphql/authed-request.ts`
+- [x] Распознавание истёкшей сессии `isUnauthorizedError` (код `unauthorized`, `extensions.code`, 401) — `shared/api/graphql/errors.ts`
+- [x] Константы маршрутов (`shared/config/routes.ts`) и безопасный `next` без внешних редиректов (`shared/helpers/redirect-path.ts`)
+- [x] `login` запрашивает `user { is_verified }`: неподтверждённых ведёт на `/verify-email`, остальных — на `next` или `/`; `next` прокинут из `/sign-in` через страницу и форму
+- [x] Codegen сканирует `shared/api/**` — документ `UpdateToken` остаётся в сгенерированных типах
+- [x] Тесты: proxy (просроченный токен, `next`, гостевые маршруты), `login`, `authedGqlRequest*`, `isUnauthorizedError`, `isTokenExpired`, `safeRedirectPath`
 
 ### Страницы авторизации
 
