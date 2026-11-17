@@ -85,13 +85,14 @@ describe("ForgotPasswordForm", () => {
     await waitFor(() => expect(submit).toBeEnabled())
     await user.click(submit)
 
-    await waitFor(() =>
-      expect(toastAdd).toHaveBeenCalledWith(
-        expect.objectContaining({
-          type: "error",
-          description: "Unable to send the email. Please try again later",
-        }),
-      ),
+    expect(
+      await screen.findByText("Unable to send the email. Please try again later"),
+    ).toBeInTheDocument()
+    expect(toastAdd).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: "error",
+        description: "Unable to send the email. Please try again later",
+      }),
     )
 
     expect(screen.getByLabelText("Email")).toHaveValue("user@example.com")
