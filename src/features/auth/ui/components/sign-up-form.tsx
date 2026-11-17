@@ -104,12 +104,12 @@ export function SignUpForm() {
 
       <div className="w-full">
         <label htmlFor="confirmPassword" className="sr-only">
-          Confirm password
+          Confirm Password
         </label>
         <PasswordInput
           id="confirmPassword"
           autoComplete="new-password"
-          placeholder="Confirm password"
+          placeholder="Confirm Password"
           variant={confirmPasswordError ? "error" : "default"}
           aria-invalid={confirmPasswordError ? true : undefined}
           aria-describedby={

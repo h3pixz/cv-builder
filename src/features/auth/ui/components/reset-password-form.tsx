@@ -58,12 +58,12 @@ export function ResetPasswordForm({ token }: { token?: string }) {
 
       <div className="w-full">
         <label htmlFor="newPassword" className="sr-only">
-          New password
+          New Password
         </label>
         <PasswordInput
           id="newPassword"
           autoComplete="new-password"
-          placeholder="New password"
+          placeholder="New Password"
           variant={newPasswordError ? "error" : "default"}
           aria-invalid={newPasswordError ? true : undefined}
           aria-describedby={
@@ -85,12 +85,12 @@ export function ResetPasswordForm({ token }: { token?: string }) {
 
       <div className="mt-9 w-full">
         <label htmlFor="confirmPassword" className="sr-only">
-          Confirm password
+          Confirm Password
         </label>
         <PasswordInput
           id="confirmPassword"
           autoComplete="new-password"
-          placeholder="Confirm password"
+          placeholder="Confirm Password"
           variant={confirmPasswordError ? "error" : "default"}
           aria-invalid={confirmPasswordError ? true : undefined}
           aria-describedby={
