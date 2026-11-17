@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { Button } from "@/shared/ui/button"
@@ -11,8 +12,10 @@ import {
   type ForgotPasswordValues,
 } from "../../model/forgot-password-schema"
 import { AuthLink } from "./auth-link"
+import { FormError } from "./form-error"
 
 export function ForgotPasswordForm() {
+  const [formError, setFormError] = useState<string | null>(null)
   const {
     register,
     handleSubmit,
@@ -26,6 +29,8 @@ export function ForgotPasswordForm() {
   })
 
   async function onSubmit(values: ForgotPasswordValues) {
+    setFormError(null)
+
     const result = await forgotPassword(values.email)
 
     if (result.success) {
@@ -36,6 +41,7 @@ export function ForgotPasswordForm() {
       })
       reset()
     } else {
+      setFormError(result.error)
       toast.add({
         type: "error",
         title: "Could not send the email",
@@ -84,6 +90,8 @@ export function ForgotPasswordForm() {
       >
         Reset Password
       </Button>
+
+      <FormError message={formError} />
 
       <div className="mt-2 text-center">
         <AuthLink href="/sign-in">Cancel</AuthLink>
