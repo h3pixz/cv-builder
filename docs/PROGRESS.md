@@ -62,6 +62,11 @@
 - [x] Next 16: auth-маршруты с `cookies` / `searchParams` помечены `instant = false` (blocking prerender)
 - [x] Тесты auth-форм (Vitest + RTL): `sign-in`, `sign-up`, `verify-email`, `forgot-password`, `reset-password` — валидация, disabled-состояния, вызовы Server Actions, тосты, ссылки-переходы
 - [x] Server Action выхода `logout` — очистка cookie и редирект на `/sign-in`
+- [x] Сверка всех 5 страниц auth с ТЗ: AC закрыты, тексты ошибок совпадают с примерами из ТЗ (`shared/api/graphql/errors.ts`)
+- [x] `/forgot-password` — отдельное сообщение «No account found with this email address»: код `accountNotFound` + inline-ошибка формы (`FormError`)
+- [x] `/verify-email` — срок жизни OTP 2 часа: код `otpExpired` → «Verification code has expired»; повторная отправка перевыпускает код и обновляет время выпуска
+- [x] Плейсхолдеры и доступные лейблы полей приведены к названиям из ТЗ (`Confirm Password`, `New Password`)
+- [x] Локальный патч учебного бэкенда (`C:\projects\cv-backend`, в upstream не пушился): `forgotPassword` → `accountNotFound`, `verifyMail` → проверка TTL 2 часа и `otpExpired`, `SignupDto` → пароль от 6 символов. При пересборке бэкенда из чистого upstream патч нужно накатить повторно (см. `docs/BACKEND.md`)
 
 ### Мержи
 
@@ -79,7 +84,6 @@
 
 ### Авторизация — остатки
 
-- [ ] `/forgot-password` — отдельное сообщение «почта не найдена» невозможно: бэкенд отдаёт `failedToSendEmail` и для отсутствующей почты, и для сбоя отправки
 - [ ] Ручной переключатель темы (сейчас тема следует системной настройке)
 
 ### Резюме
