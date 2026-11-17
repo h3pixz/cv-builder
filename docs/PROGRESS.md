@@ -71,6 +71,7 @@
 ### Мержи
 
 - [x] PR #1 `feat/auth-sign-in` → `dev` смержен 2026-11-16 (rebase, `8a6e6f3`): авторизация, сессия, proxy, codegen. Проверки перед мержем: `typecheck`, 84 теста, `build`, `codegen` без дрейфа, lint без ошибок ([PR #1](https://github.com/h3pixz/cv-builder/pull/1))
+- [x] PR #2 `feat/auth-sign-in` → `dev` смержен 2026-11-17 (rebase, `bd9c993`): повторная отправка кода на `/verify-email`, inline-ошибка `accountNotFound` на `/forgot-password`, коды `accountNotFound` / `otpExpired`, лейблы полей по ТЗ, документация бэкенда. Проверки перед мержем: `typecheck`, 92 теста, `build` ([PR #2](https://github.com/h3pixz/cv-builder/pull/2))
 
 ## In progress
 
