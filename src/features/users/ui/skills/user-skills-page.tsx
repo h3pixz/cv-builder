@@ -1,4 +1,3 @@
-// features/users/ui/skills/user-skills-page.tsx
 import { getSession } from "@/shared/api";
 import { getSkillOptions, getUserSkills } from "../../api/users.queries";
 import { groupSkills, masteryLevel } from "../../model/levels";

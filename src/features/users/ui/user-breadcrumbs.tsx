@@ -11,6 +11,7 @@ import {
   BreadcrumbSeparator,
 } from "@/shared/ui/breadcrumb";
 import { getUser } from "../api/users.queries";
+import { UserCurrentPage } from "./user-current-page";
 
 export async function UserBreadcrumbs({ userId }: { userId: string }) {
   const user = await getUser(userId);
@@ -41,7 +42,9 @@ export async function UserBreadcrumbs({ userId }: { userId: string }) {
         </BreadcrumbItem>
         <BreadcrumbSeparator />
         <BreadcrumbItem>
-          <BreadcrumbPage>Profile</BreadcrumbPage>
+          <BreadcrumbPage>
+            <UserCurrentPage />
+          </BreadcrumbPage>
         </BreadcrumbItem>
       </BreadcrumbList>
     </Breadcrumb>

@@ -1,4 +1,3 @@
-// src/proxy.ts
 import { NextResponse, type NextRequest } from "next/server";
 
 const ACCESS = "access_token";
@@ -6,7 +5,7 @@ const REFRESH = "refresh_token";
 const ACCESS_MAX_AGE = 60 * 10;
 const REFRESH_MAX_AGE = 60 * 60 * 24 * 7;
 
-const GRAPHQL_URL = process.env.VITE_GRAPHQL_URL; // same var as raw-request.ts
+const GRAPHQL_URL = process.env.VITE_GRAPHQL_URL;
 
 type Tokens = { access_token: string; refresh_token: string };
 

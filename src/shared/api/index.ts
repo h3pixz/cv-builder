@@ -12,3 +12,4 @@ export {
   saveSession,
   type SessionTokens,
 } from "./session";
+export { protectedRequest } from "./protected";

@@ -1,16 +1,11 @@
 import "server-only";
 
-import { cache } from "react";
 import type { VariablesOf } from "@graphql-typed-document-node/core";
 
-import {
-  getSession,
-  gqlRequest,
-  type GraphQLRequestOptions,
-} from "@/shared/api";
+import { type GraphQLRequestOptions } from "@/shared/api";
 import { graphql } from "@/shared/api/graphql/generated/gql";
 
-import { authedRequest } from "./raw-request";
+import { protectedRequest } from "@/shared/api";
 
 export const GetUsersDocument = graphql(`
   query GetUsers($params: SearchPaginationInput) {
@@ -49,7 +44,7 @@ export async function getUsers(
   params?: VariablesOf<typeof GetUsersDocument>["params"],
   options?: GraphQLRequestOptions,
 ) {
-  const data = await gqlRequest(GetUsersDocument, { params }, options);
+  const data = await protectedRequest(GetUsersDocument, { params }, options);
 
   return data.users;
 }
@@ -87,71 +82,14 @@ export const GetUserDocument = graphql(`
   }
 `);
 
-type UserDetails = {
-  user: {
-    id: string;
-    email: string;
-    created_at: string;
-    is_verified: boolean;
-    department: { id: string; name: string } | null;
-    position: { id: string; name: string } | null;
-    profile: {
-      first_name: string | null;
-      last_name: string | null;
-      full_name: string | null;
-      avatar: string | null;
-    };
-  } | null;
-};
-
-const USER = /* GraphQL */ `
-  query User($userId: ID!) {
-    user(userId: $userId) {
-      id
-      email
-      created_at
-      is_verified
-      department {
-        id
-        name
-      }
-      position {
-        id
-        name
-      }
-      profile {
-        first_name
-        last_name
-        full_name
-        avatar
-      }
-    }
-  }
-`;
-
-export const getUser = cache(async (userId: string) => {
-  const session = await getSession();
-  if (!session) return null;
-
-  const data = await authedRequest<UserDetails>(
-    USER,
-    { userId },
-    session.access_token,
-  );
+export async function getUser(
+  userId: VariablesOf<typeof GetUserDocument>["userId"],
+  options?: GraphQLRequestOptions,
+) {
+  const data = await protectedRequest(GetUserDocument, { userId }, options);
 
   return data.user;
-});
-
-// export async function getUser(
-//   userId: VariablesOf<typeof GetUserDocument>["userId"],
-//   options?: GraphQLRequestOptions,
-// ) {
-//   const data = await gqlRequest(GetUserDocument, { userId }, options);
-
-//   return data.user;
-// }
-
-// Current authenticated user's profile
+}
 
 export const GetCurrentProfileDocument = graphql(`
   query GetCurrentProfile {
@@ -179,7 +117,11 @@ export const GetCurrentProfileDocument = graphql(`
 `);
 
 export async function getCurrentProfile(options?: GraphQLRequestOptions) {
-  const data = await gqlRequest(GetCurrentProfileDocument, undefined, options);
+  const data = await protectedRequest(
+    GetCurrentProfileDocument,
+    undefined,
+    options,
+  );
 
   return data.me;
 }
@@ -205,7 +147,11 @@ export async function getUserSkills(
   userId: VariablesOf<typeof GetUserSkillsDocument>["userId"],
   options?: GraphQLRequestOptions,
 ) {
-  const data = await gqlRequest(GetUserSkillsDocument, { userId }, options);
+  const data = await protectedRequest(
+    GetUserSkillsDocument,
+    { userId },
+    options,
+  );
 
   return data.profile.skills;
 }
@@ -230,7 +176,11 @@ export async function getUserLanguages(
   userId: VariablesOf<typeof GetUserLanguagesDocument>["userId"],
   options?: GraphQLRequestOptions,
 ) {
-  const data = await gqlRequest(GetUserLanguagesDocument, { userId }, options);
+  const data = await protectedRequest(
+    GetUserLanguagesDocument,
+    { userId },
+    options,
+  );
 
   return data.profile.languages;
 }
@@ -271,7 +221,7 @@ export async function getUserCvs(
   params?: VariablesOf<typeof GetUserCvsDocument>["params"],
   options?: GraphQLRequestOptions,
 ) {
-  const data = await gqlRequest(
+  const data = await protectedRequest(
     GetUserCvsDocument,
     { userId, params },
     options,
@@ -326,7 +276,7 @@ export async function getSkillOptions(
   params?: VariablesOf<typeof GetSkillOptionsDocument>["params"],
   options?: GraphQLRequestOptions,
 ) {
-  return gqlRequest(GetSkillOptionsDocument, { params }, options);
+  return protectedRequest(GetSkillOptionsDocument, { params }, options);
 }
 
 // -----------------------------------------------------
@@ -355,7 +305,7 @@ export async function getLanguageOptions(
   params?: VariablesOf<typeof GetLanguageOptionsDocument>["params"],
   options?: GraphQLRequestOptions,
 ) {
-  const data = await gqlRequest(
+  const data = await protectedRequest(
     GetLanguageOptionsDocument,
     { params },
     options,
@@ -387,7 +337,7 @@ export async function getDepartmentOptions(
   params?: VariablesOf<typeof GetDepartmentOptionsDocument>["params"],
   options?: GraphQLRequestOptions,
 ) {
-  const data = await gqlRequest(
+  const data = await protectedRequest(
     GetDepartmentOptionsDocument,
     { params },
     options,
@@ -419,7 +369,7 @@ export async function getPositionOptions(
   params?: VariablesOf<typeof GetPositionOptionsDocument>["params"],
   options?: GraphQLRequestOptions,
 ) {
-  const data = await gqlRequest(
+  const data = await protectedRequest(
     GetPositionOptionsDocument,
     { params },
     options,
