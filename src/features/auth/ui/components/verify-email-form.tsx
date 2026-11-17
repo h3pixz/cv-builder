@@ -3,7 +3,8 @@
 import { FormEvent, useState } from "react"
 import { Button } from "@/shared/ui/button"
 import { CodeInput } from "@/shared/ui/input"
-import { verifyEmail } from "../../api/verify-email"
+import { toast } from "@/shared/ui/toast"
+import { resendVerification, verifyEmail } from "../../api/verify-email"
 import { AuthLink } from "./auth-link"
 
 const CODE_LENGTH = 6
@@ -24,6 +25,7 @@ export function VerifyEmailForm() {
   const [code, setCode] = useState("")
   const [error, setError] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isResending, setIsResending] = useState(false)
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -52,6 +54,28 @@ export function VerifyEmailForm() {
 
     if (error) {
       setError(null)
+    }
+  }
+
+  async function handleResend() {
+    setIsResending(true)
+
+    const result = await resendVerification()
+
+    setIsResending(false)
+
+    if (result.success) {
+      toast.add({
+        type: "success",
+        title: "Code sent",
+        description: "Check your inbox for a new verification code",
+      })
+    } else {
+      toast.add({
+        type: "error",
+        title: "Could not send the email",
+        description: result.error,
+      })
     }
   }
 
@@ -86,7 +110,19 @@ export function VerifyEmailForm() {
         Confirm
       </Button>
 
-      <div className="mt-6 text-center">
+      <div className="mt-6 flex flex-col items-center gap-4 text-center">
+        <p className="text-sm text-text-secondary">
+          Didn&apos;t receive the code?{" "}
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={handleResend}
+            disabled={isResending}
+            className="h-auto px-1 py-0 text-xs font-semibold tracking-wider text-text-secondary uppercase hover:border-transparent hover:bg-transparent hover:text-foreground"
+          >
+            {isResending ? "Sending..." : "Send again"}
+          </Button>
+        </p>
         <AuthLink href="/">Later</AuthLink>
       </div>
     </form>

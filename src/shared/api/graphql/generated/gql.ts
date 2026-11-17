@@ -19,6 +19,7 @@ type Documents = {
     "\n  mutation ForgotPassword($auth: ForgotPasswordInput!) {\n    forgotPassword(auth: $auth)\n  }\n": typeof types.ForgotPasswordDocument,
     "\n  mutation ResetPassword($auth: ResetPasswordInput!) {\n    resetPassword(auth: $auth)\n  }\n": typeof types.ResetPasswordDocument,
     "\n  mutation VerifyMail($mail: VerifyMailInput!) {\n    verifyMail(mail: $mail)\n  }\n": typeof types.VerifyMailDocument,
+    "\n  mutation SendVerification($email: String!) {\n    sendVerification(email: $email)\n  }\n": typeof types.SendVerificationDocument,
     "\n  mutation UpdateToken {\n    updateToken {\n      access_token\n      refresh_token\n    }\n  }\n": typeof types.UpdateTokenDocument,
 };
 const documents: Documents = {
@@ -27,6 +28,7 @@ const documents: Documents = {
     "\n  mutation ForgotPassword($auth: ForgotPasswordInput!) {\n    forgotPassword(auth: $auth)\n  }\n": types.ForgotPasswordDocument,
     "\n  mutation ResetPassword($auth: ResetPasswordInput!) {\n    resetPassword(auth: $auth)\n  }\n": types.ResetPasswordDocument,
     "\n  mutation VerifyMail($mail: VerifyMailInput!) {\n    verifyMail(mail: $mail)\n  }\n": types.VerifyMailDocument,
+    "\n  mutation SendVerification($email: String!) {\n    sendVerification(email: $email)\n  }\n": types.SendVerificationDocument,
     "\n  mutation UpdateToken {\n    updateToken {\n      access_token\n      refresh_token\n    }\n  }\n": types.UpdateTokenDocument,
 };
 
@@ -64,6 +66,10 @@ export function graphql(source: "\n  mutation ResetPassword($auth: ResetPassword
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  mutation VerifyMail($mail: VerifyMailInput!) {\n    verifyMail(mail: $mail)\n  }\n"): (typeof documents)["\n  mutation VerifyMail($mail: VerifyMailInput!) {\n    verifyMail(mail: $mail)\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation SendVerification($email: String!) {\n    sendVerification(email: $email)\n  }\n"): (typeof documents)["\n  mutation SendVerification($email: String!) {\n    sendVerification(email: $email)\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

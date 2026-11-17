@@ -41,3 +41,9 @@ export const VerifyMailMutation = graphql(`
     verifyMail(mail: $mail)
   }
 `)
+
+export const SendVerificationMutation = graphql(`
+  mutation SendVerification($email: String!) {
+    sendVerification(email: $email)
+  }
+`)
