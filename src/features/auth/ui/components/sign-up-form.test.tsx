@@ -14,7 +14,7 @@ describe("SignUpForm", () => {
 
     await user.type(screen.getByLabelText("Email"), "user@example.com")
     await user.type(screen.getByLabelText("Password"), "secret1")
-    await user.type(screen.getByLabelText("Confirm password"), "secret1")
+    await user.type(screen.getByLabelText("Confirm Password"), "secret1")
     await user.tab()
 
     await waitFor(() => expect(submit).toBeEnabled())
@@ -39,7 +39,7 @@ describe("SignUpForm", () => {
 
     await user.type(screen.getByLabelText("Email"), "user@example.com")
     await user.type(screen.getByLabelText("Password"), "secret1")
-    await user.type(screen.getByLabelText("Confirm password"), "secret2")
+    await user.type(screen.getByLabelText("Confirm Password"), "secret2")
     await user.tab()
 
     expect(await screen.findByText("Passwords do not match")).toBeInTheDocument()
