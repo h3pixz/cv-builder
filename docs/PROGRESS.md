@@ -35,6 +35,7 @@
 - [x] `login` запрашивает `user { is_verified }`: неподтверждённых ведёт на `/verify-email`, остальных — на `next` или `/`; `next` прокинут из `/sign-in` через страницу и форму
 - [x] Codegen сканирует `shared/api/**` — документ `UpdateToken` остаётся в сгенерированных типах
 - [x] Тесты: proxy (просроченный токен, `next`, гостевые маршруты), `login`, `authedGqlRequest*`, `isUnauthorizedError`, `isTokenExpired`, `safeRedirectPath`
+- [x] Отправка писем: Gmail SMTP с app password (`docker/.env.cv_backend`), доставка на реальную почту проверена; локальная альтернатива — Mailpit (`smtp://mailpit:1025`, UI `http://localhost:8025`)
 
 ### Страницы авторизации
 
@@ -54,6 +55,7 @@
 - [x] `/sign-in` — Server Action `login`: сохранение сессии, inline-ошибка + тост `invalidCredentials`, disabled/loading кнопки
 - [x] `/sign-up` — Server Action `signup`: `Origin` для ссылки в письме, сохранение токенов, `userAlreadyExists` inline на поле email, редирект на `/verify-email`
 - [x] `/verify-email` — проверка сессии перед рендером, `verifyMail` с access-токеном и refresh-ретраем при `unauthorized`, ошибки `mailNotFound` / `shouldBe6Digits` / истёкшая сессия, редирект на `/`
+- [x] `/verify-email` — повторная отправка кода: Server Action `resendVerification` (`sendVerification` с access-токеном и refresh-ретраем, email из токена), кнопка «Send again», тосты успеха/ошибки
 - [x] `/reset-password?token=...` — чтение `token` из query, `resetPassword` с токеном в `Authorization`, ошибки `actionExpired` / `confirmPasswordMismatch`, сообщение для отсутствующего токена
 - [x] Авто-вход после сброса пароля: email берётся из payload reset-токена, затем `login` с новым паролем; при сбое — редирект на `/sign-in`
 - [x] Общие `FormError` (form-level ошибки) и `AuthLink` (ссылки с `focus-visible`) для auth-форм
@@ -61,9 +63,11 @@
 - [x] Тесты auth-форм (Vitest + RTL): `sign-in`, `sign-up`, `verify-email`, `forgot-password`, `reset-password` — валидация, disabled-состояния, вызовы Server Actions, тосты, ссылки-переходы
 - [x] Server Action выхода `logout` — очистка cookie и редирект на `/sign-in`
 
-## In progress
+### Мержи
 
-- [ ] Согласовать с ментором итоговый стек: Tailwind + shadcn, Zustand, Zod + React Hook Form, отказ от Apollo Client — подтвердить формально
+- [x] PR #1 `feat/auth-sign-in` → `dev` смержен 2026-11-16 (rebase, `8a6e6f3`): авторизация, сессия, proxy, codegen. Проверки перед мержем: `typecheck`, 84 теста, `build`, `codegen` без дрейфа, lint без ошибок ([PR #1](https://github.com/h3pixz/cv-builder/pull/1))
+
+## In progress
 
 ## Backlog
 
@@ -75,7 +79,6 @@
 
 ### Авторизация — остатки
 
-- [ ] `/verify-email` — повторная отправка кода через `sendVerification`
 - [ ] `/forgot-password` — отдельное сообщение «почта не найдена» невозможно: бэкенд отдаёт `failedToSendEmail` и для отсутствующей почты, и для сбоя отправки
 - [ ] Ручной переключатель темы (сейчас тема следует системной настройке)
 
