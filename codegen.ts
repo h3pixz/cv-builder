@@ -4,7 +4,7 @@ const config: CodegenConfig = {
   schema: "./schema.graphql",
   documents: [
     "src/features/**/*.{ts,tsx}",
-    "src/shared/api/*.{ts,tsx}",
+    "src/shared/api/**/*.{ts,tsx}",
     "!src/shared/api/graphql/generated/**",
   ],
   generates: {

@@ -68,10 +68,11 @@ const PasswordInput = forwardRef<HTMLInputElement, InputProps>(
         />
         <button
           type="button"
-          tabIndex={-1}
           onClick={() => setShowPassword((prev) => !prev)}
-          className="absolute right-2 text-text-tertiary hover:text-foreground transition-colors focus:outline-none"
+          disabled={props.disabled}
+          className="absolute right-2 rounded-sm text-text-tertiary hover:text-foreground transition-colors disabled:pointer-events-none disabled:opacity-50"
           aria-label={showPassword ? "Hide password" : "Show password"}
+          aria-pressed={showPassword}
         >
           {showPassword ? (
             <EyeOffIcon className="size-4" />
@@ -86,14 +87,6 @@ const PasswordInput = forwardRef<HTMLInputElement, InputProps>(
 
 PasswordInput.displayName = "PasswordInput";
 
-// -----------------------------------------------------------------------------
-// CodeInput (Verification Code / OTP)
-//
-// `value` is a contiguous string of digits (no gaps). Digits can only be
-// entered at the first empty slot or over an existing digit, so the string
-// never has holes and each digit always renders in the box it was typed in.
-// -----------------------------------------------------------------------------
-
 export interface CodeInputProps {
   length?: number;
   value?: string;
@@ -102,9 +95,7 @@ export interface CodeInputProps {
   variant?: VariantProps<typeof inputVariants>["variant"];
   disabled?: boolean;
   className?: string;
-  /** Focus the first empty box on mount. Default: true. */
   autoFocus?: boolean;
-  /** Submit the parent <form> once every box is filled. Default: true. */
   submitOnComplete?: boolean;
 }
 
@@ -125,7 +116,6 @@ const CodeInput = forwardRef<HTMLDivElement, CodeInputProps>(
   ) => {
     const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
-    // Normalize: digits only, capped at `length`.
     const digits = useMemo(
       () => value.replace(/\D/g, "").slice(0, length),
       [value, length],
@@ -134,13 +124,20 @@ const CodeInput = forwardRef<HTMLDivElement, CodeInputProps>(
     const digitsRef = useRef(digits);
     digitsRef.current = digits;
 
+    const hasFocused = useRef(false);
+
     useEffect(() => {
+      if (hasFocused.current) {
+        return;
+      }
+
+      hasFocused.current = true;
+
       if (autoFocus && !disabled) {
         const first = inputRefs.current[Math.min(digits.length, length - 1)];
         first?.focus();
       }
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [autoFocus, digits.length, disabled, length]);
 
     const wasComplete = useRef(digits.length === length);
     useEffect(() => {
@@ -248,7 +245,7 @@ const CodeInput = forwardRef<HTMLDivElement, CodeInputProps>(
         ref={ref}
         role="group"
         aria-label="Verification code"
-        className={cn("flex items-center gap-2", className)}
+        className={cn("flex items-center gap-2 sm:gap-4", className)}
       >
         {codeArray.map((digit, index) => (
           <input
@@ -270,7 +267,7 @@ const CodeInput = forwardRef<HTMLDivElement, CodeInputProps>(
             onPaste={handlePaste}
             onFocus={(e) => handleFocus(e, index)}
             className={cn(
-              "flex size-10 text-center text-sm font-medium rounded-none border bg-background text-foreground shadow-none outline-none transition-colors",
+              "flex size-10 sm:size-12 text-center text-sm font-medium rounded-none border bg-background text-foreground shadow-none outline-none transition-colors",
               "hover:border-control-border focus-visible:border-control-border",
               "disabled:pointer-events-none disabled:cursor-not-allowed disabled:border-disabled disabled:bg-disabled disabled:text-disabled-foreground",
               variant === "error" &&

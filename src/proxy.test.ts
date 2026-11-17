@@ -1,144 +1,236 @@
-// @vitest-environment node
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-
-// proxy reads the endpoint at module load, so the env must be set first.
-const { fetchMock } = vi.hoisted(() => {
-  process.env.VITE_GRAPHQL_URL = "http://localhost:3001/api/graphql";
-  return { fetchMock: vi.fn() };
-});
-
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { NextRequest } from "next/server";
-import { proxy } from "./proxy";
+import { config, proxy } from "./proxy";
 
-const ACCESS = "access_token";
-const REFRESH = "refresh_token";
+const { gqlRequest } = vi.hoisted(() => ({ gqlRequest: vi.fn() }));
 
-function jwt(exp: number | undefined): string {
-  const payload = Buffer.from(JSON.stringify(exp === undefined ? {} : { exp })).toString(
-    "base64url",
-  );
-  return `header.${payload}.signature`;
+vi.mock("@/shared/api/graphql", () => ({ gqlRequest }));
+
+const freshTokens = {
+  access_token: "access-2",
+  refresh_token: "refresh-2",
+};
+
+function encode(value: object) {
+  return Buffer.from(JSON.stringify(value)).toString("base64url");
 }
 
-function futureExp() {
-  return Math.floor(Date.now() / 1000) + 60 * 60;
+function jwt(expiresInSeconds: number) {
+  return `${encode({ alg: "none" })}.${encode({
+    exp: Math.floor(Date.now() / 1000) + expiresInSeconds,
+  })}.signature`;
 }
 
-function request(cookies: Record<string, string>) {
-  const cookie = Object.entries(cookies)
+function createRequest(path: string, cookies: Record<string, string>) {
+  const cookieHeader = Object.entries(cookies)
     .map(([name, value]) => `${name}=${value}`)
     .join("; ");
 
-  return new NextRequest("http://localhost:3000/users/1", {
-    headers: cookie ? { cookie } : undefined,
+  return new NextRequest(`http://localhost:3000${path}`, {
+    headers: cookieHeader ? { cookie: cookieHeader } : undefined,
   });
 }
 
-function refreshResponse(tokens: { access_token: string; refresh_token: string }) {
-  return {
-    status: 200,
-    json: async () => ({ data: { updateToken: tokens } }),
-  } as unknown as Response;
+function location(response: Response) {
+  const value = response.headers.get("location");
+  return value ? new URL(value) : null;
 }
 
 beforeEach(() => {
-  fetchMock.mockReset();
-  vi.stubGlobal("fetch", fetchMock);
-  vi.spyOn(console, "error").mockImplementation(() => {});
+  gqlRequest.mockReset();
 });
 
-afterEach(() => {
-  vi.unstubAllGlobals();
-  vi.restoreAllMocks();
-});
-
-describe("proxy", () => {
-  it("lets a request with a valid access token through", async () => {
-    const response = await proxy(request({ [ACCESS]: jwt(futureExp()) }));
-
-    expect(response.status).toBe(200);
-    expect(response.headers.get("location")).toBeNull();
-    expect(fetchMock).not.toHaveBeenCalled();
-  });
-
-  it("redirects to /login and clears cookies when there is no session", async () => {
-    const response = await proxy(request({}));
-
-    expect(response.status).toBe(307);
-    expect(response.headers.get("location")).toBe("http://localhost:3000/login");
-    expect(response.cookies.get(ACCESS)?.value).toBe("");
-    expect(response.cookies.get(REFRESH)?.value).toBe("");
-    expect(fetchMock).not.toHaveBeenCalled();
-  });
-
-  it("treats an expired access token as missing", async () => {
+describe("private routes", () => {
+  it("lets a request with a fresh access token through", async () => {
     const response = await proxy(
-      request({ [ACCESS]: jwt(Math.floor(Date.now() / 1000) - 60) }),
-    );
-
-    expect(response.headers.get("location")).toBe("http://localhost:3000/login");
-    expect(fetchMock).not.toHaveBeenCalled();
-  });
-
-  it("treats a malformed token as expired", async () => {
-    const response = await proxy(request({ [ACCESS]: "not-a-jwt" }));
-
-    expect(response.headers.get("location")).toBe("http://localhost:3000/login");
-  });
-
-  it("refreshes an expired access token with the refresh token", async () => {
-    const fresh = { access_token: "access-2", refresh_token: "refresh-2" };
-    fetchMock.mockResolvedValueOnce(refreshResponse(fresh));
-
-    const response = await proxy(
-      request({
-        [ACCESS]: jwt(Math.floor(Date.now() / 1000) - 60),
-        [REFRESH]: "refresh-1",
+      createRequest("/cvs", {
+        access_token: jwt(60),
+        refresh_token: "refresh-1",
       }),
     );
 
     expect(response.status).toBe(200);
     expect(response.headers.get("location")).toBeNull();
-    expect(response.cookies.get(ACCESS)?.value).toBe("access-2");
-    expect(response.cookies.get(REFRESH)?.value).toBe("refresh-2");
-
-    const [, init] = fetchMock.mock.calls[0];
-    expect(init.method).toBe("POST");
-    expect(init.headers.Authorization).toBe("Bearer refresh-1");
-    expect(JSON.parse(init.body).query).toContain("mutation UpdateToken");
+    expect(gqlRequest).not.toHaveBeenCalled();
   });
 
-  it("refreshes when the access cookie is absent but a refresh token exists", async () => {
-    fetchMock.mockResolvedValueOnce(
-      refreshResponse({ access_token: "access-2", refresh_token: "refresh-2" }),
-    );
+  it("redirects to sign in without a session", async () => {
+    const response = await proxy(createRequest("/cvs", {}));
 
-    const response = await proxy(request({ [REFRESH]: "refresh-1" }));
-
-    expect(response.status).toBe(200);
-    expect(response.cookies.get(ACCESS)?.value).toBe("access-2");
+    expect(response.status).toBe(307);
+    expect(location(response)?.pathname).toBe("/sign-in");
+    expect(location(response)?.searchParams.get("next")).toBe("/cvs");
+    expect(gqlRequest).not.toHaveBeenCalled();
   });
 
-  it("redirects to /login when the refresh request fails", async () => {
-    fetchMock.mockResolvedValueOnce({
-      status: 200,
-      json: async () => ({ errors: [{ message: "invalid token" }] }),
-    } as unknown as Response);
+  it("keeps the query in the next parameter", async () => {
+    const response = await proxy(createRequest("/cvs?page=2", {}));
+
+    expect(location(response)?.searchParams.get("next")).toBe("/cvs?page=2");
+  });
+
+  it("protects the home page", async () => {
+    const response = await proxy(createRequest("/", {}));
+
+    expect(response.status).toBe(307);
+    expect(location(response)?.pathname).toBe("/sign-in");
+    expect(location(response)?.searchParams.get("next")).toBe("/");
+  });
+
+  it("renews tokens with the refresh token", async () => {
+    gqlRequest.mockResolvedValueOnce({ updateToken: freshTokens });
 
     const response = await proxy(
-      request({ [REFRESH]: "refresh-1" }),
+      createRequest("/cvs", { refresh_token: "refresh-1" }),
     );
 
-    expect(response.headers.get("location")).toBe("http://localhost:3000/login");
-    expect(response.cookies.get(ACCESS)?.value).toBe("");
-    expect(response.cookies.get(REFRESH)?.value).toBe("");
+    expect(response.status).toBe(200);
+    expect(response.cookies.get("access_token")?.value).toBe("access-2");
+    expect(response.cookies.get("refresh_token")?.value).toBe("refresh-2");
+    expect(gqlRequest).toHaveBeenCalledWith(expect.anything(), undefined, {
+      accessToken: "refresh-1",
+    });
   });
 
-  it("redirects to /login when the refresh request throws", async () => {
-    fetchMock.mockRejectedValueOnce(new Error("network"));
+  it("refreshes when the access token has expired", async () => {
+    gqlRequest.mockResolvedValueOnce({ updateToken: freshTokens });
 
-    const response = await proxy(request({ [REFRESH]: "refresh-1" }));
+    const response = await proxy(
+      createRequest("/cvs", {
+        access_token: jwt(-1),
+        refresh_token: "refresh-1",
+      }),
+    );
 
-    expect(response.headers.get("location")).toBe("http://localhost:3000/login");
+    expect(response.status).toBe(200);
+    expect(response.cookies.get("access_token")?.value).toBe("access-2");
+    expect(gqlRequest).toHaveBeenCalledOnce();
+  });
+
+  it("treats a malformed access token as expired", async () => {
+    gqlRequest.mockResolvedValueOnce({ updateToken: freshTokens });
+
+    const response = await proxy(
+      createRequest("/cvs", {
+        access_token: "not-a-jwt",
+        refresh_token: "refresh-1",
+      }),
+    );
+
+    expect(response.status).toBe(200);
+    expect(response.cookies.get("access_token")?.value).toBe("access-2");
+    expect(gqlRequest).toHaveBeenCalledOnce();
+  });
+
+  // Regression: without request.cookies.set + NextResponse.next({ request }),
+  // Server Components in this same request would still read the old, expired token.
+  it("forwards the renewed tokens to the current request", async () => {
+    gqlRequest.mockResolvedValueOnce({ updateToken: freshTokens });
+
+    const response = await proxy(
+      createRequest("/cvs", {
+        access_token: jwt(-1),
+        refresh_token: "refresh-1",
+      }),
+    );
+
+    const forwardedCookies = response.headers.get(
+      "x-middleware-request-cookie",
+    );
+
+    expect(forwardedCookies).toContain("access_token=access-2");
+    expect(forwardedCookies).toContain("refresh_token=refresh-2");
+  });
+
+  it("clears cookies and redirects when the refresh token is invalid", async () => {
+    gqlRequest.mockRejectedValueOnce(new Error("invalidRefreshToken"));
+
+    const response = await proxy(
+      createRequest("/cvs", { refresh_token: "refresh-1" }),
+    );
+
+    expect(response.status).toBe(307);
+    expect(location(response)?.pathname).toBe("/sign-in");
+    expect(response.cookies.get("access_token")?.value).toBe("");
+    expect(response.cookies.get("refresh_token")?.value).toBe("");
+  });
+});
+
+describe("guest routes", () => {
+  it("lets unauthenticated visitors see the sign in page", async () => {
+    const response = await proxy(createRequest("/sign-in", {}));
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get("location")).toBeNull();
+    expect(gqlRequest).not.toHaveBeenCalled();
+  });
+
+  it("sends authenticated visitors home", async () => {
+    const response = await proxy(
+      createRequest("/sign-in", { access_token: jwt(60) }),
+    );
+
+    expect(response.status).toBe(307);
+    expect(location(response)?.pathname).toBe("/");
+  });
+
+  it("refreshes before sending a visitor away from sign up", async () => {
+    gqlRequest.mockResolvedValueOnce({ updateToken: freshTokens });
+
+    const response = await proxy(
+      createRequest("/sign-up", {
+        access_token: jwt(-1),
+        refresh_token: "refresh-1",
+      }),
+    );
+
+    expect(response.status).toBe(307);
+    expect(location(response)?.pathname).toBe("/");
+    expect(response.cookies.get("access_token")?.value).toBe("access-2");
+  });
+
+  it("clears a dead session and shows the sign in page", async () => {
+    gqlRequest.mockRejectedValueOnce(new Error("invalidRefreshToken"));
+
+    const response = await proxy(
+      createRequest("/sign-in", {
+        access_token: jwt(-1),
+        refresh_token: "refresh-1",
+      }),
+    );
+
+    expect(response.status).toBe(200);
+    expect(response.cookies.get("access_token")?.value).toBe("");
+    expect(response.cookies.get("refresh_token")?.value).toBe("");
+  });
+});
+
+// Approximation: Next compiles matchers itself, but this pattern is plain regex.
+describe("matcher", () => {
+  const [pattern] = config.matcher;
+  const matches = (path: string) => new RegExp(`^${pattern}$`).test(path);
+
+  it("covers every app route by default, including ones added later", () => {
+    for (const path of [
+      "/",
+      "/users/1",
+      "/departments",
+      "/positions",
+      "/projects/3",
+    ]) {
+      expect(matches(path), path).toBe(true);
+    }
+  });
+
+  it("skips API routes and static assets", () => {
+    for (const path of [
+      "/api/auth/logout",
+      "/_next/static/chunk.js",
+      "/_next/image",
+      "/favicon.ico",
+      "/logo.png",
+    ]) {
+      expect(matches(path), path).toBe(false);
+    }
   });
 });

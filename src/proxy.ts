@@ -1,90 +1,137 @@
 import { NextResponse, type NextRequest } from "next/server";
-
-const ACCESS = "access_token";
-const REFRESH = "refresh_token";
-const ACCESS_MAX_AGE = 60 * 10;
-const REFRESH_MAX_AGE = 60 * 60 * 24 * 7;
-
-const GRAPHQL_URL = process.env.VITE_GRAPHQL_URL;
+import { gqlRequest } from "@/shared/api/graphql";
+import { UpdateTokenDocument } from "@/shared/api/graphql/documents";
+import { isTokenExpired } from "@/shared/api/jwt";
+import {
+  ACCESS_TOKEN_COOKIE,
+  ACCESS_TOKEN_MAX_AGE,
+  ACCESS_TOKEN_REFRESH_SKEW,
+  REFRESH_TOKEN_COOKIE,
+  REFRESH_TOKEN_MAX_AGE,
+  sessionCookieOptions,
+} from "@/shared/api/session-cookies";
+import { GUEST_ROUTES, HOME_ROUTE, SIGN_IN_ROUTE } from "@/shared/config";
 
 type Tokens = { access_token: string; refresh_token: string };
 
-function isExpired(jwt: string, skewSeconds = 30): boolean {
-  try {
-    const part = jwt.split(".")[1].replace(/-/g, "+").replace(/_/g, "/");
-    const { exp } = JSON.parse(atob(part));
-    return exp - Date.now() / 1000 < skewSeconds;
-  } catch {
-    return true;
-  }
+function isGuestRoute(pathname: string) {
+  return GUEST_ROUTES.some(
+    (route) => pathname === route || pathname.startsWith(`${route}/`),
+  );
+}
+
+function clearSessionCookies(response: NextResponse) {
+  response.cookies.delete(ACCESS_TOKEN_COOKIE);
+  response.cookies.delete(REFRESH_TOKEN_COOKIE);
+}
+
+function persistTokens(response: NextResponse, tokens: Tokens) {
+  response.cookies.set(
+    ACCESS_TOKEN_COOKIE,
+    tokens.access_token,
+    sessionCookieOptions(ACCESS_TOKEN_MAX_AGE),
+  );
+  response.cookies.set(
+    REFRESH_TOKEN_COOKIE,
+    tokens.refresh_token,
+    sessionCookieOptions(REFRESH_TOKEN_MAX_AGE),
+  );
 }
 
 async function refreshTokens(refreshToken: string): Promise<Tokens | null> {
-  if (!GRAPHQL_URL) {
-    console.error("[proxy] VITE_GRAPHQL_URL is not set");
-    return null;
-  }
   try {
-    const res = await fetch(GRAPHQL_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${refreshToken}`,
-      },
-      body: JSON.stringify({
-        query: `mutation UpdateToken { updateToken { access_token refresh_token } }`,
-      }),
+    const data = await gqlRequest(UpdateTokenDocument, undefined, {
+      accessToken: refreshToken,
     });
-    const json = await res.json();
-    if (json.errors?.length)
-      console.error("[proxy] refresh failed:", json.errors[0].message);
-    return json.data?.updateToken ?? null;
-  } catch (e) {
-    console.error("[proxy] refresh threw:", e);
+
+    return data.updateToken;
+  } catch {
     return null;
   }
 }
 
-const cookieOptions = {
-  httpOnly: true,
-  secure: process.env.NODE_ENV === "production",
-  sameSite: "lax" as const,
-  path: "/",
-};
+function redirectToSignIn(request: NextRequest) {
+  const url = new URL(SIGN_IN_ROUTE, request.url);
+  const { pathname, search } = request.nextUrl;
 
-export async function proxy(request: NextRequest) {
-  const access = request.cookies.get(ACCESS)?.value;
-  const refresh = request.cookies.get(REFRESH)?.value;
+  url.searchParams.set("next", `${pathname}${search}`);
 
-  if (access && !isExpired(access)) return NextResponse.next();
+  const response = NextResponse.redirect(url);
+  clearSessionCookies(response);
 
-  const toLogin = () => {
-    const res = NextResponse.redirect(new URL("/login", request.url));
-    res.cookies.delete(ACCESS);
-    res.cookies.delete(REFRESH);
-    return res;
-  };
-
-  if (!refresh) return toLogin();
-
-  const tokens = await refreshTokens(refresh);
-  if (!tokens) return toLogin();
-
-  request.cookies.set(ACCESS, tokens.access_token);
-  request.cookies.set(REFRESH, tokens.refresh_token);
-  const response = NextResponse.next({ request });
-
-  response.cookies.set(ACCESS, tokens.access_token, {
-    ...cookieOptions,
-    maxAge: ACCESS_MAX_AGE,
-  });
-  response.cookies.set(REFRESH, tokens.refresh_token, {
-    ...cookieOptions,
-    maxAge: REFRESH_MAX_AGE,
-  });
   return response;
 }
 
+function redirectHome(request: NextRequest) {
+  return NextResponse.redirect(new URL(HOME_ROUTE, request.url));
+}
+
+function nextWithTokens(request: NextRequest, tokens: Tokens) {
+  request.cookies.set(ACCESS_TOKEN_COOKIE, tokens.access_token);
+  request.cookies.set(REFRESH_TOKEN_COOKIE, tokens.refresh_token);
+
+  const response = NextResponse.next({ request });
+  persistTokens(response, tokens);
+  return response;
+}
+
+export async function proxy(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+  const accessToken = request.cookies.get(ACCESS_TOKEN_COOKIE)?.value;
+  const refreshToken = request.cookies.get(REFRESH_TOKEN_COOKIE)?.value;
+  const hasFreshAccessToken = accessToken
+    ? !isTokenExpired(accessToken, ACCESS_TOKEN_REFRESH_SKEW)
+    : false;
+
+  if (isGuestRoute(pathname)) {
+    if (hasFreshAccessToken) {
+      return redirectHome(request);
+    }
+
+    if (refreshToken) {
+      const tokens = await refreshTokens(refreshToken);
+      if (tokens) return nextWithTokens(request, tokens);
+    }
+
+    const response = NextResponse.next();
+
+    if (accessToken || refreshToken) {
+      clearSessionCookies(response);
+    }
+
+    return response;
+  }
+
+  if (hasFreshAccessToken) {
+    return NextResponse.next();
+  }
+
+  if (refreshToken) {
+    const tokens = await refreshTokens(refreshToken);
+
+    if (tokens) {
+      const response = NextResponse.next();
+      persistTokens(response, tokens);
+      return response;
+    }
+  }
+
+  return redirectToSignIn(request);
+}
+
 export const config = {
-  matcher: ["/((?!login|api/auth|_next/static|_next/image|favicon.ico).*)"],
+  matcher: [
+    "/",
+    "/sign-in",
+    "/sign-up",
+    "/forgot-password",
+    "/verify-email",
+    "/users/:path*",
+    "/profile/:path*",
+    "/cvs/:path*",
+    "/skills/:path*",
+    "/languages/:path*",
+    "/admin/:path*",
+    "/settings/:path*",
+  ],
 };

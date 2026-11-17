@@ -1,11 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
-  UpdateTokenDocument,
   clearSession,
   getSession,
   refreshSession,
   saveSession,
 } from "./session";
+import { UpdateTokenDocument } from "./graphql/generated/graphql";
 
 const { cookieStore, gqlRequest } = vi.hoisted(() => {
   const store = new Map<string, string>();
@@ -28,7 +28,7 @@ const { cookieStore, gqlRequest } = vi.hoisted(() => {
 });
 
 vi.mock("next/headers", () => ({ cookies: async () => cookieStore }));
-vi.mock("./graphql", () => ({ gqlRequest }));
+vi.mock("./graphql/client", () => ({ gqlRequest }));
 
 const tokens = {
   access_token: "access-1",
@@ -69,11 +69,9 @@ describe("refreshSession", () => {
 
     await expect(refreshSession()).resolves.toEqual(fresh);
 
-    expect(gqlRequest).toHaveBeenCalledWith(
-      UpdateTokenDocument,
-      undefined,
-      { accessToken: "refresh-1" },
-    );
+    expect(gqlRequest).toHaveBeenCalledWith(UpdateTokenDocument, undefined, {
+      accessToken: "refresh-1",
+    });
     await expect(getSession()).resolves.toEqual(fresh);
   });
 

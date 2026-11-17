@@ -50,11 +50,29 @@ npm run codegen
 
 ```graphql
 mutation Login($auth: AuthInput!) {
-  login(auth: $auth) { user { id email is_verified role } access_token refresh_token }
+  login(auth: $auth) {
+    user {
+      id
+      email
+      is_verified
+      role
+    }
+    access_token
+    refresh_token
+  }
 }
 
 mutation Signup($auth: SignupInput!) {
-  signup(auth: $auth) { user { id email is_verified role } access_token refresh_token }
+  signup(auth: $auth) {
+    user {
+      id
+      email
+      is_verified
+      role
+    }
+    access_token
+    refresh_token
+  }
 }
 
 mutation ForgotPassword($auth: ForgotPasswordInput!) {
@@ -62,11 +80,14 @@ mutation ForgotPassword($auth: ForgotPasswordInput!) {
 }
 
 mutation ResetPassword($auth: ResetPasswordInput!) {
-  resetPassword(auth: $auth)   # Authorization: Bearer <токен из ссылки в письме>
+  resetPassword(auth: $auth) # Authorization: Bearer <токен из ссылки в письме>
 }
 
 mutation UpdateToken {
-  updateToken { access_token refresh_token }   # Authorization: Bearer <refresh_token>
+  updateToken {
+    access_token
+    refresh_token
+  } # Authorization: Bearer <refresh_token>
 }
 ```
 
@@ -81,7 +102,7 @@ mutation UpdateToken {
 
 ```graphql
 mutation VerifyMail($mail: VerifyMailInput!) {
-  verifyMail(mail: $mail)      # Authorization: Bearer <access_token>
+  verifyMail(mail: $mail) # Authorization: Bearer <access_token>
 }
 
 mutation SendVerification($email: String!) {
@@ -95,7 +116,7 @@ mutation SendVerification($email: String!) {
 
 1. `forgotPassword({ email })` — письмо со ссылкой `${origin}/reset-password?token=<jwt 10 мин>`.
 2. На странице `/reset-password` взять `token` из query, вызвать `resetPassword` с этим токеном в `Authorization`.
-3. После успеха — редирект на логин.
+3. После успеха фронтенд делает авто-вход: декодирует `email` из payload reset-токена и вызывает `login` с новым паролем, сохраняя сессию. Если `login` не удался — редирект на `/sign-in`.
 
 `origin` для ссылок бэкенд берёт из заголовка `Origin` запроса. Браузер шлёт его сам, но **`fetch` из Server Components — нет**: для `signup` и `forgotPassword` с сервера заголовок `Origin: http://localhost:3000` (или адрес приложения) нужно выставлять вручную, иначе ссылка в письме будет битой.
 
@@ -103,7 +124,16 @@ mutation SendVerification($email: String!) {
 
 ```graphql
 query Me {
-  me { id first_name last_name full_name avatar email is_verified role }
+  me {
+    id
+    first_name
+    last_name
+    full_name
+    avatar
+    email
+    is_verified
+    role
+  }
 }
 ```
 
@@ -111,30 +141,33 @@ query Me {
 
 ### Ошибки
 
-Apollo отдаёт `errors[].message` — это код на английском (camelCase), его нужно маппить на русские тексты в UI. `extensions.code` — HTTP-статус (`UNAUTHORIZED`, `BAD_REQUEST`, `CONFLICT`, `FORBIDDEN`, `SERVICE_UNAVAILABLE`, `INTERNAL_SERVER_ERROR`). `src/features/users/api/raw-request.ts` считает ошибкой авторизации и `UNAUTHORIZED`, и `UNAUTHENTICATED`, а также HTTP 401.
+Apollo отдаёт `errors[].message` — это код на английском (camelCase), его нужно маппить на английские тексты в UI. `extensions.code` — HTTP-статус (`UNAUTHORIZED`, `BAD_REQUEST`, `CONFLICT`, `FORBIDDEN`, `SERVICE_UNAVAILABLE`, `INTERNAL_SERVER_ERROR`).
 
 Коды, которые встретятся на страницах авторизации:
 
-| Код | Где | Смысл |
-|---|---|---|
-| `invalidCredentials` | login | Неверная почта или пароль |
-| `userAlreadyExists` | signup | Почта уже занята |
-| `confirmPasswordMismatch` | signup, resetPassword | Пароли не совпадают |
-| `passwordTooShort`, `confirmPasswordTooShort` | signup, resetPassword | Слишком короткий пароль |
-| `passwordIsRequired` | login | Пустой пароль |
-| `invalidEmail` | везде | Некорректная почта |
-| `otpIsRequired`, `shouldBe6Digits` | verifyMail | Неверный формат OTP |
-| `mailNotFound` | verifyMail | Неверный или устаревший OTP |
-| `actionExpired` | resetPassword | Ссылка сброса истекла |
-| `failedToSendEmail` | signup, forgotPassword | Не удалось отправить письмо (и «почта не найдена» при сбросе) |
-| `unauthorized` | любые защищённые операции | Нет/просрочен access-токен |
-| `invalidRefreshToken` | updateToken | Нужен повторный вход |
-| `insufficientPermissions` | админские операции | Не хватает роли |
+| Код                                           | Где                       | Смысл                                                         |
+| --------------------------------------------- | ------------------------- | ------------------------------------------------------------- |
+| `invalidCredentials`                          | login                     | Неверная почта или пароль                                     |
+| `userAlreadyExists`                           | signup                    | Почта уже занята                                              |
+| `confirmPasswordMismatch`                     | signup, resetPassword     | Пароли не совпадают                                           |
+| `passwordTooShort`, `confirmPasswordTooShort` | signup, resetPassword     | Слишком короткий пароль                                       |
+| `passwordIsRequired`                          | login                     | Пустой пароль                                                 |
+| `invalidEmail`                                | везде                     | Некорректная почта                                            |
+| `otpIsRequired`, `shouldBe6Digits`            | verifyMail                | Неверный формат OTP                                           |
+| `mailNotFound`                                | verifyMail                | Неверный или устаревший OTP                                   |
+| `actionExpired`                               | resetPassword             | Ссылка сброса истекла                                         |
+| `failedToSendEmail`                           | signup, forgotPassword    | Не удалось отправить письмо (и «почта не найдена» при сбросе) |
+| `unauthorized`                                | любые защищённые операции | Нет/просрочен access-токен                                    |
+| `invalidRefreshToken`                         | updateToken               | Нужен повторный вход                                          |
+| `insufficientPermissions`                     | админские операции        | Не хватает роли                                               |
 
 ## Пользователи и роли
 
 ```graphql
-enum UserRole { Employee Admin }
+enum UserRole {
+  Employee
+  Admin
+}
 
 type User {
   id: ID!
@@ -153,18 +186,18 @@ type User {
 
 ## Модули API
 
-| Модуль | Что даёт |
-|---|---|
-| `auth` | login, signup, forgotPassword, resetPassword, updateToken |
-| `users` | `users` (пагинация), `user(id)`, changePassword, CRUD пользователей (admin) |
-| `profile` | `me`, `profile(userId)`, updateProfile, uploadAvatar/deleteAvatar |
-| `cvs` | CRUD резюме, `cvs`, `cvsByUserId`, `cv(id)`; PDF-экспорт |
-| `cvs` / `pdf` | `exportPdf({ html, margin })` → base64-строка PDF |
-| `cv_skills`, `cv_projects` | навыки и проекты внутри резюме |
-| `departments`, `positions` | справочники |
-| `languages`, `skills`, `skill_categories`, `projects` | справочники/CRUD |
-| `mail` | verifyMail, sendVerification |
-| `cloud` | загрузка аватарок в Cloudinary (внутренний модуль) |
+| Модуль                                                | Что даёт                                                                    |
+| ----------------------------------------------------- | --------------------------------------------------------------------------- |
+| `auth`                                                | login, signup, forgotPassword, resetPassword, updateToken                   |
+| `users`                                               | `users` (пагинация), `user(id)`, changePassword, CRUD пользователей (admin) |
+| `profile`                                             | `me`, `profile(userId)`, updateProfile, uploadAvatar/deleteAvatar           |
+| `cvs`                                                 | CRUD резюме, `cvs`, `cvsByUserId`, `cv(id)`; PDF-экспорт                    |
+| `cvs` / `pdf`                                         | `exportPdf({ html, margin })` → base64-строка PDF                           |
+| `cv_skills`, `cv_projects`                            | навыки и проекты внутри резюме                                              |
+| `departments`, `positions`                            | справочники                                                                 |
+| `languages`, `skills`, `skill_categories`, `projects` | справочники/CRUD                                                            |
+| `mail`                                                | verifyMail, sendVerification                                                |
+| `cloud`                                               | загрузка аватарок в Cloudinary (внутренний модуль)                          |
 
 Схема: все `src/**/*.graphql` в репозитории бэкенда; единого `schema.graphql` нет — удобнее всего смотреть через Playground/introspection.
 
