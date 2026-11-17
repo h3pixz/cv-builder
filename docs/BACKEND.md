@@ -15,6 +15,7 @@
 2. `pnpm run image:up` — поднимает Postgres (`127.0.0.1:5432`) и бэкенд (`3001`).
 3. `pnpm run backup` — восстановить дамп БД.
 4. Для писем (OTP, сброс пароля) нужен `SMTP_URL` с app-паролем Gmail; для аватарок — `CLOUDINARY_URL`; для PDF — `CHROME_WS` (Browserless).
+5. Локальная альтернатива Gmail — Mailpit: `docker run -d --name mailpit --restart unless-stopped --network innowise_default -p 127.0.0.1:8025:8025 -p 127.0.0.1:1025:1025 axllent/mailpit`, в `.env.cv_backend` — `SMTP_URL="smtp://mailpit:1025"` и `MAIL_FROM="no-reply@cv.local"`, пересоздать `cv_backend`. Письма открываются на `http://localhost:8025`.
 
 Проверка: playground отвечает на `http://localhost:3001/api/graphql`.
 
@@ -82,7 +83,7 @@ mutation SendVerification($email: String!) {
 }
 ```
 
-`verifyMail` **не публичная**: email берётся из access-токена, поэтому токены от `signup` надо сохранить до ввода OTP. Принимает только `{ otp }` ровно из 6 символов.
+`verifyMail` **не публичная**: email берётся из access-токена, поэтому токены от `signup` надо сохранить до ввода OTP. Принимает только `{ otp }` ровно из 6 символов. `sendVerification` тоже без `@Public` — вызывать с `Authorization: Bearer <access_token>`, иначе `unauthorized`.
 
 ### Сброс пароля
 
