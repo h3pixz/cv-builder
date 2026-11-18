@@ -266,6 +266,7 @@ export function UsersTable({
                         variant="icon"
                         aria-label={`Open ${user.firstName || user.email}`}
                         className="size-8"
+                        nativeButton={false}
                         render={<Link href={`/users/${user.id}`} />}
                       >
                         <ArrowRight className="size-4" />
