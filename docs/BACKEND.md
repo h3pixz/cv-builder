@@ -15,6 +15,7 @@
 2. `pnpm run image:up` — поднимает Postgres (`127.0.0.1:5432`) и бэкенд (`3001`).
 3. `pnpm run backup` — восстановить дамп БД.
 4. Для писем (OTP, сброс пароля) нужен `SMTP_URL` с app-паролем Gmail; для аватарок — `CLOUDINARY_URL`; для PDF — `CHROME_WS` (Browserless).
+5. Локальная альтернатива Gmail — Mailpit: `docker run -d --name mailpit --restart unless-stopped --network innowise_default -p 127.0.0.1:8025:8025 -p 127.0.0.1:1025:1025 axllent/mailpit`, в `.env.cv_backend` — `SMTP_URL="smtp://mailpit:1025"` и `MAIL_FROM="no-reply@cv.local"`, пересоздать `cv_backend`. Письма открываются на `http://localhost:8025`.
 
 Проверка: playground отвечает на `http://localhost:3001/api/graphql`.
 
@@ -92,13 +93,15 @@ mutation UpdateToken {
 ```
 
 - `AuthInput` — `{ email, password }`
-- `SignupInput` — `{ email, password, confirmPassword }`, пароль от 5 символов
+- `SignupInput` — `{ email, password, confirmPassword }`, пароль от 6 символов
 - `ResetPasswordInput` — `{ newPassword, confirmPassword }`, от 6 символов
 - `login` возвращает `user` целиком (включая `profile`, `department`, `position`, `cvs`)
 
 ### Подтверждение почты
 
-После `signup` пользователь создаётся с `is_verified: false`, на email уходит 6-значный OTP (живёт 2 часа).
+После `signup` пользователь создаётся с `is_verified: false`, на email уходит 6-значный OTP (живёт 2 часа). `sendVerification` перевыпускает код и обновляет время выпуска; просроченный OTP при `verifyMail` удаляется и отдаёт `otpExpired`.
+
+> Локальный патч бэкенда: проверка TTL 2 часа и код `otpExpired` добавлены в `C:\projects\cv-backend` (`src/mail/mail.service.ts`). В upstream без патча срок жизни кода не проверяется, и любой верный OTP принимается бессрочно.
 
 ```graphql
 mutation VerifyMail($mail: VerifyMailInput!) {
@@ -110,13 +113,15 @@ mutation SendVerification($email: String!) {
 }
 ```
 
-`verifyMail` **не публичная**: email берётся из access-токена, поэтому токены от `signup` надо сохранить до ввода OTP. Принимает только `{ otp }` ровно из 6 символов.
+`verifyMail` **не публичная**: email берётся из access-токена, поэтому токены от `signup` надо сохранить до ввода OTP. Принимает только `{ otp }` ровно из 6 символов. `sendVerification` тоже без `@Public` — вызывать с `Authorization: Bearer <access_token>`, иначе `unauthorized`.
 
 ### Сброс пароля
 
-1. `forgotPassword({ email })` — письмо со ссылкой `${origin}/reset-password?token=<jwt 10 мин>`.
+1. `forgotPassword({ email })` — письмо со ссылкой `${origin}/reset-password?token=<jwt 10 мин>`. Если аккаунта с такой почтой нет, бэкенд отдаёт `accountNotFound`.
 2. На странице `/reset-password` взять `token` из query, вызвать `resetPassword` с этим токеном в `Authorization`.
 3. После успеха фронтенд делает авто-вход: декодирует `email` из payload reset-токена и вызывает `login` с новым паролем, сохраняя сессию. Если `login` не удался — редирект на `/sign-in`.
+
+> Локальный патч бэкенда: `accountNotFound` при неизвестной почте добавлен в `src/auth/auth.service.ts`. В upstream без патча запрос отдаёт `failedToSendEmail` — и для отсутствующего аккаунта, и при сбое отправки.
 
 `origin` для ссылок бэкенд берёт из заголовка `Origin` запроса. Браузер шлёт его сам, но **`fetch` из Server Components — нет**: для `signup` и `forgotPassword` с сервера заголовок `Origin: http://localhost:3000` (или адрес приложения) нужно выставлять вручную, иначе ссылка в письме будет битой.
 
@@ -145,21 +150,23 @@ Apollo отдаёт `errors[].message` — это код на английско
 
 Коды, которые встретятся на страницах авторизации:
 
-| Код                                           | Где                       | Смысл                                                         |
-| --------------------------------------------- | ------------------------- | ------------------------------------------------------------- |
-| `invalidCredentials`                          | login                     | Неверная почта или пароль                                     |
-| `userAlreadyExists`                           | signup                    | Почта уже занята                                              |
-| `confirmPasswordMismatch`                     | signup, resetPassword     | Пароли не совпадают                                           |
-| `passwordTooShort`, `confirmPasswordTooShort` | signup, resetPassword     | Слишком короткий пароль                                       |
-| `passwordIsRequired`                          | login                     | Пустой пароль                                                 |
-| `invalidEmail`                                | везде                     | Некорректная почта                                            |
-| `otpIsRequired`, `shouldBe6Digits`            | verifyMail                | Неверный формат OTP                                           |
-| `mailNotFound`                                | verifyMail                | Неверный или устаревший OTP                                   |
-| `actionExpired`                               | resetPassword             | Ссылка сброса истекла                                         |
-| `failedToSendEmail`                           | signup, forgotPassword    | Не удалось отправить письмо (и «почта не найдена» при сбросе) |
-| `unauthorized`                                | любые защищённые операции | Нет/просрочен access-токен                                    |
-| `invalidRefreshToken`                         | updateToken               | Нужен повторный вход                                          |
-| `insufficientPermissions`                     | админские операции        | Не хватает роли                                               |
+| Код                                           | Где                       | Смысл                                        |
+| --------------------------------------------- | ------------------------- | -------------------------------------------- |
+| `invalidCredentials`                          | login                     | Неверная почта или пароль                    |
+| `userAlreadyExists`                           | signup                    | Почта уже занята                             |
+| `confirmPasswordMismatch`                     | signup, resetPassword     | Пароли не совпадают                          |
+| `passwordTooShort`, `confirmPasswordTooShort` | signup, resetPassword     | Слишком короткий пароль                      |
+| `passwordIsRequired`                          | login                     | Пустой пароль                                |
+| `invalidEmail`                                | везде                     | Некорректная почта                           |
+| `otpIsRequired`, `shouldBe6Digits`            | verifyMail                | Неверный формат OTP                          |
+| `mailNotFound`                                | verifyMail                | Неверный OTP                                 |
+| `otpExpired`                                  | verifyMail                | Срок действия OTP истёк (2 часа), код удалён |
+| `accountNotFound`                             | forgotPassword            | Нет аккаунта с такой почтой                  |
+| `actionExpired`                               | resetPassword             | Ссылка сброса истекла                        |
+| `failedToSendEmail`                           | signup, forgotPassword    | Не удалось отправить письмо                  |
+| `unauthorized`                                | любые защищённые операции | Нет/просрочен access-токен                   |
+| `invalidRefreshToken`                         | updateToken               | Нужен повторный вход                         |
+| `insufficientPermissions`                     | админские операции        | Не хватает роли                              |
 
 ## Пользователи и роли
 

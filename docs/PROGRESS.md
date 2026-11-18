@@ -35,6 +35,7 @@
 - [x] `login` запрашивает `user { is_verified }`: неподтверждённых ведёт на `/verify-email`, остальных — на `next` или `/`; `next` прокинут из `/sign-in` через страницу и форму
 - [x] Codegen сканирует `shared/api/**` — документ `UpdateToken` остаётся в сгенерированных типах
 - [x] Тесты: proxy (просроченный токен, `next`, гостевые маршруты), `login`, `authedGqlRequest*`, `isUnauthorizedError`, `isTokenExpired`, `safeRedirectPath`
+- [x] Отправка писем: Gmail SMTP с app password (`docker/.env.cv_backend`), доставка на реальную почту проверена; локальная альтернатива — Mailpit (`smtp://mailpit:1025`, UI `http://localhost:8025`)
 
 ### Страницы авторизации
 
@@ -54,16 +55,39 @@
 - [x] `/sign-in` — Server Action `login`: сохранение сессии, inline-ошибка + тост `invalidCredentials`, disabled/loading кнопки
 - [x] `/sign-up` — Server Action `signup`: `Origin` для ссылки в письме, сохранение токенов, `userAlreadyExists` inline на поле email, редирект на `/verify-email`
 - [x] `/verify-email` — проверка сессии перед рендером, `verifyMail` с access-токеном и refresh-ретраем при `unauthorized`, ошибки `mailNotFound` / `shouldBe6Digits` / истёкшая сессия, редирект на `/`
+- [x] `/verify-email` — повторная отправка кода: Server Action `resendVerification` (`sendVerification` с access-токеном и refresh-ретраем, email из токена), кнопка «Send again», тосты успеха/ошибки
 - [x] `/reset-password?token=...` — чтение `token` из query, `resetPassword` с токеном в `Authorization`, ошибки `actionExpired` / `confirmPasswordMismatch`, сообщение для отсутствующего токена
 - [x] Авто-вход после сброса пароля: email берётся из payload reset-токена, затем `login` с новым паролем; при сбое — редирект на `/sign-in`
 - [x] Общие `FormError` (form-level ошибки) и `AuthLink` (ссылки с `focus-visible`) для auth-форм
 - [x] Next 16: auth-маршруты с `cookies` / `searchParams` помечены `instant = false` (blocking prerender)
 - [x] Тесты auth-форм (Vitest + RTL): `sign-in`, `sign-up`, `verify-email`, `forgot-password`, `reset-password` — валидация, disabled-состояния, вызовы Server Actions, тосты, ссылки-переходы
 - [x] Server Action выхода `logout` — очистка cookie и редирект на `/sign-in`
+- [x] Сверка всех 5 страниц auth с ТЗ: AC закрыты, тексты ошибок совпадают с примерами из ТЗ (`shared/api/graphql/errors.ts`)
+- [x] `/forgot-password` — отдельное сообщение «No account found with this email address»: код `accountNotFound` + inline-ошибка формы (`FormError`)
+- [x] `/verify-email` — срок жизни OTP 2 часа: код `otpExpired` → «Verification code has expired»; повторная отправка перевыпускает код и обновляет время выпуска
+- [x] Плейсхолдеры и доступные лейблы полей приведены к названиям из ТЗ (`Confirm Password`, `New Password`)
+- [x] Локальный патч учебного бэкенда (`C:\projects\cv-backend`, в upstream не пушился): `forgotPassword` → `accountNotFound`, `verifyMail` → проверка TTL 2 часа и `otpExpired`, `SignupDto` → пароль от 6 символов. При пересборке бэкенда из чистого upstream патч нужно накатить повторно (см. `docs/BACKEND.md`)
+
+### Страницы ошибок
+
+- [x] No Internet: страница «Oops» с иллюстрацией и кнопкой `RETRY` (`src/features/errors/ui/no-internet-page.tsx`), тексты по ТЗ, `Button variant="primary"`
+- [x] Подключение: `src/app/error.tsx` (`retry`), `src/app/global-error.tsx` (собственные `html`/`body` + `globals.css` + тема), офлайн-оверлей `OfflineGuard` в root layout (`navigator.onLine` + события `online`/`offline`)
+- [x] Общие требования для No Internet: Light/Dark темы, клавиатура и focus-visible, центрирование, адаптивность
+- [x] Тесты: `useOnlineStatus`, `NoInternetPage`, `OfflineGuard`, `app/error`, `app/global-error`
+- [x] Not Found (404): страница «Hmm…» с общей иллюстрацией `SadMonitorIllustration`, текстом по ТЗ и кнопкой `GO BACK` (`src/features/errors/ui/not-found-page.tsx`), `Button variant="primary"`
+- [x] Подключение Not Found: `src/app/not-found.tsx` (корневой `not-found` ловит несуществующие URL), возврат назад с фолбэком на `/` — `shared/helpers/go-back.ts`
+- [x] Тесты Not Found: `NotFoundPage`, `goBack`, `app/not-found`
+- [x] Device Error: страница «Oops» с иллюстрацией и текстом по ТЗ (`src/features/errors/ui/device-error-page.tsx`)
+- [x] Показ при ширине вьюпорта меньше `768px`, включая ресайз: `useMediaQuery` (`shared/hooks`) + `DeviceGuard` в root layout, контент под оверлеем `inert`
+- [x] Общие требования для Device Error: Light/Dark темы, центрирование, адаптивность
+- [x] Тесты Device Error: `useMediaQuery`, `DeviceErrorPage`, `DeviceGuard`
+
+### Мержи
+
+- [x] PR #1 `feat/auth-sign-in` → `dev` смержен 2026-11-16 (rebase, `8a6e6f3`): авторизация, сессия, proxy, codegen. Проверки перед мержем: `typecheck`, 84 теста, `build`, `codegen` без дрейфа, lint без ошибок ([PR #1](https://github.com/h3pixz/cv-builder/pull/1))
+- [x] PR #2 `feat/auth-sign-in` → `dev` смержен 2026-11-17 (rebase, `bd9c993`): повторная отправка кода на `/verify-email`, inline-ошибка `accountNotFound` на `/forgot-password`, коды `accountNotFound` / `otpExpired`, лейблы полей по ТЗ, документация бэкенда. Проверки перед мержем: `typecheck`, 92 теста, `build` ([PR #2](https://github.com/h3pixz/cv-builder/pull/2))
 
 ## In progress
-
-- [ ] Согласовать с ментором итоговый стек: Tailwind + shadcn, Zustand, Zod + React Hook Form, отказ от Apollo Client — подтвердить формально
 
 ## Backlog
 
@@ -75,8 +99,6 @@
 
 ### Авторизация — остатки
 
-- [ ] `/verify-email` — повторная отправка кода через `sendVerification`
-- [ ] `/forgot-password` — отдельное сообщение «почта не найдена» невозможно: бэкенд отдаёт `failedToSendEmail` и для отсутствующей почты, и для сбоя отправки
 - [ ] Ручной переключатель темы (сейчас тема следует системной настройке)
 
 ### Резюме

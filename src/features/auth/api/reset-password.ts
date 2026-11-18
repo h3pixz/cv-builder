@@ -5,29 +5,12 @@ import { gqlRequest } from "@/shared/api/graphql/graphql"
 import { saveSession } from "@/shared/api/session/session"
 import { toFormError, type FormActionResult } from "./action-result"
 import { LoginMutation, ResetPasswordMutation } from "./documents"
+import { decodeTokenEmail } from "./token-payload"
 
 type ResetPasswordInput = {
   token: string
   newPassword: string
   confirmPassword: string
-}
-
-function decodeEmail(token: string): string | null {
-  try {
-    const payload = token.split(".")[1]
-
-    if (!payload) {
-      return null
-    }
-
-    const data = JSON.parse(
-      Buffer.from(payload, "base64url").toString("utf8"),
-    ) as { email?: unknown }
-
-    return typeof data.email === "string" ? data.email : null
-  } catch {
-    return null
-  }
 }
 
 export async function resetPassword({
@@ -45,7 +28,7 @@ export async function resetPassword({
     return toFormError(error)
   }
 
-  const email = decodeEmail(token)
+  const email = decodeTokenEmail(token)
   let signedIn = false
 
   if (email) {

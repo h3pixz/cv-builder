@@ -15,8 +15,8 @@ async function fillPasswords(
   password: string,
   confirmPassword: string,
 ) {
-  await user.type(screen.getByLabelText("New password"), password)
-  await user.type(screen.getByLabelText("Confirm password"), confirmPassword)
+  await user.type(screen.getByLabelText("New Password"), password)
+  await user.type(screen.getByLabelText("Confirm Password"), confirmPassword)
   await user.tab()
 }
 
@@ -44,7 +44,7 @@ describe("ResetPasswordForm", () => {
     const user = userEvent.setup()
     render(<ResetPasswordForm token="reset-token" />)
 
-    await user.type(screen.getByLabelText("New password"), "123")
+    await user.type(screen.getByLabelText("New Password"), "123")
     await user.tab()
 
     expect(

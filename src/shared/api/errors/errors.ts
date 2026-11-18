@@ -1,6 +1,7 @@
 export const ERROR_MESSAGES = {
   invalidCredentials: "Invalid email or password",
   userAlreadyExists: "An account with this email already exists",
+  accountNotFound: "No account found with this email address",
   confirmPasswordMismatch: "Passwords do not match",
   passwordTooShort: "Password must be at least 6 characters long",
   confirmPasswordTooShort: "Password must be at least 6 characters long",
@@ -9,6 +10,7 @@ export const ERROR_MESSAGES = {
   otpIsRequired: "Verification code is required",
   shouldBe6Digits: "Please enter a valid 6-digit code",
   mailNotFound: "Invalid verification code",
+  otpExpired: "Verification code has expired",
   actionExpired: "This password reset link has expired",
   failedToSendEmail: "Unable to send the email. Please try again later",
   unauthorized: "Your session has expired. Please sign in again",
