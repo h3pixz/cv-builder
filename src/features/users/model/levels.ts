@@ -1,21 +1,51 @@
-const MASTERY = [
+export const SKILL_MASTERY_VALUES = [
   "Novice",
   "Advanced",
   "Competent",
   "Proficient",
   "Expert",
 ] as const;
-const PROFICIENCY = ["A1", "A2", "B1", "B2", "C1", "C2", "Native"] as const;
 
-export const MASTERY_MAX = MASTERY.length;
-export const PROFICIENCY_MAX = PROFICIENCY.length;
+export const LANGUAGE_PROFICIENCY_VALUES = [
+  "A1",
+  "A2",
+  "B1",
+  "B2",
+  "C1",
+  "C2",
+  "Native",
+] as const;
+
+export type SkillMasteryValue = (typeof SKILL_MASTERY_VALUES)[number];
+export type LanguageProficiencyValue =
+  (typeof LANGUAGE_PROFICIENCY_VALUES)[number];
+
+export const MASTERY_MAX = SKILL_MASTERY_VALUES.length;
+export const PROFICIENCY_MAX = LANGUAGE_PROFICIENCY_VALUES.length;
 
 export function masteryLevel(value: string): number {
-  return MASTERY.indexOf(value as (typeof MASTERY)[number]) + 1;
+  return SKILL_MASTERY_VALUES.indexOf(value as SkillMasteryValue) + 1;
 }
+
 export function proficiencyLevel(value: string): number {
-  return PROFICIENCY.indexOf(value as (typeof PROFICIENCY)[number]) + 1;
+  return (
+    LANGUAGE_PROFICIENCY_VALUES.indexOf(value as LanguageProficiencyValue) + 1
+  );
 }
+
+export type LevelItem = {
+  name: string;
+  /** Numeric level used by the `Level` meter. */
+  level: number;
+  /** Raw mastery/proficiency value shown next to the meter. */
+  levelLabel: string;
+};
+
+export type LevelGroup = {
+  id: string;
+  name: string;
+  items: LevelItem[];
+};
 
 type CategoryMeta = { id: string; name: string; order: number };
 type Category = CategoryMeta & { children: CategoryMeta[] };

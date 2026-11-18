@@ -20,10 +20,10 @@
 
 ## Переменная окружения фронтенда
 
-Фронтенд читает серверную переменную `VITE_GRAPHQL_URL` (имя унаследовано от Vite, несмотря на то что проект на Next.js):
+Фронтенд читает серверную переменную `GRAPHQL_URL` (имя унаследовано от Vite, несмотря на то что проект на Next.js):
 
 ```sh
-VITE_GRAPHQL_URL="http://localhost:3001/api/graphql"
+GRAPHQL_URL="http://localhost:3001/api/graphql"
 ```
 
 Её читают `src/shared/api/graphql.ts`, `src/features/users/api/raw-request.ts` и `scripts/export-schema.mjs`. `NEXT_PUBLIC_` не нужен, пока весь доступ к API идёт с сервера.

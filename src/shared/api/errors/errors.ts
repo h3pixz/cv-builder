@@ -14,6 +14,10 @@ export const ERROR_MESSAGES = {
   unauthorized: "Your session has expired. Please sign in again",
   invalidRefreshToken: "Your session has expired. Please sign in again",
   insufficientPermissions: "You do not have permission to perform this action",
+  notOwnProfile: "You can only edit your own profile",
+  profileNotFound: "Profile not found",
+  skillHasBeenAdded: "This skill has already been added",
+  languageHasBeenAdded: "This language has already been added",
 } as const;
 
 export type GraphQLErrorCode = keyof typeof ERROR_MESSAGES;

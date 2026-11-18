@@ -1,7 +1,5 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
-
 import { getRequestOrigin } from "@/shared/api/request-origin";
 
 import type {
@@ -22,6 +20,7 @@ import {
   uploadUserAvatar,
 } from "./profile.mutations";
 import { getCurrentUser } from "./profile.queries";
+import { revalidateUser } from "./profile-revalidate";
 import { forbiddenFailure, runAuthed } from "./run-authed";
 import { getUser } from "./users.queries";
 import { updateUser } from "./users.mutations";
@@ -31,11 +30,6 @@ export type UploadAvatarValues = {
   size: number;
   type: string;
 };
-
-function revalidateUser(userId: string) {
-  revalidatePath("/users");
-  revalidatePath(`/users/${userId}`, "layout");
-}
 
 export async function updateProfileAction(
   userId: string,

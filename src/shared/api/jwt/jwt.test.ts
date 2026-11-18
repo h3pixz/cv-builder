@@ -18,6 +18,10 @@ describe("getTokenSubject", () => {
     expect(getTokenSubject(token({ sub: "user-1" }))).toBe("user-1");
   });
 
+  it("stringifies a numeric subject", () => {
+    expect(getTokenSubject(token({ sub: 42 }))).toBe("42");
+  });
+
   it("returns null when there is no subject", () => {
     expect(getTokenSubject(token({ exp: inSeconds(60) }))).toBeNull();
   });

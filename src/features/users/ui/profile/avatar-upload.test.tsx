@@ -88,7 +88,7 @@ describe("AvatarUpload", () => {
 
     await waitFor(() => {
       expect(uploadAvatarAction).toHaveBeenCalledWith("user-1", {
-        base64: "aW1hZ2U=",
+        base64: "data:image/png;base64,aW1hZ2U=",
         size: 5,
         type: "image/png",
       });
