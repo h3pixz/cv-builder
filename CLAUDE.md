@@ -21,7 +21,9 @@
 - `(platform)/users/page.tsx` — список пользователей;
 - `(platform)/users/[userId]/layout.tsx` — breadcrumbs и табы пользователя;
 - `(platform)/users/[userId]/page.tsx` — редирект на `/profile`;
-- `(platform)/users/[userId]/profile/page.tsx` — профиль пользователя.
+- `(platform)/users/[userId]/profile/page.tsx` — профиль пользователя;
+- `(platform)/users/[userId]/cvs/page.tsx` — вкладка CV выбранного сотрудника (только Admin);
+- `(platform)/users/[userId]/cvs/[cvId]/page.tsx` — детали CV.
 
 `src/proxy.ts` — защита маршрутов: приватные требуют валидную сессию (при истёкшем access-токене обновляет пару через refresh-токен), гостевые (`GUEST_ROUTES`) отправляют авторизованного на `HOME_ROUTE`. Тесты — `src/proxy.test.ts`.
 
@@ -38,12 +40,15 @@
 - `api/profile.mutations.ts` — мутации профиля, аватара и отправки письма подтверждения;
 - `api/profile.actions.ts` — Server Actions профиля (`updateProfileAction`, `uploadAvatarAction`, `sendVerificationEmailAction`) с проверкой прав;
 - `api/profile-levels.actions.ts` — Server Actions навыков и языков (добавление/обновление/удаление) с той же проверкой прав;
+- `api/cvs.queries.ts` — список CV сотрудника (`cvsByUserId`: поиск по имени и сортировка) и одно CV;
+- `api/cvs.mutations.ts` — создание/обновление/удаление CV;
+- `api/cvs.actions.ts` — Server Actions CV (create/update/delete) только для Admin;
 - `api/run-authed.ts` — `runAuthed`: выполнение операции с access-токеном и refresh-повтором;
-- `model/` — `profile-permissions` (кто может править профиль/аватар/подтверждать email), `profile-schema` (zod), `levels` (значения Mastery/Proficiency, группировка навыков по категориям), `level-forms` (zod-схемы и сообщения для навыков/языков), `avatar` (типы и лимит 5MB), `action-result`;
-- `ui/` — `users-page`, `users-table`, `users-toolbar`, `users-pagination`, `user-layout`, `user-breadcrumbs`, `user-tabs`, `profile/user-profile-page`, `profile/user-profile-form`, `profile/avatar-upload`, `profile/profile-skeleton`, `skills/user-skills-page`, `languages/user-languages-page`, `levels/level-manager` (списки, диалоги добавления/обновления/удаления), `levels/level-list-skeleton`;
+- `model/` — `profile-permissions` (кто может править профиль/аватар/подтверждать email), `profile-schema` (zod), `levels` (значения Mastery/Proficiency, группировка навыков по категориям), `level-forms` (zod-схемы и сообщения для навыков/языков), `cv-schema` (zod: name/education ≤ 255, description), `cv-permissions`, `cv-record`, `avatar` (типы и лимит 5MB), `action-result`;
+- `ui/` — `users-page`, `users-table`, `users-toolbar`, `users-pagination`, `user-layout`, `user-breadcrumbs`, `user-tabs`, `profile/user-profile-page`, `profile/user-profile-form`, `profile/avatar-upload`, `profile/profile-skeleton`, `skills/user-skills-page`, `languages/user-languages-page`, `levels/level-manager` (списки, диалоги добавления/обновления/удаления), `levels/level-list-skeleton`, `cvs/user-cvs-page` (поиск, сортировка по имени, create/update/delete), `cvs/user-cv-details-page`;
 - `index.ts` — публичный экспорт страницы и layout-а.
 
-Все модули `api/` помечены `import "server-only"` — их нельзя импортировать из клиентских компонентов. Доступ к профилю: Employee правит только свой профиль и аватар и может подтвердить только свой email; Admin правит любой профиль и аватар, но подтверждение email — только владелец (`model/profile-permissions.ts`).
+Все модули `api/` помечены `import "server-only"` — их нельзя импортировать из клиентских компонентов. Доступ к профилю: Employee правит только свой профиль и аватар и может подтвердить только свой email; Admin правит любой профиль и аватар, но подтверждение email — только владелец (`model/profile-permissions.ts`). Вкладка CV на странице пользователя доступна только Admin (`model/cv-permissions.ts`); Employee при прямом заходе получает 404.
 
 `src/features/auth/` — `ui/sign-in-page`, `ui/sign-up-page`, формы и `AuthTabs` в `ui/components`.
 

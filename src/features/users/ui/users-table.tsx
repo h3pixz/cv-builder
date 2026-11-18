@@ -84,10 +84,16 @@ function SortableHead({
 
   function toggleSort() {
     const params = new URLSearchParams(searchParams.toString());
-    const nextOrder: SortOrder = order === "asc" ? "desc" : "asc";
 
     params.set("sort_by", column);
-    params.set("sort_order", nextOrder);
+    if (order === undefined) {
+      params.set("sort_order", "asc");
+    } else if (order === "asc") {
+      params.set("sort_order", "desc");
+    } else {
+      params.delete("sort_by");
+      params.delete("sort_order");
+    }
     params.delete("page");
 
     router.replace(`${pathname}?${params.toString()}`);
@@ -99,11 +105,7 @@ function SortableHead({
   return (
     <TableHead
       aria-sort={
-        order === "asc"
-          ? "ascending"
-          : order === "desc"
-            ? "descending"
-            : "none"
+        order === "asc" ? "ascending" : order === "desc" ? "descending" : "none"
       }
       className={className}
     >

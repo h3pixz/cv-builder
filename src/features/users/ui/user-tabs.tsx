@@ -11,12 +11,21 @@ const TABS = [
   { segment: "cvs", label: "CVs" },
 ] as const;
 
-export function UserTabs({ userId }: { userId: string }) {
+export function UserTabs({
+  userId,
+  showCvs = false,
+}: {
+  userId: string;
+  showCvs?: boolean;
+}) {
   const active = useSelectedLayoutSegment();
+  const tabs = showCvs
+    ? TABS
+    : TABS.filter((tab) => tab.segment !== "cvs");
 
   return (
     <nav aria-label="User sections" className="flex border-b">
-      {TABS.map(({ segment, label }) => {
+      {tabs.map(({ segment, label }) => {
         const isActive = active === segment;
         return (
           <Link

@@ -18,6 +18,8 @@ export const ERROR_MESSAGES = {
   profileNotFound: "Profile not found",
   skillHasBeenAdded: "This skill has already been added",
   languageHasBeenAdded: "This language has already been added",
+  cvNotFound: "CV not found",
+  notOwnCv: "You can only manage your own CVs",
 } as const;
 
 export type GraphQLErrorCode = keyof typeof ERROR_MESSAGES;

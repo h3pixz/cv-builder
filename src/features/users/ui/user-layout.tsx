@@ -1,6 +1,15 @@
 import { Suspense } from "react";
+
+import { getCurrentUser } from "../api/profile.queries";
+import { canManageCvs } from "../model/cv-permissions";
 import { UserBreadcrumbs } from "./user-breadcrumbs";
 import { UserTabs } from "./user-tabs";
+
+async function UserTabsSection({ userId }: { userId: string }) {
+  const me = await getCurrentUser();
+
+  return <UserTabs userId={userId} showCvs={canManageCvs(me.role)} />;
+}
 
 export function UserLayout({
   userId,
@@ -15,7 +24,9 @@ export function UserLayout({
         <UserBreadcrumbs userId={userId} />
       </Suspense>
 
-      <UserTabs userId={userId} />
+      <Suspense fallback={<div className="h-10" />}>
+        <UserTabsSection userId={userId} />
+      </Suspense>
 
       <div className="pt-6">{children}</div>
     </section>

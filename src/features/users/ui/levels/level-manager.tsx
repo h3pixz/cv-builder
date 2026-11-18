@@ -3,11 +3,12 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CheckIcon, PlusIcon, Trash2Icon } from "lucide-react";
+import { PlusIcon, Trash2Icon } from "lucide-react";
 import { useForm, useWatch } from "react-hook-form";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/shared/ui/button";
+import { Checkbox } from "@/shared/ui/checkbox";
 import {
   Dialog,
   DialogContent,
@@ -107,22 +108,8 @@ function LevelRow({
   selected: boolean;
   onSelect: () => void;
 }) {
-  const content = (
+  const details = (
     <>
-      {selectionMode && (
-        <span
-          aria-hidden="true"
-          className={cn(
-            "flex size-4 shrink-0 items-center justify-center border",
-            selected
-              ? "border-primary bg-primary text-primary-foreground"
-              : "border-control-border",
-          )}
-        >
-          {selected && <CheckIcon className="size-3" />}
-        </span>
-      )}
-
       <span className="label-xl label-label-secondary min-w-0 truncate">
         {item.name}
       </span>
@@ -139,12 +126,25 @@ function LevelRow({
   const className = cn(
     "flex w-full items-center gap-2 px-2 py-1.5 text-left transition-colors",
     interactive &&
-      "cursor-pointer hover:bg-secondary-hover focus-visible:bg-secondary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/30",
-    selected && "bg-secondary-hover",
+      "cursor-pointer hover:bg-secondary-foreground hover:text-primary-hover focus-visible:bg-secondary-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/30",
+    selected && "bg-secondary-foreground text-primary-hover",
   );
 
   if (!interactive) {
-    return <div className={className}>{content}</div>;
+    return <div className={className}>{details}</div>;
+  }
+
+  if (selectionMode) {
+    return (
+      <Label className={className}>
+        <Checkbox
+          checked={selected}
+          onCheckedChange={() => onSelect()}
+          aria-label={`${selected ? "Deselect" : "Select"} ${item.name}`}
+        />
+        {details}
+      </Label>
+    );
   }
 
   return (
@@ -152,14 +152,9 @@ function LevelRow({
       type="button"
       className={className}
       onClick={onSelect}
-      aria-pressed={selectionMode ? selected : undefined}
-      aria-label={
-        selectionMode
-          ? `${selected ? "Deselect" : "Select"} ${item.name}`
-          : `Update ${item.name}`
-      }
+      aria-label={`Update ${item.name}`}
     >
-      {content}
+      {details}
     </button>
   );
 }
@@ -525,9 +520,7 @@ export function LevelManager({
                 type="submit"
                 variant="primary"
                 disabled={
-                  !addName ||
-                  !addMastery ||
-                  addForm.formState.isSubmitting
+                  !addName || !addMastery || addForm.formState.isSubmitting
                 }
               >
                 Add
@@ -559,9 +552,7 @@ export function LevelManager({
                 id="update-level-name"
                 placeholder={config.nameLabel}
                 options={
-                  editing
-                    ? [{ value: editing.name, label: editing.name }]
-                    : []
+                  editing ? [{ value: editing.name, label: editing.name }] : []
                 }
                 value={editing?.name ?? null}
                 disabled
@@ -610,9 +601,7 @@ export function LevelManager({
               <Button
                 type="submit"
                 variant="primary"
-                disabled={
-                  !updateMastery || updateForm.formState.isSubmitting
-                }
+                disabled={!updateMastery || updateForm.formState.isSubmitting}
               >
                 Save
               </Button>

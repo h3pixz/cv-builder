@@ -45,3 +45,58 @@ export async function getUserCvs(
 
   return data.cvsByUserId;
 }
+
+// -----------------------------------------------------
+// SINGLE CV
+// -----------------------------------------------------
+
+export const GetCvDocument = graphql(`
+  query GetCv($cvId: ID!) {
+    cv(cvId: $cvId) {
+      id
+      created_at
+      name
+      education
+      description
+      user {
+        id
+        email
+        profile {
+          first_name
+          last_name
+          full_name
+        }
+      }
+      skills {
+        name
+        categoryId
+        mastery
+      }
+      languages {
+        name
+        proficiency
+      }
+      projects {
+        id
+        name
+        internal_name
+        description
+        domain
+        start_date
+        end_date
+        environment
+        roles
+        responsibilities
+      }
+    }
+  }
+`);
+
+export async function getCv(
+  cvId: VariablesOf<typeof GetCvDocument>["cvId"],
+  options?: GraphQLRequestOptions,
+) {
+  const data = await protectedRequest(GetCvDocument, { cvId }, options);
+
+  return data.cv;
+}
