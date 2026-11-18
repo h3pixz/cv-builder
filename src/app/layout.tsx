@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Roboto } from "next/font/google";
 import { cn } from "@/lib/utils";
-import { OfflineGuard } from "@/features/errors";
+import { DeviceGuard, OfflineGuard } from "@/features/errors";
 import { THEME_SCRIPT } from "@/shared/config/theme-script";
 import { Toaster } from "@/shared/ui/toast";
 
@@ -26,7 +26,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body>
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
-        <OfflineGuard>{children}</OfflineGuard>
+        <DeviceGuard>
+          <OfflineGuard>{children}</OfflineGuard>
+        </DeviceGuard>
         <Toaster />
       </body>
     </html>
