@@ -74,6 +74,9 @@
 - [x] Подключение: `src/app/error.tsx` (`retry`), `src/app/global-error.tsx` (собственные `html`/`body` + `globals.css` + тема), офлайн-оверлей `OfflineGuard` в root layout (`navigator.onLine` + события `online`/`offline`)
 - [x] Общие требования для No Internet: Light/Dark темы, клавиатура и focus-visible, центрирование, адаптивность
 - [x] Тесты: `useOnlineStatus`, `NoInternetPage`, `OfflineGuard`, `app/error`, `app/global-error`
+- [x] Not Found (404): страница «Hmm…» с общей иллюстрацией `SadMonitorIllustration`, текстом по ТЗ и кнопкой `GO BACK` (`src/features/errors/ui/not-found-page.tsx`), `Button variant="primary"`
+- [x] Подключение Not Found: `src/app/not-found.tsx` (корневой `not-found` ловит несуществующие URL), возврат назад с фолбэком на `/` — `shared/helpers/go-back.ts`
+- [x] Тесты Not Found: `NotFoundPage`, `goBack`, `app/not-found`
 
 ### Мержи
 
@@ -98,10 +101,9 @@
 
 Требования: `docs/TZ.md`, раздел «Страницы ошибок».
 
-- [ ] Not Found (404): иллюстрация, текст, кнопка `GO BACK` (возврат назад)
 - [ ] Device Error: экран при ширине вьюпорта меньше `768px` (включая ресайз)
-- [ ] Общие требования для Not Found и Device Error: Light/Dark темы, клавиатура и focus-visible, центрирование, адаптивность
-- [ ] Тесты оставшихся страниц ошибок (Vitest + RTL)
+- [ ] Общие требования для Device Error: Light/Dark темы, клавиатура и focus-visible, центрирование, адаптивность
+- [ ] Тесты Device Error (Vitest + RTL)
 
 ### Резюме
 
