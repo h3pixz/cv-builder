@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Roboto } from "next/font/google";
 import { cn } from "@/lib/utils";
+import { OfflineGuard } from "@/features/errors";
+import { THEME_SCRIPT } from "@/shared/config/theme-script";
 import { Toaster } from "@/shared/ui/toast";
 
 const roboto = Roboto({
@@ -15,17 +17,6 @@ export const metadata: Metadata = {
   description: "Конструктор резюме",
 };
 
-const themeScript = `
-(function () {
-  try {
-    var stored = localStorage.getItem("theme");
-    var prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    var isDark = stored === "dark" || (stored !== "light" && prefersDark);
-    document.documentElement.classList.toggle("dark", isDark);
-  } catch (error) {}
-})();
-`;
-
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
@@ -34,8 +25,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       suppressHydrationWarning
     >
       <body>
-        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
-        {children}
+        <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
+        <OfflineGuard>{children}</OfflineGuard>
         <Toaster />
       </body>
     </html>
