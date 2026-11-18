@@ -34,10 +34,15 @@
 - `api/users.queries.ts` — запросы (`getUsers`, `getUser`, `getCurrentProfile`, справочники);
 - `api/users.mutations.ts` — CRUD пользователей, профиля, навыков и языков;
 - `api/raw-request.ts` — сырой `fetch`-транспорт: логин, refresh и `authedRequest` с автообновлением токена;
-- `ui/` — `users-page`, `users-table`, `users-toolbar`, `user-layout`, `user-breadcrumbs`, `user-tabs`, `profile/user-profile-page`;
+- `api/profile.queries.ts` — `getCurrentUser` (id/email/role из claims access-токена: `me.id` — это id профиля, а не пользователя), `getCurrentUserRole`, навыки и языки профиля;
+- `api/profile.mutations.ts` — мутации профиля, аватара и отправки письма подтверждения;
+- `api/profile.actions.ts` — Server Actions профиля (`updateProfileAction`, `uploadAvatarAction`, `sendVerificationEmailAction`) с проверкой прав;
+- `api/run-authed.ts` — `runAuthed`: выполнение операции с access-токеном и refresh-повтором;
+- `model/` — `profile-permissions` (кто может править профиль/аватар/подтверждать email), `profile-schema` (zod), `avatar` (типы и лимит 5MB), `action-result`;
+- `ui/` — `users-page`, `users-table`, `users-toolbar`, `users-pagination`, `user-layout`, `user-breadcrumbs`, `user-tabs`, `profile/user-profile-page`, `profile/user-profile-form`, `profile/avatar-upload`, `profile/profile-skeleton`;
 - `index.ts` — публичный экспорт страницы и layout-а.
 
-Все модули `api/` помечены `import "server-only"` — их нельзя импортировать из клиентских компонентов. `profile/avatar-upload.tsx` и `profile/user-profile-form.tsx` пока пустые заготовки.
+Все модули `api/` помечены `import "server-only"` — их нельзя импортировать из клиентских компонентов. Доступ к профилю: Employee правит только свой профиль и аватар и может подтвердить только свой email; Admin правит любой профиль и аватар, но подтверждение email — только владелец (`model/profile-permissions.ts`).
 
 `src/features/auth/` — `ui/sign-in-page`, `ui/sign-up-page`, формы и `AuthTabs` в `ui/components`.
 

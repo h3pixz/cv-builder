@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { isTokenExpired } from "./jwt";
+import { getTokenSubject, isTokenExpired } from "./jwt";
 
 function encode(value: object) {
   return Buffer.from(JSON.stringify(value)).toString("base64url");
@@ -12,6 +12,20 @@ function token(payload: object) {
 function inSeconds(seconds: number) {
   return Math.floor(Date.now() / 1000) + seconds;
 }
+
+describe("getTokenSubject", () => {
+  it("returns the user id from the payload", () => {
+    expect(getTokenSubject(token({ sub: "user-1" }))).toBe("user-1");
+  });
+
+  it("returns null when there is no subject", () => {
+    expect(getTokenSubject(token({ exp: inSeconds(60) }))).toBeNull();
+  });
+
+  it("returns null for a malformed token", () => {
+    expect(getTokenSubject("not-a-jwt")).toBeNull();
+  });
+});
 
 describe("isTokenExpired", () => {
   it("returns false for a token that expires later", () => {

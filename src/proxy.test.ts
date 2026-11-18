@@ -4,7 +4,7 @@ import { config, proxy } from "./proxy";
 
 const { gqlRequest } = vi.hoisted(() => ({ gqlRequest: vi.fn() }));
 
-vi.mock("@/shared/api/graphql", () => ({ gqlRequest }));
+vi.mock("@/shared/api/graphql/graphql", () => ({ gqlRequest }));
 
 const freshTokens = {
   access_token: "access-2",
@@ -122,8 +122,6 @@ describe("private routes", () => {
     expect(gqlRequest).toHaveBeenCalledOnce();
   });
 
-  // Regression: without request.cookies.set + NextResponse.next({ request }),
-  // Server Components in this same request would still read the old, expired token.
   it("forwards the renewed tokens to the current request", async () => {
     gqlRequest.mockResolvedValueOnce({ updateToken: freshTokens });
 

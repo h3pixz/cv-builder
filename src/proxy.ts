@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { gqlRequest } from "@/shared/api/graphql";
-import { UpdateTokenDocument } from "@/shared/api/graphql/documents";
-import { isTokenExpired } from "@/shared/api/jwt";
+import { gqlRequest } from "@/shared/api/graphql/graphql";
+import { UpdateTokenDocument } from "@/shared/api/documents/documents";
+import { isTokenExpired } from "@/shared/api/jwt/jwt";
 import {
   ACCESS_TOKEN_COOKIE,
   ACCESS_TOKEN_MAX_AGE,
@@ -9,7 +9,7 @@ import {
   REFRESH_TOKEN_COOKIE,
   REFRESH_TOKEN_MAX_AGE,
   sessionCookieOptions,
-} from "@/shared/api/session-cookies";
+} from "@/shared/api/session-cookies/session-cookies";
 import { GUEST_ROUTES, HOME_ROUTE, SIGN_IN_ROUTE } from "@/shared/config";
 
 type Tokens = { access_token: string; refresh_token: string };

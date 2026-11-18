@@ -69,6 +69,28 @@ Row actions menu:
 ```
 The file has `"use client"`, so a server component can render it, but handlers (`onClick`) must come from a client component.
 
+## dialog
+Base UI Dialog wrappers in `shared/ui/dialog`. `Dialog` (Root, controlled via `open` / `onOpenChange`), `DialogTrigger`, `DialogPortal`, `DialogBackdrop`, `DialogViewport`, `DialogContent` (portal + backdrop + viewport + popup), `DialogHeader`, `DialogTitle`, `DialogDescription`, `DialogFooter`, `DialogClose`.
+- `DialogContent`: `className`, all `Dialog.Popup` props. Includes a top-right close button and centers the popup (`max-w-lg` by default).
+- `Dialog` is modal by default (focus trap, Escape closes). Popup content unmounts when closed, so form state inside `DialogContent` resets on every open.
+```tsx
+<Dialog open={open} onOpenChange={onOpenChange}>
+  <DialogContent>
+    <DialogHeader>
+      <DialogTitle>Create user</DialogTitle>
+      <DialogDescription>...</DialogDescription>
+    </DialogHeader>
+    <form onSubmit={...}>
+      ...
+      <DialogFooter>
+        <Button variant="secondary" type="button" onClick={() => onOpenChange(false)}>Cancel</Button>
+        <Button variant="primary" type="submit">Create</Button>
+      </DialogFooter>
+    </form>
+  </DialogContent>
+</Dialog>
+```
+
 ## table
 Plain styled table primitives: `Table` (wraps in a scroll container), `TableHeader`, `TableBody`, `TableFooter`, `TableRow`, `TableHead`, `TableCell`, `TableCaption`. No sorting, selection or pagination built in. For a sortable column (e.g. Department with the arrow) build a client header button that updates `?sort_by=&sort_order=` and pass those to `SearchPaginationInput`.
 

@@ -1,15 +1,15 @@
 import "server-only";
 
 import { cookies } from "next/headers";
-import { gqlRequest } from "./graphql/client";
-import { UpdateTokenDocument } from "./graphql/documents";
+import { gqlRequest } from "../graphql/graphql";
+import { UpdateTokenDocument } from "../documents/documents";
 import {
   ACCESS_TOKEN_COOKIE,
   ACCESS_TOKEN_MAX_AGE,
   REFRESH_TOKEN_COOKIE,
   REFRESH_TOKEN_MAX_AGE,
   sessionCookieOptions,
-} from "./session-cookies";
+} from "../session-cookies/session-cookies";
 
 export type SessionTokens = {
   access_token: string;

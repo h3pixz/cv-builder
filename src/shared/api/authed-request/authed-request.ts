@@ -2,9 +2,9 @@ import { redirect } from "next/navigation";
 import type { TypedDocumentNode } from "@graphql-typed-document-node/core";
 import type { Variables } from "graphql-request";
 import { SIGN_IN_ROUTE } from "@/shared/config";
-import { gqlRequest, type GraphQLRequestOptions } from "./client";
-import { isUnauthorizedError } from "./errors";
-import { clearSession, getSession, refreshSession } from "../session";
+import { gqlRequest, type GraphQLRequestOptions } from "../graphql/graphql";
+import { isUnauthorizedError } from "../errors/errors";
+import { clearSession, getSession, refreshSession } from "../session/session";
 
 type AuthedRequestOptions = Omit<GraphQLRequestOptions, "accessToken">;
 

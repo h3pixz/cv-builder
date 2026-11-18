@@ -1,5 +1,5 @@
 import { getSession } from "@/shared/api";
-import { getUserLanguages } from "../../api/users.queries";
+import { getUserLanguages } from "../../api/profile.queries";
 import { proficiencyLevel } from "../../model/levels";
 import { LevelActions } from "../level-actions";
 import { Level } from "@/shared/ui/level";

@@ -1,11 +1,11 @@
-"use server"
+"use server";
 
-import { redirect } from "next/navigation"
-import { gqlRequest } from "@/shared/api/graphql"
-import { saveSession } from "@/shared/api/session"
-import { toFormError, type FormActionResult } from "./action-result"
-import { SignupMutation } from "./documents"
-import { getRequestOrigin } from "./request-origin"
+import { redirect } from "next/navigation";
+import { gqlRequest } from "@/shared/api/graphql/graphql";
+import { saveSession } from "@/shared/api/session/session";
+import { toFormError, type FormActionResult } from "./action-result";
+import { SignupMutation } from "./documents";
+import { getRequestOrigin } from "@/shared/api/request-origin";
 
 export async function signup(
   email: string,
@@ -13,17 +13,17 @@ export async function signup(
   confirmPassword: string,
 ): Promise<FormActionResult> {
   try {
-    const origin = await getRequestOrigin()
+    const origin = await getRequestOrigin();
     const data = await gqlRequest(
       SignupMutation,
       { auth: { email, password, confirmPassword } },
       { origin },
-    )
+    );
 
-    await saveSession(data.signup)
+    await saveSession(data.signup);
   } catch (error) {
-    return toFormError(error)
+    return toFormError(error);
   }
 
-  redirect("/verify-email")
+  redirect("/verify-email");
 }

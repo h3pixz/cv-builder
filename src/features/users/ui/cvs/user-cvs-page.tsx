@@ -2,7 +2,8 @@
 import { Suspense } from "react";
 
 import { getSession } from "@/shared/api";
-import { getUser, getUserCvs } from "../../api/users.queries";
+import { getUserCvs } from "../../api/cvs.queries";
+import { getUser } from "../../api/users.queries";
 import { CvsTable } from "./cvs-table";
 import { CvsToolbar } from "./cvs-toolbar";
 

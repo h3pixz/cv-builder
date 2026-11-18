@@ -24,7 +24,7 @@ npm install
 Создайте `.env` в корне:
 
 ```sh
-VITE_GRAPHQL_URL="http://localhost:3001/api/graphql"
+GRAPHQL_URL="http://localhost:3001/api/graphql"
 ```
 
 ```bash
@@ -35,17 +35,17 @@ npm run dev
 
 ## Скрипты
 
-| Команда | Что делает |
-|---|---|
-| `npm run dev` | dev-сервер Next.js |
-| `npm run build` / `npm start` | production-сборка и запуск |
-| `npm run lint` | ESLint |
-| `npm run typecheck` | `tsc --noEmit` |
-| `npm test` | unit-тесты (Vitest, один прогон) |
-| `npm run test:watch` | unit-тесты в watch-режиме |
-| `npm run test:coverage` | покрытие (v8) |
-| `npm run codegen` | генерация типов и документов из `schema.graphql` |
-| `npm run codegen:watch` | codegen в watch-режиме |
+| Команда                       | Что делает                                       |
+| ----------------------------- | ------------------------------------------------ |
+| `npm run dev`                 | dev-сервер Next.js                               |
+| `npm run build` / `npm start` | production-сборка и запуск                       |
+| `npm run lint`                | ESLint                                           |
+| `npm run typecheck`           | `tsc --noEmit`                                   |
+| `npm test`                    | unit-тесты (Vitest, один прогон)                 |
+| `npm run test:watch`          | unit-тесты в watch-режиме                        |
+| `npm run test:coverage`       | покрытие (v8)                                    |
+| `npm run codegen`             | генерация типов и документов из `schema.graphql` |
+| `npm run codegen:watch`       | codegen в watch-режиме                           |
 
 Обновить схему с запущенного бэкенда:
 

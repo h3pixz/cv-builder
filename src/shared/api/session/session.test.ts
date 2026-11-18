@@ -5,7 +5,7 @@ import {
   refreshSession,
   saveSession,
 } from "./session";
-import { UpdateTokenDocument } from "./graphql/generated/graphql";
+import { UpdateTokenDocument } from "../graphql/generated/graphql";
 
 const { cookieStore, gqlRequest } = vi.hoisted(() => {
   const store = new Map<string, string>();
@@ -28,7 +28,7 @@ const { cookieStore, gqlRequest } = vi.hoisted(() => {
 });
 
 vi.mock("next/headers", () => ({ cookies: async () => cookieStore }));
-vi.mock("./graphql/client", () => ({ gqlRequest }));
+vi.mock("../graphql/graphql", () => ({ gqlRequest }));
 
 const tokens = {
   access_token: "access-1",

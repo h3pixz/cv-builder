@@ -1,11 +1,14 @@
 import "server-only";
 
+import { cache } from "react";
 import type { VariablesOf } from "@graphql-typed-document-node/core";
 
-import { type GraphQLRequestOptions } from "@/shared/api";
+import { type GraphQLRequestOptions, protectedRequest } from "@/shared/api";
 import { graphql } from "@/shared/api/graphql/generated/gql";
 
-import { protectedRequest } from "@/shared/api";
+// -----------------------------------------------------
+// USERS LIST
+// -----------------------------------------------------
 
 export const GetUsersDocument = graphql(`
   query GetUsers($params: SearchPaginationInput) {
@@ -50,7 +53,7 @@ export async function getUsers(
 }
 
 // -----------------------------------------------------
-// SINGLE USER / PROFILE PAGE
+// SINGLE USER
 // -----------------------------------------------------
 
 export const GetUserDocument = graphql(`
@@ -91,232 +94,11 @@ export async function getUser(
   return data.user;
 }
 
-export const GetCurrentProfileDocument = graphql(`
-  query GetCurrentProfile {
-    me {
-      id
-      created_at
-      first_name
-      last_name
-      full_name
-      avatar
-      email
-      is_verified
-      role
-      skills {
-        name
-        categoryId
-        mastery
-      }
-      languages {
-        name
-        proficiency
-      }
-    }
-  }
-`);
-
-export async function getCurrentProfile(options?: GraphQLRequestOptions) {
-  const data = await protectedRequest(
-    GetCurrentProfileDocument,
-    undefined,
-    options,
-  );
-
-  return data.me;
-}
-
 // -----------------------------------------------------
-// USER SKILLS PAGE
+// REFERENCE DATA (FORM OPTIONS)
 // -----------------------------------------------------
 
-export const GetUserSkillsDocument = graphql(`
-  query GetUserSkills($userId: ID!) {
-    profile(userId: $userId) {
-      id
-      skills {
-        name
-        categoryId
-        mastery
-      }
-    }
-  }
-`);
-
-export async function getUserSkills(
-  userId: VariablesOf<typeof GetUserSkillsDocument>["userId"],
-  options?: GraphQLRequestOptions,
-) {
-  const data = await protectedRequest(
-    GetUserSkillsDocument,
-    { userId },
-    options,
-  );
-
-  return data.profile.skills;
-}
-
-// -----------------------------------------------------
-// USER LANGUAGES PAGE
-// -----------------------------------------------------
-
-export const GetUserLanguagesDocument = graphql(`
-  query GetUserLanguages($userId: ID!) {
-    profile(userId: $userId) {
-      id
-      languages {
-        name
-        proficiency
-      }
-    }
-  }
-`);
-
-export async function getUserLanguages(
-  userId: VariablesOf<typeof GetUserLanguagesDocument>["userId"],
-  options?: GraphQLRequestOptions,
-) {
-  const data = await protectedRequest(
-    GetUserLanguagesDocument,
-    { userId },
-    options,
-  );
-
-  return data.profile.languages;
-}
-
-// -----------------------------------------------------
-// USER CVS PAGE
-// -----------------------------------------------------
-
-export const GetUserCvsDocument = graphql(`
-  query GetUserCvs($userId: ID!, $params: SearchPaginationInput) {
-    cvsByUserId(userId: $userId, params: $params) {
-      items {
-        id
-        created_at
-        name
-        education
-        description
-        skills {
-          name
-          categoryId
-          mastery
-        }
-        languages {
-          name
-          proficiency
-        }
-      }
-      total
-      page
-      limit
-      total_pages
-    }
-  }
-`);
-
-export async function getUserCvs(
-  userId: VariablesOf<typeof GetUserCvsDocument>["userId"],
-  params?: VariablesOf<typeof GetUserCvsDocument>["params"],
-  options?: GraphQLRequestOptions,
-) {
-  const data = await protectedRequest(
-    GetUserCvsDocument,
-    { userId, params },
-    options,
-  );
-
-  return data.cvsByUserId;
-}
-
-// -----------------------------------------------------
-// SKILLS CATALOG
-// Data for adding skills to a user profile
-// -----------------------------------------------------
-
-export const GetSkillOptionsDocument = graphql(`
-  query GetSkillOptions($params: SearchPaginationInput) {
-    skillCategories {
-      id
-      name
-      order
-      parent {
-        id
-        name
-      }
-      children {
-        id
-        name
-        order
-      }
-    }
-
-    skills(params: $params) {
-      items {
-        id
-        name
-        category_name
-        category_parent_name
-        category {
-          id
-          name
-        }
-      }
-      total
-      page
-      limit
-      total_pages
-    }
-  }
-`);
-
-// Returns the whole result: both `skillCategories` and `skills` are needed.
-export async function getSkillOptions(
-  params?: VariablesOf<typeof GetSkillOptionsDocument>["params"],
-  options?: GraphQLRequestOptions,
-) {
-  return protectedRequest(GetSkillOptionsDocument, { params }, options);
-}
-
-// -----------------------------------------------------
-// LANGUAGES CATALOG
-// Data for adding languages to a user profile
-// -----------------------------------------------------
-
-export const GetLanguageOptionsDocument = graphql(`
-  query GetLanguageOptions($params: SearchPaginationInput) {
-    languages(params: $params) {
-      items {
-        id
-        iso2
-        name
-        native_name
-      }
-      total
-      page
-      limit
-      total_pages
-    }
-  }
-`);
-
-export async function getLanguageOptions(
-  params?: VariablesOf<typeof GetLanguageOptionsDocument>["params"],
-  options?: GraphQLRequestOptions,
-) {
-  const data = await protectedRequest(
-    GetLanguageOptionsDocument,
-    { params },
-    options,
-  );
-
-  return data.languages;
-}
-
-// -----------------------------------------------------
-// DEPARTMENT OPTIONS
-// -----------------------------------------------------
+const OPTIONS_LIMIT = 100;
 
 export const GetDepartmentOptionsDocument = graphql(`
   query GetDepartmentOptions($params: SearchPaginationInput) {
@@ -333,22 +115,13 @@ export const GetDepartmentOptionsDocument = graphql(`
   }
 `);
 
-export async function getDepartmentOptions(
-  params?: VariablesOf<typeof GetDepartmentOptionsDocument>["params"],
-  options?: GraphQLRequestOptions,
-) {
-  const data = await protectedRequest(
-    GetDepartmentOptionsDocument,
-    { params },
-    options,
-  );
+export const getDepartmentOptions = cache(async () => {
+  const data = await protectedRequest(GetDepartmentOptionsDocument, {
+    params: { page: 1, limit: OPTIONS_LIMIT },
+  });
 
-  return data.departments;
-}
-
-// -----------------------------------------------------
-// POSITION OPTIONS
-// -----------------------------------------------------
+  return data.departments.items;
+});
 
 export const GetPositionOptionsDocument = graphql(`
   query GetPositionOptions($params: SearchPaginationInput) {
@@ -365,15 +138,10 @@ export const GetPositionOptionsDocument = graphql(`
   }
 `);
 
-export async function getPositionOptions(
-  params?: VariablesOf<typeof GetPositionOptionsDocument>["params"],
-  options?: GraphQLRequestOptions,
-) {
-  const data = await protectedRequest(
-    GetPositionOptionsDocument,
-    { params },
-    options,
-  );
+export const getPositionOptions = cache(async () => {
+  const data = await protectedRequest(GetPositionOptionsDocument, {
+    params: { page: 1, limit: OPTIONS_LIMIT },
+  });
 
-  return data.positions;
-}
+  return data.positions.items;
+});

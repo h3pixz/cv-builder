@@ -4,8 +4,8 @@ import { redirect } from "next/navigation";
 import { ClientError } from "graphql-request";
 import type { TypedDocumentNode } from "@graphql-typed-document-node/core";
 
-import { getSession } from "./session";
-import { gqlRequest, type GraphQLRequestOptions } from "./index";
+import { getSession } from "../session/session";
+import { gqlRequest, type GraphQLRequestOptions } from "../graphql/graphql";
 
 function isUnauthenticated(error: unknown): boolean {
   if (!(error instanceof ClientError)) return false;

@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import { redirect } from "next/navigation";
 
-import { getSession } from "@/shared/api/session";
+import { getSession } from "@/shared/api";
 import { Sidebar } from "@/widgets/sidebar";
 
 async function AuthGate({ children }: { children: React.ReactNode }) {

@@ -13,8 +13,12 @@ const { gqlRequest, getSession, refreshSession, clearSession, redirect } =
     }),
   }));
 
-vi.mock("./client", () => ({ gqlRequest }));
-vi.mock("../session", () => ({ getSession, refreshSession, clearSession }));
+vi.mock("../graphql/graphql", () => ({ gqlRequest }));
+vi.mock("../session/session", () => ({
+  getSession,
+  refreshSession,
+  clearSession,
+}));
 vi.mock("next/navigation", () => ({ redirect }));
 
 const document = {} as TypedDocumentNode<
