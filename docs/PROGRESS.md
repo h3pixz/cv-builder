@@ -68,6 +68,13 @@
 - [x] Плейсхолдеры и доступные лейблы полей приведены к названиям из ТЗ (`Confirm Password`, `New Password`)
 - [x] Локальный патч учебного бэкенда (`C:\projects\cv-backend`, в upstream не пушился): `forgotPassword` → `accountNotFound`, `verifyMail` → проверка TTL 2 часа и `otpExpired`, `SignupDto` → пароль от 6 символов. При пересборке бэкенда из чистого upstream патч нужно накатить повторно (см. `docs/BACKEND.md`)
 
+### Страницы ошибок
+
+- [x] No Internet: страница «Oops» с иллюстрацией и кнопкой `RETRY` (`src/features/errors/ui/no-internet-page.tsx`), тексты по ТЗ, `Button variant="primary"`
+- [x] Подключение: `src/app/error.tsx` (`retry`), `src/app/global-error.tsx` (собственные `html`/`body` + `globals.css` + тема), офлайн-оверлей `OfflineGuard` в root layout (`navigator.onLine` + события `online`/`offline`)
+- [x] Общие требования для No Internet: Light/Dark темы, клавиатура и focus-visible, центрирование, адаптивность
+- [x] Тесты: `useOnlineStatus`, `NoInternetPage`, `OfflineGuard`, `app/error`, `app/global-error`
+
 ### Мержи
 
 - [x] PR #1 `feat/auth-sign-in` → `dev` смержен 2026-11-16 (rebase, `8a6e6f3`): авторизация, сессия, proxy, codegen. Проверки перед мержем: `typecheck`, 84 теста, `build`, `codegen` без дрейфа, lint без ошибок ([PR #1](https://github.com/h3pixz/cv-builder/pull/1))
@@ -86,6 +93,15 @@
 ### Авторизация — остатки
 
 - [ ] Ручной переключатель темы (сейчас тема следует системной настройке)
+
+### Страницы ошибок
+
+Требования: `docs/TZ.md`, раздел «Страницы ошибок».
+
+- [ ] Not Found (404): иллюстрация, текст, кнопка `GO BACK` (возврат назад)
+- [ ] Device Error: экран при ширине вьюпорта меньше `768px` (включая ресайз)
+- [ ] Общие требования для Not Found и Device Error: Light/Dark темы, клавиатура и focus-visible, центрирование, адаптивность
+- [ ] Тесты оставшихся страниц ошибок (Vitest + RTL)
 
 ### Резюме
 
