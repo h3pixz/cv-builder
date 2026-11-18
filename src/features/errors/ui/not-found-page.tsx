@@ -12,7 +12,7 @@ export function NotFoundPage({ onGoBack }: NotFoundPageProps) {
     <main className="flex min-h-dvh w-full flex-col items-center justify-center bg-background px-6 py-10 text-center">
       <SadMonitorIllustration className="mb-6 sm:mb-7" />
 
-      <h1 className="mb-4 text-[34px] font-normal tracking-tight text-foreground">
+      <h1 className="mb-4 text-4xl font-normal tracking-tight text-foreground">
         Hmm…
       </h1>
 
