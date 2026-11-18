@@ -16,16 +16,21 @@ export function NoInternetPage({
     <main className="flex min-h-dvh w-full flex-col items-center justify-center bg-background px-6 py-10 text-center">
       <SadMonitorIllustration className="mb-7" />
 
-      <h1 className="mb-4 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
+      <h1 className="mb-4 text-[34px] font-normal tracking-tight text-foreground">
         Oops
       </h1>
 
-      <p className="mb-8 max-w-sm text-sm leading-relaxed text-text-secondary sm:max-w-md sm:text-base">
+      <p className="mb-8 max-w-sm text-base leading-relaxed text-text-secondary sm:max-w-md">
         Something went wrong. We’re already working on fixing it. Please try
         again.
       </p>
 
-      <Button variant="primary" onClick={onRetry} autoFocus={autoFocusRetry}>
+      <Button
+        variant="primary"
+        className="h-12 w-[220px] text-center text-sm leading-[24.5px] font-medium tracking-[0.4px]"
+        onClick={onRetry}
+        autoFocus={autoFocusRetry}
+      >
         RETRY
       </Button>
     </main>
