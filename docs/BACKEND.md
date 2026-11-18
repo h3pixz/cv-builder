@@ -21,13 +21,20 @@
 
 ## Переменная окружения фронтенда
 
-README бэкенда написан под Vite (`VITE_GRAPHQL_URL`). У нас Next.js и запросы из Server Components / Server Actions, поэтому нужна серверная переменная, например:
+Фронтенд читает серверную переменную `GRAPHQL_URL` (имя унаследовано от Vite, несмотря на то что проект на Next.js):
 
 ```sh
 GRAPHQL_URL="http://localhost:3001/api/graphql"
 ```
 
-`NEXT_PUBLIC_` не нужен, пока весь доступ к API идёт с сервера.
+Её читают `src/shared/api/graphql.ts`, `src/features/users/api/raw-request.ts` и `scripts/export-schema.mjs`. `NEXT_PUBLIC_` не нужен, пока весь доступ к API идёт с сервера.
+
+Обновить `schema.graphql` и `introspectionSchema.full.json` с запущенного бэкенда:
+
+```sh
+node scripts/export-schema.mjs
+npm run codegen
+```
 
 ## Аутентификация
 
@@ -44,11 +51,29 @@ GRAPHQL_URL="http://localhost:3001/api/graphql"
 
 ```graphql
 mutation Login($auth: AuthInput!) {
-  login(auth: $auth) { user { id email is_verified role } access_token refresh_token }
+  login(auth: $auth) {
+    user {
+      id
+      email
+      is_verified
+      role
+    }
+    access_token
+    refresh_token
+  }
 }
 
 mutation Signup($auth: SignupInput!) {
-  signup(auth: $auth) { user { id email is_verified role } access_token refresh_token }
+  signup(auth: $auth) {
+    user {
+      id
+      email
+      is_verified
+      role
+    }
+    access_token
+    refresh_token
+  }
 }
 
 mutation ForgotPassword($auth: ForgotPasswordInput!) {
@@ -56,11 +81,14 @@ mutation ForgotPassword($auth: ForgotPasswordInput!) {
 }
 
 mutation ResetPassword($auth: ResetPasswordInput!) {
-  resetPassword(auth: $auth)   # Authorization: Bearer <токен из ссылки в письме>
+  resetPassword(auth: $auth) # Authorization: Bearer <токен из ссылки в письме>
 }
 
 mutation UpdateToken {
-  updateToken { access_token refresh_token }   # Authorization: Bearer <refresh_token>
+  updateToken {
+    access_token
+    refresh_token
+  } # Authorization: Bearer <refresh_token>
 }
 ```
 
@@ -77,7 +105,7 @@ mutation UpdateToken {
 
 ```graphql
 mutation VerifyMail($mail: VerifyMailInput!) {
-  verifyMail(mail: $mail)      # Authorization: Bearer <access_token>
+  verifyMail(mail: $mail) # Authorization: Bearer <access_token>
 }
 
 mutation SendVerification($email: String!) {
@@ -101,7 +129,16 @@ mutation SendVerification($email: String!) {
 
 ```graphql
 query Me {
-  me { id first_name last_name full_name avatar email is_verified role }
+  me {
+    id
+    first_name
+    last_name
+    full_name
+    avatar
+    email
+    is_verified
+    role
+  }
 }
 ```
 
@@ -113,28 +150,31 @@ Apollo отдаёт `errors[].message` — это код на английско
 
 Коды, которые встретятся на страницах авторизации:
 
-| Код | Где | Смысл |
-|---|---|---|
-| `invalidCredentials` | login | Неверная почта или пароль |
-| `userAlreadyExists` | signup | Почта уже занята |
-| `confirmPasswordMismatch` | signup, resetPassword | Пароли не совпадают |
-| `passwordTooShort`, `confirmPasswordTooShort` | signup, resetPassword | Слишком короткий пароль |
-| `passwordIsRequired` | login | Пустой пароль |
-| `invalidEmail` | везде | Некорректная почта |
-| `otpIsRequired`, `shouldBe6Digits` | verifyMail | Неверный формат OTP |
-| `mailNotFound` | verifyMail | Неверный OTP |
-| `otpExpired` | verifyMail | Срок действия OTP истёк (2 часа), код удалён |
-| `accountNotFound` | forgotPassword | Нет аккаунта с такой почтой |
-| `actionExpired` | resetPassword | Ссылка сброса истекла |
-| `failedToSendEmail` | signup, forgotPassword | Не удалось отправить письмо |
-| `unauthorized` | любые защищённые операции | Нет/просрочен access-токен |
-| `invalidRefreshToken` | updateToken | Нужен повторный вход |
-| `insufficientPermissions` | админские операции | Не хватает роли |
+| Код                                           | Где                       | Смысл                                        |
+| --------------------------------------------- | ------------------------- | -------------------------------------------- |
+| `invalidCredentials`                          | login                     | Неверная почта или пароль                    |
+| `userAlreadyExists`                           | signup                    | Почта уже занята                             |
+| `confirmPasswordMismatch`                     | signup, resetPassword     | Пароли не совпадают                          |
+| `passwordTooShort`, `confirmPasswordTooShort` | signup, resetPassword     | Слишком короткий пароль                      |
+| `passwordIsRequired`                          | login                     | Пустой пароль                                |
+| `invalidEmail`                                | везде                     | Некорректная почта                           |
+| `otpIsRequired`, `shouldBe6Digits`            | verifyMail                | Неверный формат OTP                          |
+| `mailNotFound`                                | verifyMail                | Неверный OTP                                 |
+| `otpExpired`                                  | verifyMail                | Срок действия OTP истёк (2 часа), код удалён |
+| `accountNotFound`                             | forgotPassword            | Нет аккаунта с такой почтой                  |
+| `actionExpired`                               | resetPassword             | Ссылка сброса истекла                        |
+| `failedToSendEmail`                           | signup, forgotPassword    | Не удалось отправить письмо                  |
+| `unauthorized`                                | любые защищённые операции | Нет/просрочен access-токен                   |
+| `invalidRefreshToken`                         | updateToken               | Нужен повторный вход                         |
+| `insufficientPermissions`                     | админские операции        | Не хватает роли                              |
 
 ## Пользователи и роли
 
 ```graphql
-enum UserRole { Employee Admin }
+enum UserRole {
+  Employee
+  Admin
+}
 
 type User {
   id: ID!
@@ -153,26 +193,33 @@ type User {
 
 ## Модули API
 
-| Модуль | Что даёт |
-|---|---|
-| `auth` | login, signup, forgotPassword, resetPassword, updateToken |
-| `users` | `users` (пагинация), `user(id)`, changePassword, CRUD пользователей (admin) |
-| `profile` | `me`, `profile(userId)`, updateProfile, uploadAvatar/deleteAvatar |
-| `cvs` | CRUD резюме, `cvs`, `cvsByUserId`, `cv(id)`; PDF-экспорт |
-| `cvs` / `pdf` | `exportPdf({ html, margin })` → base64-строка PDF |
-| `cv_skills`, `cv_projects` | навыки и проекты внутри резюме |
-| `departments`, `positions` | справочники |
-| `languages`, `skills`, `skill_categories`, `projects` | справочники/CRUD |
-| `mail` | verifyMail, sendVerification |
-| `cloud` | загрузка аватарок в Cloudinary (внутренний модуль) |
+| Модуль                                                | Что даёт                                                                    |
+| ----------------------------------------------------- | --------------------------------------------------------------------------- |
+| `auth`                                                | login, signup, forgotPassword, resetPassword, updateToken                   |
+| `users`                                               | `users` (пагинация), `user(id)`, changePassword, CRUD пользователей (admin) |
+| `profile`                                             | `me`, `profile(userId)`, updateProfile, uploadAvatar/deleteAvatar           |
+| `cvs`                                                 | CRUD резюме, `cvs`, `cvsByUserId`, `cv(id)`; PDF-экспорт                    |
+| `cvs` / `pdf`                                         | `exportPdf({ html, margin })` → base64-строка PDF                           |
+| `cv_skills`, `cv_projects`                            | навыки и проекты внутри резюме                                              |
+| `departments`, `positions`                            | справочники                                                                 |
+| `languages`, `skills`, `skill_categories`, `projects` | справочники/CRUD                                                            |
+| `mail`                                                | verifyMail, sendVerification                                                |
+| `cloud`                                               | загрузка аватарок в Cloudinary (внутренний модуль)                          |
 
 Схема: все `src/**/*.graphql` в репозитории бэкенда; единого `schema.graphql` нет — удобнее всего смотреть через Playground/introspection.
 
-## Что это значит для страницы авторизации
+## Что уже есть во фронтенде
 
-Фронтенду нужны маршруты, на которые бэкенд ссылается из писем:
+- `src/shared/api/session.ts` — сессия в httpOnly-cookie `access_token` / `refresh_token` (10 минут / 7 дней), функции `getSession`, `saveSession`, `clearSession`, `refreshSession`.
+- `src/features/users/api/raw-request.ts` — `loginRequest`, `refreshRequest` и `authedRequest` с автоматическим обновлением access-токена и повтором запроса.
+- `src/app/(platform)/layout.tsx` — `AuthGate`: при отсутствии сессии редиректит на `/login`.
 
+## Что ещё нужно реализовать
+
+Маршруты, на которые бэкенд ссылается из писем:
+
+- `/login` — вход (`login`, затем `saveSession`).
 - `/verify-email` — ввод 6-значного OTP; доступен только с валидным access-токеном (сохранить после `signup`).
 - `/reset-password?token=...` — новый пароль, токен из query уходит в `Authorization`.
 
-Рекомендуемая схема сессии: токены в httpOnly cookie, `updateToken` на сервере при истечении access-токена (через ~10 минут), middleware для защиты редактора. Подробный план по слоям FSD — в обсуждении задачи.
+Все три маршрута пока отсутствуют. Также нет middleware для защиты редактора — сейчас проверка сессии выполняется в layout route group `(platform)`.

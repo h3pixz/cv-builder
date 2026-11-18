@@ -1,8 +1,8 @@
 "use server"
 
 import { redirect } from "next/navigation"
-import { gqlRequest } from "@/shared/api/graphql"
-import { saveSession } from "@/shared/api/session"
+import { gqlRequest } from "@/shared/api/graphql/graphql"
+import { saveSession } from "@/shared/api/session/session"
 import { toFormError, type FormActionResult } from "./action-result"
 import { LoginMutation, ResetPasswordMutation } from "./documents"
 import { decodeTokenEmail } from "./token-payload"

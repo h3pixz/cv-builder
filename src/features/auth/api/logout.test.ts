@@ -6,7 +6,7 @@ const { clearSession, redirect } = vi.hoisted(() => ({
   redirect: vi.fn(),
 }));
 
-vi.mock("@/shared/api/session", () => ({ clearSession }));
+vi.mock("@/shared/api", () => ({ clearSession }));
 vi.mock("next/navigation", () => ({ redirect }));
 
 beforeEach(() => {

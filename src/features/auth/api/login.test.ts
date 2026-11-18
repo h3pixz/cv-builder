@@ -9,8 +9,8 @@ const { gqlRequest, saveSession, redirect } = vi.hoisted(() => ({
   }),
 }))
 
-vi.mock("@/shared/api/graphql/client", () => ({ gqlRequest }))
-vi.mock("@/shared/api/session", () => ({ saveSession }))
+vi.mock("@/shared/api/graphql/graphql", () => ({ gqlRequest }))
+vi.mock("@/shared/api/session/session", () => ({ saveSession }))
 vi.mock("next/navigation", () => ({ redirect }))
 
 const user = {

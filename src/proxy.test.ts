@@ -1,10 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { NextRequest } from "next/server";
-import { proxy } from "./proxy";
+import { config, proxy } from "./proxy";
 
 const { gqlRequest } = vi.hoisted(() => ({ gqlRequest: vi.fn() }));
 
-vi.mock("@/shared/api/graphql", () => ({ gqlRequest }));
+vi.mock("@/shared/api/graphql/graphql", () => ({ gqlRequest }));
 
 const freshTokens = {
   access_token: "access-2",
@@ -60,6 +60,7 @@ describe("private routes", () => {
     expect(response.status).toBe(307);
     expect(location(response)?.pathname).toBe("/sign-in");
     expect(location(response)?.searchParams.get("next")).toBe("/cvs");
+    expect(gqlRequest).not.toHaveBeenCalled();
   });
 
   it("keeps the query in the next parameter", async () => {
@@ -79,7 +80,9 @@ describe("private routes", () => {
   it("renews tokens with the refresh token", async () => {
     gqlRequest.mockResolvedValueOnce({ updateToken: freshTokens });
 
-    const response = await proxy(createRequest("/cvs", { refresh_token: "refresh-1" }));
+    const response = await proxy(
+      createRequest("/cvs", { refresh_token: "refresh-1" }),
+    );
 
     expect(response.status).toBe(200);
     expect(response.cookies.get("access_token")?.value).toBe("access-2");
@@ -104,10 +107,45 @@ describe("private routes", () => {
     expect(gqlRequest).toHaveBeenCalledOnce();
   });
 
+  it("treats a malformed access token as expired", async () => {
+    gqlRequest.mockResolvedValueOnce({ updateToken: freshTokens });
+
+    const response = await proxy(
+      createRequest("/cvs", {
+        access_token: "not-a-jwt",
+        refresh_token: "refresh-1",
+      }),
+    );
+
+    expect(response.status).toBe(200);
+    expect(response.cookies.get("access_token")?.value).toBe("access-2");
+    expect(gqlRequest).toHaveBeenCalledOnce();
+  });
+
+  it("forwards the renewed tokens to the current request", async () => {
+    gqlRequest.mockResolvedValueOnce({ updateToken: freshTokens });
+
+    const response = await proxy(
+      createRequest("/cvs", {
+        access_token: jwt(-1),
+        refresh_token: "refresh-1",
+      }),
+    );
+
+    const forwardedCookies = response.headers.get(
+      "x-middleware-request-cookie",
+    );
+
+    expect(forwardedCookies).toContain("access_token=access-2");
+    expect(forwardedCookies).toContain("refresh_token=refresh-2");
+  });
+
   it("clears cookies and redirects when the refresh token is invalid", async () => {
     gqlRequest.mockRejectedValueOnce(new Error("invalidRefreshToken"));
 
-    const response = await proxy(createRequest("/cvs", { refresh_token: "refresh-1" }));
+    const response = await proxy(
+      createRequest("/cvs", { refresh_token: "refresh-1" }),
+    );
 
     expect(response.status).toBe(307);
     expect(location(response)?.pathname).toBe("/sign-in");
@@ -126,7 +164,9 @@ describe("guest routes", () => {
   });
 
   it("sends authenticated visitors home", async () => {
-    const response = await proxy(createRequest("/sign-in", { access_token: jwt(60) }));
+    const response = await proxy(
+      createRequest("/sign-in", { access_token: jwt(60) }),
+    );
 
     expect(response.status).toBe(307);
     expect(location(response)?.pathname).toBe("/");
@@ -160,5 +200,35 @@ describe("guest routes", () => {
     expect(response.status).toBe(200);
     expect(response.cookies.get("access_token")?.value).toBe("");
     expect(response.cookies.get("refresh_token")?.value).toBe("");
+  });
+});
+
+// Approximation: Next compiles matchers itself, but this pattern is plain regex.
+describe("matcher", () => {
+  const [pattern] = config.matcher;
+  const matches = (path: string) => new RegExp(`^${pattern}$`).test(path);
+
+  it("covers every app route by default, including ones added later", () => {
+    for (const path of [
+      "/",
+      "/users/1",
+      "/departments",
+      "/positions",
+      "/projects/3",
+    ]) {
+      expect(matches(path), path).toBe(true);
+    }
+  });
+
+  it("skips API routes and static assets", () => {
+    for (const path of [
+      "/api/auth/logout",
+      "/_next/static/chunk.js",
+      "/_next/image",
+      "/favicon.ico",
+      "/logo.png",
+    ]) {
+      expect(matches(path), path).toBe(false);
+    }
   });
 });

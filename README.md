@@ -1,34 +1,93 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# CV Builder
 
-## Getting Started
+Веб-приложение для создания и редактирования резюме. Next.js (App Router) + GraphQL-бэкенд из отдельного репозитория.
 
-First, run the development server:
+## Стек
+
+- **Next.js 16** (App Router, Server Components), **React 19**, **TypeScript**
+- **Tailwind CSS 4**, UI-kit на **Base UI** / shadcn-подходе
+- **graphql-request** + **@graphql-codegen/cli** (типы и документы генерируются из схемы)
+- **Vitest** + **React Testing Library**
+- **react-hook-form**, **zod**, **zustand** (установлены для форм и клиентского состояния)
+
+## Требования
+
+- Node.js 20+
+- Локальный GraphQL-бэкенд на `http://localhost:3001/api/graphql` — см. `docs/BACKEND.md`
+
+## Запуск
+
+```bash
+npm install
+```
+
+Создайте `.env` в корне:
+
+```sh
+GRAPHQL_URL="http://localhost:3001/api/graphql"
+```
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Приложение откроется на [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Скрипты
 
-## Learn More
+| Команда                       | Что делает                                       |
+| ----------------------------- | ------------------------------------------------ |
+| `npm run dev`                 | dev-сервер Next.js                               |
+| `npm run build` / `npm start` | production-сборка и запуск                       |
+| `npm run lint`                | ESLint                                           |
+| `npm run typecheck`           | `tsc --noEmit`                                   |
+| `npm test`                    | unit-тесты (Vitest, один прогон)                 |
+| `npm run test:watch`          | unit-тесты в watch-режиме                        |
+| `npm run test:coverage`       | покрытие (v8)                                    |
+| `npm run codegen`             | генерация типов и документов из `schema.graphql` |
+| `npm run codegen:watch`       | codegen в watch-режиме                           |
 
-To learn more about Next.js, take a look at the following resources:
+Обновить схему с запущенного бэкенда:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+node scripts/export-schema.mjs
+npm run codegen
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Структура
 
-## Deploy on Vercel
+Проект следует Feature-Sliced Design: `app` → `views` → `widgets` → `features` → `entities` → `shared`.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```
+src/
+  app/                  # маршруты и layout-ы Next.js
+    (platform)/         # защищённая часть: sidebar + AuthGate
+  features/users/       # фича пользователей: api/ + ui/
+  widgets/sidebar/      # боковое меню
+  shared/
+    api/                # GraphQL-клиент, сессия, ошибки, generated/
+    ui/                 # UI-kit
+  lib/                  # cn()
+docs/
+  TZ.md                 # техническое задание
+  BACKEND.md            # контракт GraphQL-бэкенда
+  PROGRESS.md           # текущий статус работ
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Подробная карта кода и конвенции — в `CLAUDE.md`.
+
+## Тесты
+
+Тесты лежат рядом с кодом как `*.test.ts(x)`.
+
+```bash
+npm test
+npm run test:coverage
+```
+
+## Документация
+
+- `docs/TZ.md` — требования
+- `docs/BACKEND.md` — GraphQL API, авторизация, коды ошибок
+- `docs/PROGRESS.md` — что сделано и что осталось
+- `CLAUDE.md` — карта кода и конвенции
