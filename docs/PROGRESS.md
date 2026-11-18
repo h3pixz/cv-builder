@@ -77,6 +77,10 @@
 - [x] Not Found (404): страница «Hmm…» с общей иллюстрацией `SadMonitorIllustration`, текстом по ТЗ и кнопкой `GO BACK` (`src/features/errors/ui/not-found-page.tsx`), `Button variant="primary"`
 - [x] Подключение Not Found: `src/app/not-found.tsx` (корневой `not-found` ловит несуществующие URL), возврат назад с фолбэком на `/` — `shared/helpers/go-back.ts`
 - [x] Тесты Not Found: `NotFoundPage`, `goBack`, `app/not-found`
+- [x] Device Error: страница «Oops» с иллюстрацией и текстом по ТЗ (`src/features/errors/ui/device-error-page.tsx`)
+- [x] Показ при ширине вьюпорта меньше `768px`, включая ресайз: `useMediaQuery` (`shared/hooks`) + `DeviceGuard` в root layout, контент под оверлеем `inert`
+- [x] Общие требования для Device Error: Light/Dark темы, центрирование, адаптивность
+- [x] Тесты Device Error: `useMediaQuery`, `DeviceErrorPage`, `DeviceGuard`
 
 ### Мержи
 
@@ -96,14 +100,6 @@
 ### Авторизация — остатки
 
 - [ ] Ручной переключатель темы (сейчас тема следует системной настройке)
-
-### Страницы ошибок
-
-Требования: `docs/TZ.md`, раздел «Страницы ошибок».
-
-- [ ] Device Error: экран при ширине вьюпорта меньше `768px` (включая ресайз)
-- [ ] Общие требования для Device Error: Light/Dark темы, клавиатура и focus-visible, центрирование, адаптивность
-- [ ] Тесты Device Error (Vitest + RTL)
 
 ### Резюме
 
