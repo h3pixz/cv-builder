@@ -11,7 +11,7 @@ Backend schema highlights: `login(auth)`, `updateToken` (returns `access_token` 
 - `shared/api/graphql/graphql.ts` — `gqlRequest`, отправляет `Authorization: Bearer <token>` и `Origin`.
 - `shared/api/authed-request/authed-request.ts` — `authedGqlRequest` (Server Components) и `authedGqlRequestWithRefresh` (Server Actions): при `unauthorized` вызывают `updateToken` с refresh-токеном и повторяют запрос один раз.
 - `shared/api/protected/protected.ts` — `protectedRequest`: берёт сессию из cookie, без сессии редиректит на страницу входа.
-- `features/users/api/run-authed.ts` — `runAuthed` для Server Actions пользователей и профиля: сессия + refresh-ретрай + `UsersActionResult`.
+- `shared/api/run-authed.ts` — `runAuthed` для Server Actions пользователей, профиля и CV: сессия + refresh-ретрай + `ActionResult`.
 - `src/proxy.ts` — обновляет пару токенов до рендера страницы; это основной путь refresh, ретраи в рендере — запасной.
 
 Use stored credentials only in a flow where the user just typed them or for a service account from env. Never store raw passwords in cookies or storage.

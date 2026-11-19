@@ -24,6 +24,9 @@ cv-builder/
 │   │   │
 │   │   ├── (platform)/
 │   │   │   ├── layout.tsx              # Sidebar + AuthGate
+│   │   │   ├── cvs/
+│   │   │   │   ├── page.tsx            # раздел CV
+│   │   │   │   └── error.tsx
 │   │   │   └── users/
 │   │   │       ├── page.tsx            # список сотрудников
 │   │   │       ├── error.tsx
@@ -38,12 +41,11 @@ cv-builder/
 │   │   │           ├── languages/
 │   │   │           │   ├── page.tsx
 │   │   │           │   └── error.tsx
-│   │   │           └── cvs/
+│   │   │           └── cvs/            # вкладка CV в профиле (Admin)
 │   │   │               ├── page.tsx
 │   │   │               ├── error.tsx
 │   │   │               └── [cvId]/
-│   │   │                   ├── page.tsx
-│   │   │                   └── error.tsx
+│   │   │                   └── page.tsx # редирект на /cvs/[cvId]/details
 │   │   │
 │   │   ├── layout.tsx                  # шрифт, тема, guards, Toaster
 │   │   ├── page.tsx
@@ -125,20 +127,9 @@ cv-builder/
 │   │   │   │   │   └── user-skills-page.tsx
 │   │   │   │   ├── languages/
 │   │   │   │   │   └── user-languages-page.tsx
-│   │   │   │   ├── levels/
-│   │   │   │   │   ├── level-manager.tsx
-│   │   │   │   │   └── level-list-skeleton.tsx
-│   │   │   │   └── cvs/
-│   │   │   │       ├── user-cvs-page.tsx
-│   │   │   │       ├── cvs-table.tsx
-│   │   │   │       ├── cvs-toolbar.tsx
-│   │   │   │       ├── cvs-sort-header.tsx
-│   │   │   │       ├── cvs-table-skeleton.tsx
-│   │   │   │       ├── cv-actions-menu.tsx
-│   │   │   │       ├── cv-dialog.tsx
-│   │   │   │       ├── delete-cv-dialog.tsx
-│   │   │   │       ├── user-cv-details-page.tsx
-│   │   │   │       └── cv-details.tsx
+│   │   │   │   └── levels/
+│   │   │   │       ├── level-manager.tsx
+│   │   │   │       └── level-list-skeleton.tsx
 │   │   │   ├── api/
 │   │   │   │   ├── users.queries.ts
 │   │   │   │   ├── users.mutations.ts
@@ -147,11 +138,7 @@ cv-builder/
 │   │   │   │   ├── profile.mutations.ts
 │   │   │   │   ├── profile.actions.ts
 │   │   │   │   ├── profile-levels.actions.ts
-│   │   │   │   ├── profile-revalidate.ts
-│   │   │   │   ├── cvs.queries.ts
-│   │   │   │   ├── cvs.mutations.ts
-│   │   │   │   ├── cvs.actions.ts
-│   │   │   │   └── run-authed.ts
+│   │   │   │   └── profile-revalidate.ts
 │   │   │   ├── model/
 │   │   │   │   ├── action-result.ts
 │   │   │   │   ├── user-schema.ts
@@ -159,14 +146,38 @@ cv-builder/
 │   │   │   │   ├── profile-schema.ts
 │   │   │   │   ├── profile-permissions.ts
 │   │   │   │   ├── avatar.ts
-│   │   │   │   ├── levels.ts
 │   │   │   │   ├── level-forms.ts
-│   │   │   │   ├── cv-schema.ts
-│   │   │   │   ├── cv-permissions.ts
-│   │   │   │   └── cv-record.ts
+│   │   │   │   └── cv-permissions.ts
 │   │   │   └── index.ts
 │   │   │
-│   │   ├── cvs/                        # план: отдельная фича резюме
+│   │   ├── cvs/
+│   │   │   ├── ui/
+│   │   │   │   ├── cvs-page.tsx
+│   │   │   │   ├── cvs-header.tsx
+│   │   │   │   ├── cvs-toolbar.tsx
+│   │   │   │   ├── cvs-table.tsx
+│   │   │   │   ├── cvs-sort-header.tsx
+│   │   │   │   ├── cvs-pagination.tsx
+│   │   │   │   ├── cvs-table-skeleton.tsx
+│   │   │   │   ├── cv-actions-menu.tsx
+│   │   │   │   ├── cv-dialog.tsx
+│   │   │   │   ├── delete-cv-dialog.tsx
+│   │   │   │   └── user-cvs-page.tsx
+│   │   │   ├── api/
+│   │   │   │   ├── cvs.queries.ts
+│   │   │   │   ├── cvs.mutations.ts
+│   │   │   │   ├── cvs.actions.ts
+│   │   │   │   ├── cv-skills.actions.ts
+│   │   │   │   └── cv-projects.actions.ts
+│   │   │   ├── model/
+│   │   │   │   ├── cv-record.ts
+│   │   │   │   ├── cv-schema.ts
+│   │   │   │   ├── cv-permissions.ts
+│   │   │   │   ├── cv-skill-schema.ts
+│   │   │   │   ├── cv-project-schema.ts
+│   │   │   │   └── cv-tabs.ts
+│   │   │   └── index.ts
+│   │   │
 │   │   ├── skills/                     # план
 │   │   ├── languages/                  # план
 │   │   ├── admin/                      # план
@@ -206,6 +217,9 @@ cv-builder/
 │   │   │   │   └── session.ts
 │   │   │   ├── session-cookies/
 │   │   │   │   └── session-cookies.ts  # имена cookie и настройки сессии
+│   │   │   ├── action-result.ts        # ActionResult, toActionError
+│   │   │   ├── current-user.ts         # getCurrentUser из claims токена
+│   │   │   ├── run-authed.ts           # runAuthed с refresh-ретраем
 │   │   │   ├── request-origin.ts       # origin запроса для ссылок в письмах
 │   │   │   └── index.ts
 │   │   ├── config/
@@ -216,13 +230,15 @@ cv-builder/
 │   │   ├── helpers/
 │   │   │   ├── date-formatter.ts
 │   │   │   ├── go-back.ts
+│   │   │   ├── levels.ts               # Mastery/Proficiency и группировка
 │   │   │   ├── redirect-path.ts
 │   │   │   ├── reload-page.ts
 │   │   │   └── index.ts
 │   │   ├── hooks/
 │   │   │   ├── use-media-query.ts
 │   │   │   └── use-online-status.ts
-│   │   └── types/                      # план
+│   │   └── types/
+│   │       └── user-role.ts
 │   │
 │   ├── widgets/
 │   │   └── sidebar/

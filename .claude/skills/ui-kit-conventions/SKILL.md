@@ -125,7 +125,7 @@ toast.add({ type: "success", title: "Success", description: "Profile updated" })
 Other exports: `Toast`, `ToastTitle`, `ToastDescription`, `ToastAction`, `ToastClose`, `ToastProvider`, `ToastViewport`, `createToastManager`, `useToastManager`.
 
 ## level
-`Level` — шкала 0–5 на `role="meter"`. Props: `level: number` (округляется и зажимается в 0–5), `label?: string` (текст справа), `barClassName?: string` (переопределить полосу), плюс `HTMLAttributes<HTMLDivElement>` (`className`). Высота полосы `h-1`, ширина `w-34`, цвета уровней — токены `level-0..5-fill/track`. Для Mastery/Proficiency переводи значение в число через `masteryLevel` / `proficiencyLevel` из `features/users/model/levels.ts`.
+`Level` — шкала 0–5 на `role="meter"`. Props: `level: number` (округляется и зажимается в 0–5), `label?: string` (текст справа), `barClassName?: string` (переопределить полосу), плюс `HTMLAttributes<HTMLDivElement>` (`className`). Высота полосы `h-1`, ширина `w-34`, цвета уровней — токены `level-0..5-fill/track`. Для Mastery/Proficiency переводи значение в число через `masteryLevel` / `proficiencyLevel` из `@/shared/helpers` (`shared/helpers/levels.ts`).
 
 ## pagination
 `ListPagination` из `shared/ui/pagination` — постраничная навигация для таблиц. Props: `page`, `totalPages`, `getHref(page)` (собирает URL и сохраняет остальные query-параметры), `label` (по умолчанию `"Pagination"`), `className`. При `totalPages <= 1` не рендерится. Также экспортирует `getPageItems` и тип `PageItem`; раскладка всегда 7 слотов, чтобы ширина не скакала.

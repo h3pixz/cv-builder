@@ -94,7 +94,7 @@
 - [x] Вкладка языков `/users/[userId]/languages`: список с Proficiency и CRUD через диалоги
 - [x] Вкладка CV (только Admin): таблица с поиском и сортировкой по имени, создание, обновление и удаление CV, страница деталей `/users/[userId]/cvs/[cvId]`; Employee получает 404 (`model/cv-permissions.ts`)
 - [x] Breadcrumbs и табы пользователя (`user-breadcrumbs`, `user-tabs`), редирект `/users/[userId]` → `/profile`
-- [x] Общий авторизованный серверный транспорт с refresh-ретраем: `api/run-authed.ts`
+- [x] Общий авторизованный серверный транспорт с refresh-ретраем: `shared/api/run-authed.ts`
 - [x] Тесты: права профиля и CV, схемы, сортировка и пагинация, тулбар, диалоги CV, `level-manager`, Server Actions CV
 
 ### Мержи
@@ -107,13 +107,28 @@
 
 ## In progress
 
+### Раздел CVs
+
+Этап начат 2026-11-19. Требования — `docs/TZ.md` («Раздел CVs»), исходники — `...\cv-tz\cvs\`.
+
+- [x] Вынести CV из `features/users` в домен `cvs` и открыть отдельный раздел `/cvs` для Admin и Employee (вкладка `/users/[userId]/cvs` осталась для Admin)
+- [x] Список CV `/cvs`: таблица `Name` / `Education` / `Employee` с описанием под строкой, поиск, сортировка по имени, пагинация
+- [x] Список CV: состояния loading / empty / no results / error, `CREATE CV`, меню `View` / `Edit` / `Delete`, диалоги create / update / delete по макетам
+- [ ] Страница CV с вкладками `Details` / `Skills` / `Projects` / `Preview` и breadcrumbs `CVs > {CV name} > {Tab}`
+- [ ] Details: форма `Name` / `Education` / `Description`, `UPDATE` активна только при изменениях и без ошибок валидации
+- [ ] Skills: группировка по категориям, `ADD SKILL` из навыков владельца CV, `Update skill`, режим массового удаления
+- [ ] Projects: таблица с поиском и сортировкой, Add / Update / Remove, роли из активных ролей, даты в пределах длительности проекта
+- [ ] Preview: резюме из профиля, языков, навыков и проектов; `Experience in Years` и `Last Used` по пересечению environment проектов CV
+- [ ] `EXPORT PDF` через бэкенд `exportPdf`, имя файла из названия CV
+- [ ] Права: Employee — только свои CV, Admin — любые; `notOwnCv` и прочие отказы — системной ошибкой
+- [ ] Тесты: список и модалки CV, права, расчёты Experience / Last Used, Preview
+
 ## Backlog
 
 ### Маршруты и layout
 
 - [x] Создать общий layout приватной части: сайдбар, контейнер, breadcrumbs и табы пользователя
-- [ ] Добавить страницы разделов из сайдбара: `/skills`, `/languages`, `/cvs`, `/departments`, `/positions`, `/projects`
-- [ ] Редактор и превью резюме (`/cvs/[cvId]/preview`)
+- [ ] Добавить страницы разделов из сайдбара: `/skills`, `/languages`, `/departments`, `/positions`, `/projects`
 - [ ] Применить SSR/SSG для страниц, где уместно
 
 ### Авторизация — остатки
@@ -125,11 +140,8 @@
 
 - [x] Описать схему и поднять локальный GraphQL-бэкенд (`cv-backend`, Docker)
 - [x] CRUD резюме сотрудника и инвалидация кэша через `revalidatePath` (вкладка CV на странице пользователя, Admin)
-- [ ] Редактор резюме с формами: личные данные и контакты, опыт работы, образование и навыки
+- [ ] Раздел CV (список, Details / Skills / Projects / Preview, PDF) — вынесен в «In progress → Раздел CVs»
 - [ ] Хранить черновик резюме в Zustand (`src/store` пока не создан)
-- [ ] Валидация полей формы (Zod + React Hook Form)
-- [ ] Живое превью резюме
-- [ ] PDF-экспорт резюме
 
 ### Качество и сдача
 
