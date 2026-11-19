@@ -276,8 +276,8 @@ describe("LevelManager", () => {
     const removeButton = screen.getByRole("button", { name: /remove \(0\)/i });
     expect(removeButton).toBeDisabled();
 
-    fireEvent.click(screen.getByRole("button", { name: "Select React" }));
-    fireEvent.click(screen.getByRole("button", { name: "Select CSS" }));
+    fireEvent.click(screen.getByRole("checkbox", { name: "Select React" }));
+    fireEvent.click(screen.getByRole("checkbox", { name: "Select CSS" }));
 
     expect(
       screen.getByRole("button", { name: /remove \(2\)/i }),

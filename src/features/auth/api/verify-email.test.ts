@@ -10,9 +10,9 @@ const { gqlRequest, getSession, refreshSession, getRequestOrigin } = vi.hoisted(
   }),
 )
 
-vi.mock("@/shared/api/graphql/client", () => ({ gqlRequest }))
-vi.mock("@/shared/api/session", () => ({ getSession, refreshSession }))
-vi.mock("./request-origin", () => ({ getRequestOrigin }))
+vi.mock("@/shared/api/graphql/graphql", () => ({ gqlRequest }))
+vi.mock("@/shared/api/session/session", () => ({ getSession, refreshSession }))
+vi.mock("@/shared/api/request-origin", () => ({ getRequestOrigin }))
 vi.mock("next/navigation", () => ({ redirect: vi.fn() }))
 
 const email = "user@example.com"
