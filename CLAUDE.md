@@ -18,7 +18,7 @@
 `src/app/`:
 
 - `layout.tsx` — корневой layout: шрифт Roboto, `globals.css`, `THEME_SCRIPT` (тема до гидрации), `DeviceGuard` + `OfflineGuard`, `Toaster`;
-- `page.tsx` — заглушка главной;
+- `page.tsx` — редирект с `/` на `/users`;
 - `globals.css` — Tailwind-тема;
 - `error.tsx` — глобальная ошибка с `RETRY` (рендерит `NoInternetPage`), `global-error.tsx` — собственные `html`/`body`, `not-found.tsx` — страница 404 (`NotFoundPage`);
 - `(auth)/sign-in`, `(auth)/sign-up`, `(auth)/forgot-password`, `(auth)/reset-password`, `(auth)/verify-email` — гостевые страницы (URL без префикса группы);
