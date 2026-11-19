@@ -7,12 +7,14 @@ description: Use when writing server-side GraphQL queries or mutations against t
 
 Backend schema highlights: `login(auth)`, `updateToken` (returns `access_token` + `refresh_token`), `users(params: SearchPaginationInput)`, `user(userId)`, `updateUser`, `updateProfile`, `uploadAvatar(avatar: {userId, base64, size, type})`, `sendVerification(email)`, `deleteUser(userId)`. Pagination type: `{ items, total, page, limit, total_pages }`.
 
-## Flow (`shared/api/graphql/raw-request.ts`, `server-only`)
-1. Send request with `Authorization: Bearer <access_token>`.
-2. If unauthenticated (HTTP 401, `extensions.code === "UNAUTHENTICATED"`, or token/jwt message) -> call `updateToken` with the refresh token as Bearer.
-3. If refresh fails -> redirect to `/login`. Use stored credentials only in a flow where the user just typed them or for a service account from env. Never store raw passwords in cookies or storage.
-4. Retry the original request exactly once.
-5. Return `{ data, renewed }` so the caller can persist new tokens.
+## Flow
+- `shared/api/graphql/graphql.ts` — `gqlRequest`, отправляет `Authorization: Bearer <token>` и `Origin`.
+- `shared/api/authed-request/authed-request.ts` — `authedGqlRequest` (Server Components) и `authedGqlRequestWithRefresh` (Server Actions): при `unauthorized` вызывают `updateToken` с refresh-токеном и повторяют запрос один раз.
+- `shared/api/protected/protected.ts` — `protectedRequest`: берёт сессию из cookie, без сессии редиректит на страницу входа.
+- `features/users/api/run-authed.ts` — `runAuthed` для Server Actions пользователей и профиля: сессия + refresh-ретрай + `UsersActionResult`.
+- `src/proxy.ts` — обновляет пару токенов до рендера страницы; это основной путь refresh, ретраи в рендере — запасной.
+
+Use stored credentials only in a flow where the user just typed them or for a service account from env. Never store raw passwords in cookies or storage.
 
 ## Cookie rules
 - `cookies().set()` works only in Server Actions, Route Handlers and `middleware.ts`/`proxy.ts`. It throws in Server Component render.

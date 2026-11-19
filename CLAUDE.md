@@ -2,8 +2,12 @@
 
 - FSD-подход: `app` (тонкие маршруты) → `features/<domain>/{ui,api,model}` (страницы и сценарии) → `shared/{ui,api,config,helpers,hooks,types}` → `lib`; импорты только вниз. Канон структуры — `docs/STRUCTURE.md`, обоснование — `docs/TZ.md`.
 - Команда: 2 разработчика, работа в паре.
-- Сейчас реально используются `app`, `widgets`, `features`, `shared`. Слоёв `views` и `entities` пока нет: композиция страниц лежит в `src/features/<name>/ui`, а файлы `src/app/**` только собирают её. Новые страницы можно класть туда же, пока `views` не выделен.
-- Next.js 16 (App Router) + React 19. `params` и `searchParams` — `Promise`, их нужно `await`. В `next.config.ts` включены `cacheComponents` и `partialPrefetching`. В `AGENTS.md` предупреждение: API Next 16 отличаются от старых версий — сверяйся с `node_modules/next/dist/docs/`.
+- Сейчас реально используются `app`, `widgets`, `features`, `shared`. Слоёв `views`, `entities`, `store` пока нет: композиция страниц лежит в `src/features/<name>/ui`, а файлы `src/app/**` только собирают её. Новые страницы можно класть туда же, пока `views` не выделен.
+- Домены фич: `auth`, `users`, `errors`. CV, навыки и языки пока живут внутри `users` (`users/ui/cvs`, `users/ui/skills`, `users/ui/languages`), отдельных фич `cvs` / `skills` / `languages` нет.
+- Next.js 16 (App Router) + React 19. `params` и `searchParams` — `Promise`, их нужно `await`. В `next.config.ts` включены `cacheComponents` и `partialPrefetching`.
+- Компоненты, читающие `params`, `searchParams`, `cookies()` или `headers()`, обёрнуты в `<Suspense>` в файлах маршрутов — иначе Next 16 падает с blocking-prerender.
+- `experimental.serverActions.bodySizeLimit = "8mb"` — аватар уходит в Server Action как base64 (файл до 5MB).
+- В `AGENTS.md` предупреждение: API Next 16 отличаются от старых версий — сверяйся с `node_modules/next/dist/docs/`.
 
 ## Карта кода
 
@@ -13,95 +17,133 @@
 
 `src/app/`:
 
-- `layout.tsx` — корневой layout: шрифт, `globals.css`, `Toaster`;
+- `layout.tsx` — корневой layout: шрифт Roboto, `globals.css`, `THEME_SCRIPT` (тема до гидрации), `DeviceGuard` + `OfflineGuard`, `Toaster`;
 - `page.tsx` — заглушка главной;
 - `globals.css` — Tailwind-тема;
-- `(auth)/sign-in`, `(auth)/sign-up` — гостевые страницы (URL `/sign-in`, `/sign-up`);
-- `(platform)/layout.tsx` — route group приватной части: `Sidebar` + `AuthGate` (редирект на `SIGN_IN_ROUTE`, если сессии нет);
-- `(platform)/users/page.tsx` — список пользователей;
+- `error.tsx` — глобальная ошибка с `RETRY` (рендерит `NoInternetPage`), `global-error.tsx` — собственные `html`/`body`, `not-found.tsx` — страница 404 (`NotFoundPage`);
+- `(auth)/sign-in`, `(auth)/sign-up`, `(auth)/forgot-password`, `(auth)/reset-password`, `(auth)/verify-email` — гостевые страницы (URL без префикса группы);
+- `(platform)/layout.tsx` — route group приватной части: `Sidebar` + `AuthGate` внутри `Suspense` (редирект, если сессии нет);
+- `(platform)/users/page.tsx` — список сотрудников, читает `search`, `page`, `sort_by`, `sort_order`;
 - `(platform)/users/[userId]/layout.tsx` — breadcrumbs и табы пользователя;
 - `(platform)/users/[userId]/page.tsx` — редирект на `/profile`;
 - `(platform)/users/[userId]/profile/page.tsx` — профиль пользователя;
-- `(platform)/users/[userId]/cvs/page.tsx` — вкладка CV выбранного сотрудника (только Admin);
-- `(platform)/users/[userId]/cvs/[cvId]/page.tsx` — детали CV.
+- `(platform)/users/[userId]/skills/page.tsx` — навыки пользователя;
+- `(platform)/users/[userId]/languages/page.tsx` — языки пользователя;
+- `(platform)/users/[userId]/cvs/page.tsx` — вкладка CV сотрудника (только Admin), читает `search`, `sort_by`, `sort_order`;
+- `(platform)/users/[userId]/cvs/[cvId]/page.tsx` — детали CV;
+- локальные `error.tsx` — у `/users`, `/users/[userId]/cvs`, `/users/[userId]/cvs/[cvId]`, `/users/[userId]/skills`, `/users/[userId]/languages`.
 
-`src/proxy.ts` — защита маршрутов: приватные требуют валидную сессию (при истёкшем access-токене обновляет пару через refresh-токен), гостевые (`GUEST_ROUTES`) отправляют авторизованного на `HOME_ROUTE`. Тесты — `src/proxy.test.ts`.
+`src/proxy.ts` — защита маршрутов: приватные требуют валидную сессию (при истёкшем access-токене обновляет пару через refresh-токен), гостевые (`GUEST_ROUTES`: `/sign-in`, `/sign-up`, `/forgot-password`) отправляют авторизованного на `HOME_ROUTE`. Matcher — `/`, гостевые страницы, `/verify-email`, `/users/*`, `/profile/*`, `/cvs/*`, `/skills/*`, `/languages/*`, `/admin/*`, `/settings/*`. Тесты — `src/proxy.test.ts`.
 
-Известные пробелы: готовы только `/sign-in` и `/sign-up`; страниц `/verify-email`, `/reset-password` пока нет; ссылки сайдбара на `/skills`, `/languages`, `/cvs`, `/departments`, `/positions`, `/projects` и кнопка «плюс» на `/users/new` ведут на несуществующие страницы.
+Известные пробелы:
+
+- страниц `/skills`, `/languages`, `/cvs`, `/departments`, `/positions`, `/projects`, на которые ведут ссылки сайдбара, пока нет;
+- серверная проверка сессии в `(platform)/layout.tsx` (`AuthGate`) и `protectedRequest` редиректят на `/login`, хотя реальный маршрут входа — `/sign-in`; это известный баг, требующий правки кода;
+- `scripts/export-schema.mjs`, на который ссылаются старые инструкции, в репозитории отсутствует (папки `scripts/` нет).
 
 ### Features
 
+`src/features/auth/`:
+
+- `ui/` — `sign-in-page`, `sign-up-page`, `forgot-password-page`, `reset-password-page`, `verify-email-page`; формы и общие `AuthTabs`, `AuthLink`, `FormError` — в `ui/components`;
+- `api/` — Server Actions `login`, `signup`, `logout`, `forgotPassword`, `resetPassword`, `verifyEmail`, `resendVerification`; типизированные документы — `documents.ts`, email из reset-токена — `token-payload.ts`, маппинг ошибок формы — `action-result.ts`;
+- `model/` — zod-схемы форм (`sign-in`, `sign-up`, `forgot-password`, `reset-password`) и общие `emailSchema` / `passwordSchema` в `validation.ts`;
+- `index.ts` — публичный экспорт страниц.
+
+`src/features/errors/`:
+
+- `ui/no-internet-page.tsx` — экран «Oops» с `RETRY`;
+- `ui/not-found-page.tsx` — 404 «Hmm…» с `GO BACK`;
+- `ui/device-error-page.tsx` — неподдерживаемое устройство (< 768px);
+- `ui/offline-guard.tsx` — оверлей при `navigator.onLine === false`, `ui/device-guard.tsx` — оверлей на узком вьюпорте (контент под ним `inert`);
+- `ui/sad-monitor-illustration.tsx` — общая иллюстрация.
+
 `src/features/users/` — задаёт структуру для новых фич:
 
-- `api/users.queries.ts` — запросы (`getUsers`, `getUser`, `getCurrentProfile`, справочники);
-- `api/users.mutations.ts` — CRUD пользователей, профиля, навыков и языков;
-- `api/raw-request.ts` — сырой `fetch`-транспорт: логин, refresh и `authedRequest` с автообновлением токена;
-- `api/profile.queries.ts` — `getCurrentUser` (id/email/role из claims access-токена: `me.id` — это id профиля, а не пользователя), `getCurrentUserRole`, навыки и языки профиля;
-- `api/profile.mutations.ts` — мутации профиля, аватара и отправки письма подтверждения;
+- `api/users.queries.ts` — `getUsers`, `getUser`, справочники `getDepartmentOptions` / `getPositionOptions` (обёрнуты в `cache`);
+- `api/users.mutations.ts` — CRUD пользователей и `changeUserPassword`;
+- `api/users.actions.ts` — Server Actions пользователей (`createUserAction`, `updateUserAction`, `deleteUserAction`) с валидацией и `revalidatePath`;
+- `api/profile.queries.ts` — `getCurrentProfile`, `getCurrentUser` / `getCurrentUserRole` (id/email/role из claims access-токена; `me.id` — это id профиля, а не пользователя), `getUserSkills`, `getUserLanguages`, справочники навыков/категорий/языков;
+- `api/profile.mutations.ts` — мутации профиля, аватара, отправки письма подтверждения, навыков и языков;
 - `api/profile.actions.ts` — Server Actions профиля (`updateProfileAction`, `uploadAvatarAction`, `sendVerificationEmailAction`) с проверкой прав;
-- `api/profile-levels.actions.ts` — Server Actions навыков и языков (добавление/обновление/удаление) с той же проверкой прав;
-- `api/cvs.queries.ts` — список CV сотрудника (`cvsByUserId`: поиск по имени и сортировка) и одно CV;
+- `api/profile-levels.actions.ts` — Server Actions навыков и языков (добавление/обновление/удаление);
+- `api/cvs.queries.ts` — `getUserCvs` (поиск по имени и сортировка) и `getCv`;
 - `api/cvs.mutations.ts` — создание/обновление/удаление CV;
-- `api/cvs.actions.ts` — Server Actions CV (create/update/delete) только для Admin;
-- `api/run-authed.ts` — `runAuthed`: выполнение операции с access-токеном и refresh-повтором;
-- `model/` — `profile-permissions` (кто может править профиль/аватар/подтверждать email), `profile-schema` (zod), `levels` (значения Mastery/Proficiency, группировка навыков по категориям), `level-forms` (zod-схемы и сообщения для навыков/языков), `cv-schema` (zod: name/education ≤ 255, description), `cv-permissions`, `cv-record`, `avatar` (типы и лимит 5MB), `action-result`;
-- `ui/` — `users-page`, `users-table`, `users-toolbar`, `users-pagination`, `user-layout`, `user-breadcrumbs`, `user-tabs`, `profile/user-profile-page`, `profile/user-profile-form`, `profile/avatar-upload`, `profile/profile-skeleton`, `skills/user-skills-page`, `languages/user-languages-page`, `levels/level-manager` (списки, диалоги добавления/обновления/удаления), `levels/level-list-skeleton`, `cvs/user-cvs-page` (поиск, сортировка по имени, create/update/delete), `cvs/user-cv-details-page`;
-- `index.ts` — публичный экспорт страницы и layout-а.
+- `api/cvs.actions.ts` — Server Actions CV (`createCvAction`, `updateCvAction`, `deleteCvAction`) только для Admin;
+- `api/run-authed.ts` — `runAuthed`: выполнение операции с access-токеном и refresh-повтором, хелперы `unauthorizedFailure` / `forbiddenFailure`;
+- `api/profile-revalidate.ts` — `revalidateUser` (список `/users` и layout всех вкладок пользователя);
+- `model/` — `action-result` (`UsersActionResult`, `AvatarUploadResult`), `user-schema` (zod + `USER_ROLES`, create/update), `user-record`, `profile-schema` (zod), `profile-permissions`, `avatar` (типы и лимит 5MB), `levels` (значения Mastery/Proficiency, группировка навыков), `level-forms` (zod-схемы и сообщения для навыков/языков), `cv-schema`, `cv-permissions`, `cv-record`;
+- `ui/` — `users-page`, `users-header`, `users-toolbar`, `users-table`, `users-pagination`, диалоги `create-user-dialog` / `update-user-dialog` / `delete-user-dialog`; `user-layout`, `user-breadcrumbs`, `user-tabs`, `user-current-page`; `profile/user-profile-page`, `profile/user-profile-form`, `profile/avatar-upload`, `profile/profile-skeleton`; `skills/user-skills-page`, `languages/user-languages-page`, `levels/level-manager` (списки и диалоги добавления/обновления/удаления), `levels/level-list-skeleton`; `cvs/user-cvs-page`, `cvs/cvs-table`, `cvs/cvs-toolbar`, `cvs/cvs-sort-header`, `cvs/cvs-table-skeleton`, `cvs/cv-actions-menu`, `cvs/cv-dialog`, `cvs/delete-cv-dialog`, `cvs/user-cv-details-page`, `cvs/cv-details`;
+- `index.ts` — публичный экспорт страниц и layout-а.
 
-Все модули `api/` помечены `import "server-only"` — их нельзя импортировать из клиентских компонентов. Доступ к профилю: Employee правит только свой профиль и аватар и может подтвердить только свой email; Admin правит любой профиль и аватар, но подтверждение email — только владелец (`model/profile-permissions.ts`). Вкладка CV на странице пользователя доступна только Admin (`model/cv-permissions.ts`); Employee при прямом заходе получает 404.
+Все модули `api/` помечены `import "server-only"` — их нельзя импортировать из клиентских компонентов. Доступ:
 
-`src/features/auth/` — `ui/sign-in-page`, `ui/sign-up-page`, формы и `AuthTabs` в `ui/components`.
+- Admin управляет пользователями (создание, редактирование, удаление) и любыми профилями и аватарами; Employee видит список, но не управляет пользователями;
+- Employee правит только свой профиль и аватар, собственные навыки и языки; подтверждение email — только владелец (`model/profile-permissions.ts`);
+- вкладка CV доступна только Admin (`model/cv-permissions.ts`); Employee при прямом заходе получает 404.
 
 ### Widgets
 
-- `src/widgets/sidebar/` — боковое меню (`"use client"`): collapse, активный пункт по `usePathname`. Новых виджетов не добавляем (см. «Куда класть новое»).
+- `src/widgets/sidebar/` — боковое меню (`"use client"`): collapse, активный пункт по `usePathname`, ссылки на Employees / Skills / Languages / CVs и Departments / Positions / Projects. Новых виджетов не добавляем (см. «Куда класть новое»).
 
 ### Shared
 
 `src/shared/api/`:
 
-- `graphql/client.ts` — `gqlRequest()` поверх `graphql-request`, добавляет `Authorization` и `Origin`;
-- `graphql/documents` — общие документы (например, `UpdateTokenDocument`);
-- `graphql/errors.ts` — `ERROR_MESSAGES`, `getGraphQLErrorCode`, `getGraphQLErrorMessage`;
+- `graphql/graphql.ts` — `gqlRequest()` поверх `graphql-request`, добавляет `Authorization` и `Origin`;
 - `graphql/generated/` — код, сгенерированный `graphql-codegen`. Не редактировать вручную: перегенерировать из схемы;
-- `session.ts` — httpOnly-cookies `access_token` / `refresh_token`, `getSession` / `saveSession` / `clearSession` / `refreshSession`;
-- `session-cookies.ts` — имена cookies, `ACCESS_TOKEN_MAX_AGE`, `REFRESH_TOKEN_MAX_AGE`, `sessionCookieOptions` (без `next/headers`, можно использовать в `proxy.ts`);
-- `jwt.ts` — `isTokenExpired`;
+- `authed-request/authed-request.ts` — `authedGqlRequest` (Server Components) и `authedGqlRequestWithRefresh` (refresh + один ретрай);
+- `protected/protected.ts` — `protectedRequest`: проверка сессии и редирект для серверных запросов;
+- `documents/documents.ts` — общие документы (например, `UpdateTokenDocument`);
+- `errors/errors.ts` — `ERROR_MESSAGES`, `getGraphQLErrorCode`, `getGraphQLErrorMessage`, `isUnauthorizedError`;
+- `session/session.ts` — httpOnly-cookies `access_token` / `refresh_token`, `getSession` / `saveSession` / `clearSession` / `refreshSession`;
+- `session-cookies/session-cookies.ts` — имена cookies, `ACCESS_TOKEN_MAX_AGE`, `REFRESH_TOKEN_MAX_AGE`, `ACCESS_TOKEN_REFRESH_SKEW`, `sessionCookieOptions` (без `next/headers`, можно использовать в `proxy.ts`);
+- `jwt/jwt.ts` — `getTokenPayload`, `getTokenSubject`, `isTokenExpired`;
+- `request-origin.ts` — `getRequestOrigin` (публичный origin запроса для ссылок в письмах);
 - `index.ts` — публичный реэкспорт.
 
-`src/shared/config/` — `env.ts` (читает `GRAPHQL_URL`), константы маршрутов `GUEST_ROUTES`, `HOME_ROUTE`, `SIGN_IN_ROUTE`.
+`src/shared/config/` — `env.ts` (`getGraphQLUrl` читает `GRAPHQL_URL`), `routes.ts` (константы `HOME_ROUTE`, `SIGN_IN_ROUTE`, `SIGN_UP_ROUTE`, `FORGOT_PASSWORD_ROUTE`, `VERIFY_EMAIL_ROUTE`, `GUEST_ROUTES`), `theme-script.ts` (`THEME_SCRIPT` для темы до гидрации), `index.ts`.
+
+`src/shared/helpers/` — `redirect-path.ts` (`safeRedirectPath`), `date-formatter.ts`, `go-back.ts`, `reload-page.ts`, `index.ts`.
+
+`src/shared/hooks/` — `use-media-query.ts`, `use-online-status.ts`.
+
+`src/shared/types/` пока нет — создавай при первом использовании.
 
 UI-kit — `src/shared/ui/<component>/`, экспорт через `index.ts`:
 
-- `button` — `Button` (default / primary / secondary / ghost / icon);
+- `button` — `Button` (default / primary / secondary / ghost / icon), `buttonVariants`;
 - `input` — `Input` (default / error), `PasswordInput`, `CodeInput` (6-значный OTP);
 - `textarea` — `Textarea` (default / error);
-- `select` — `SelectField` (одиночный), `MultiselectField` (мультивыбор с чипами); примитивы `Select*` лежат в `select.tsx`, но из `index.ts` не реэкспортируются;
+- `select` — `SelectField`, `MultiselectField`, тип `SelectOption`; примитивы `Select*` лежат в `select.tsx`, но из `index.ts` не реэкспортируются;
+- `checkbox` — `Checkbox`;
+- `label` — `Label`;
 - `level` — `Level` (шкала 0–5);
 - `avatar` — `Avatar`, `AvatarImage`, `AvatarFallback`, `AvatarGroup`, `AvatarBadge`;
 - `breadcrumb` — `Breadcrumb*`;
 - `dropdown-menu` — `DropdownMenu*`;
+- `dialog` — `Dialog*` (`Dialog`, `DialogContent`, `DialogHeader`, `DialogTitle`, `DialogFooter`, ...);
+- `pagination` — `ListPagination` (из `list-pagination.tsx`);
 - `table` — `Table*`;
 - `toast` — `Toaster`, `toast`, варианты success / error / warning / info.
 
 `src/lib/utils.ts` только реэкспортирует `cn` из пакета `cn`. В новых файлах импортируй `cn` из `@/lib/utils`; часть UI-компонентов исторически импортирует его напрямую из `"cn"`.
 
-`src/shared/hooks/` пока нет — создавай при первом использовании.
-
 ### Куда класть новое
 
 - страница и её сценарии → `src/features/<domain>/ui/`, запросы и Server Actions → `api/`, типы и схемы → `model/`, публичный экспорт → `index.ts`;
-- домены: `auth`, `users`, `cvs`, `skills`, `languages`, `admin`, `settings`;
+- домены: `auth`, `users`, `errors`; планируемые — `admin`, `settings` (CV, навыки и языки пока внутри `users`);
 - маршрут → тонкий `src/app/<route-group>/<route>/page.tsx` (приватные — в `(platform)`, гостевые — в `(auth)`);
 - `views` не выделен: композиция страниц живёт в `features/<domain>/ui`;
 - `widgets` — только существующий `sidebar`; новые блоки интерфейса кладём в `features/<domain>/ui` или `shared`;
 - бизнес-сущности → `src/entities/` (слой ещё не создан);
 - общие функции → `src/shared/helpers/`, хуки → `src/shared/hooks/`, типы → `src/shared/types/`, конфиг → `src/shared/config/`;
-- глобальное клиентское состояние → `src/store/` (Zustand).
+- глобальное клиентское состояние → `src/store/` (Zustand, пока не создан).
 
 ## Готовый код страниц: `docs/PAGE_CODE.md`
 
 - Пользователь кладёт готовую разметку/код страницы в `docs/PAGE_CODE.md` — переносить её в проект **нашими стилями и компонентами**, не копировать как есть.
+- Файл в `.gitignore` — это локальный блокнот.
 - Стили: только CSS-переменные и Tailwind-тема из `src/app/globals.css` (`bg-background`, `text-foreground`, `border-border`, ...). Никаких произвольных hex/rgb из присланного кода.
 - Компоненты: сначала `src/shared/ui/*`, затем готовое в `src/features/*/ui` и `src/shared`. Не хватает — добавить по структуре и переиспользовать.
 - Структура: страница → `src/features/<domain>/ui/`, маршрут → тонкая обёртка в `src/app/<route-group>/<route>/page.tsx`.
@@ -110,10 +152,10 @@ UI-kit — `src/shared/ui/<component>/`, экспорт через `index.ts`:
 ## GraphQL и codegen
 
 - Схема: `schema.graphql`; полный introspection — `introspectionSchema.full.json`.
-- Конфиг: `codegen.ts`. Документы ищутся в `src/features/**/*.{ts,tsx}` и `src/shared/api/*.{ts,tsx}`, результат пишется в `src/shared/api/graphql/generated/`.
+- Конфиг: `codegen.ts`. Документы ищутся в `src/features/**/*.{ts,tsx}` и `src/shared/api/**/*.{ts,tsx}`, результат пишется в `src/shared/api/graphql/generated/`.
 - Команды: `npm run codegen`, `npm run codegen:watch`.
-- Обновить схему с запущенного бэкенда: `node scripts/export-schema.mjs` (адрес берёт из `.env`).
-- В коде используй `graphql()` из `generated/gql` и типы из `generated/graphql`. Сырые GraphQL-строки допустимы только в `raw-request.ts`, где намеренно используется отдельный транспорт.
+- Скрипта экспорта схемы в репозитории нет (`scripts/` отсутствует): `schema.graphql` и `introspectionSchema.full.json` обновляются вручную из Playground/интроспекции бэкенда.
+- В коде используй `graphql()` из `generated/gql` и типы из `generated/graphql`. Сырые GraphQL-строки допустимы только там, где намеренно используется отдельный транспорт (`proxy.ts`, `shared/api/graphql/graphql.ts`).
 
 ## Окружение и бэкенд
 
@@ -125,17 +167,17 @@ UI-kit — `src/shared/ui/<component>/`, экспорт через `index.ts`:
 - Компоненты: именованный экспорт, `function`-декларации.
 - Стили: только Tailwind; условные классы через `cn()`.
 - Формы: `react-hook-form` + `zod` (зависимости уже стоят).
-- GraphQL-клиент: `graphql-request`, обёртка `gqlRequest` в `src/shared/api/graphql/client.ts`.
+- GraphQL-клиент: `graphql-request`, обёртка `gqlRequest` в `src/shared/api/graphql/graphql.ts`.
 - Новые варианты UI — расширять `src/shared/ui/<component>`, не стилизовать на месте.
 
 ## Скрипты и проверки
 
 - `npm run dev` / `npm run build` / `npm start`;
 - `npm run typecheck` — `tsc --noEmit`;
-- `npm run lint`;
+- `npm run lint` — `eslint`;
 - `npm test`, `npm run test:watch`, `npm run test:coverage`.
 
-Тесты — Vitest + React Testing Library, лежат рядом с кодом как `*.test.ts(x)`. `vitest.setup.ts` мокает `server-only`, чтобы серверные модули импортировались в unit-тестах. Цель по ТЗ — покрытие > 80% (`docs/TZ.md`); UI и сгенерированный код исключены из coverage в `vitest.config.mts`.
+Тесты — Vitest + React Testing Library, лежат рядом с кодом как `*.test.ts(x)`. `vitest.setup.ts` мокает `server-only`, чтобы серверные модули импортировались в unit-тестах. Из coverage в `vitest.config.mts` исключены UI-компоненты и сгенерированный код. Цель по ТЗ — покрытие > 80% (`docs/TZ.md`).
 
 Текущий статус работ — `docs/PROGRESS.md`.
 

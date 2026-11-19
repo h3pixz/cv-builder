@@ -47,29 +47,38 @@ npm run dev
 | `npm run codegen`             | генерация типов и документов из `schema.graphql` |
 | `npm run codegen:watch`       | codegen в watch-режиме                           |
 
-Обновить схему с запущенного бэкенда:
+Обновить `schema.graphql` и `introspectionSchema.full.json` с запущенного бэкенда (Playground / introspection API), затем перегенерировать типы:
 
 ```bash
-node scripts/export-schema.mjs
 npm run codegen
 ```
 
 ## Структура
 
-Проект следует Feature-Sliced Design: `app` → `views` → `widgets` → `features` → `entities` → `shared`.
+Проект следует Feature-Sliced Design: `app` → `features` → `shared`. Композиция страниц живёт в `features/<domain>/ui`, маршруты в `app` — тонкие обёртки. Слои `views`, `entities` и `store` пока не выделены.
 
 ```
 src/
   app/                  # маршруты и layout-ы Next.js
-    (platform)/         # защищённая часть: sidebar + AuthGate
-  features/users/       # фича пользователей: api/ + ui/
+    (auth)/             # sign-in, sign-up, forgot/reset password, verify-email
+    (platform)/         # защищённая часть: sidebar + AuthGate, users/**
+  proxy.ts              # проверка сессии и refresh токенов
+  features/
+    auth/               # страницы и Server Actions авторизации
+    errors/             # 404, No Internet, Device Error
+    users/              # сотрудники: список, профиль, навыки, языки, CV
   widgets/sidebar/      # боковое меню
   shared/
     api/                # GraphQL-клиент, сессия, ошибки, generated/
     ui/                 # UI-kit
+    config/             # env, маршруты, тема
+    helpers/            # общие чистые функции
+    hooks/              # общие React-хуки
   lib/                  # cn()
+e2e/                    # план: Playwright
 docs/
   TZ.md                 # техническое задание
+  STRUCTURE.md          # полное дерево проекта
   BACKEND.md            # контракт GraphQL-бэкенда
   PROGRESS.md           # текущий статус работ
 ```
@@ -88,6 +97,7 @@ npm run test:coverage
 ## Документация
 
 - `docs/TZ.md` — требования
+- `docs/STRUCTURE.md` — каноническая структура проекта
 - `docs/BACKEND.md` — GraphQL API, авторизация, коды ошибок
 - `docs/PROGRESS.md` — что сделано и что осталось
 - `CLAUDE.md` — карта кода и конвенции

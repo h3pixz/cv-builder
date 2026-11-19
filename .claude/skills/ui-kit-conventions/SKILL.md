@@ -1,6 +1,6 @@
 ---
 name: ui-kit-conventions
-description: Use when building or styling UI in this project (buttons, inputs, textareas, selects, tables, dropdown menus, avatars, breadcrumbs, toasts, forms, tabs, sidebar). Documents every component in the ui folder with real props, import paths, gotchas and the visual style from the CV Builder mockups.
+description: Use when building or styling UI in this project (buttons, inputs, textareas, selects, checkboxes, labels, tables, pagination, dialogs, dropdown menus, avatars, breadcrumbs, levels, toasts, forms, tabs, sidebar). Documents every component in the ui folder with real props, import paths, gotchas and the visual style from the CV Builder mockups.
 ---
 
 # UI kit conventions
@@ -10,7 +10,7 @@ All components are built on `@base-ui/react` (not Radix). Each lives in `shared/
 ## Imports
 - Components: `import { Button } from "@/shared/ui/button"` (always the barrel, never the inner file).
 - Class helper: `cn` is imported as `"cn"` in some files and `"@/lib/utils"` in others. Both are in use; stay consistent within a file.
-- There is **no Label component** and no `components/ui` folder. Do not import either.
+- `Label` живёт в `shared/ui/label` (`import { Label } from "@/shared/ui/label"`). Папки `components/ui` нет — не создавай её.
 - Base UI uses `render={<Link />}` where Radix uses `asChild`.
 
 ## button
@@ -24,6 +24,12 @@ All components are built on `@base-ui/react` (not Radix). Each lives in `shared/
 
 ## textarea
 `Textarea`, `textareaVariants`. `forwardRef`, `min-h-20 resize-none text-xs`, `variant` `default` | `error`, also styles `aria-invalid`. No `"use client"` directive.
+
+## label
+`Label` — styled `<label>` на `React.ComponentProps<"label">`, `text-sm font-medium`, учитывает `disabled` у вложенного контрола. Используй вместо ручного `<label className=...>`.
+
+## checkbox
+`Checkbox` — обёртка над Base UI Checkbox. Принимает `CheckboxPrimitive.Root.Props` (`checked`, `defaultChecked`, `onCheckedChange`, `disabled`, `name`). Рендерит свой индикатор, `data-slot="checkbox"`.
 
 ## select
 Primitives in `select.tsx`: `Select` (Base UI Root), `SelectTrigger` (`size`: `default` | `sm`), `SelectContent`, `SelectItem`, `SelectGroup`, `SelectLabel`, `SelectSeparator`, `SelectValue`, `SelectFieldShell`, `selectItemClassName`. Prefer the field wrappers below for forms.
@@ -108,7 +114,7 @@ Plain styled table primitives: `Table` (wraps in a scroll container), `TableHead
 
 ## toast
 Base UI toast with a global manager.
-1. Mount once in a layout: `<Toaster>{children}</Toaster>`.
+1. Mount once in the root layout: `<Toaster />` (children необязательны; так он и подключён в `src/app/layout.tsx`).
 2. Fire from anywhere on the client:
 ```tsx
 import { toast } from "@/shared/ui/toast";
@@ -119,7 +125,10 @@ toast.add({ type: "success", title: "Success", description: "Profile updated" })
 Other exports: `Toast`, `ToastTitle`, `ToastDescription`, `ToastAction`, `ToastClose`, `ToastProvider`, `ToastViewport`, `createToastManager`, `useToastManager`.
 
 ## level
-Not documented yet. Read the source before use.
+`Level` — шкала 0–5 на `role="meter"`. Props: `level: number` (округляется и зажимается в 0–5), `label?: string` (текст справа), `barClassName?: string` (переопределить полосу), плюс `HTMLAttributes<HTMLDivElement>` (`className`). Высота полосы `h-1`, ширина `w-34`, цвета уровней — токены `level-0..5-fill/track`. Для Mastery/Proficiency переводи значение в число через `masteryLevel` / `proficiencyLevel` из `features/users/model/levels.ts`.
+
+## pagination
+`ListPagination` из `shared/ui/pagination` — постраничная навигация для таблиц. Props: `page`, `totalPages`, `getHref(page)` (собирает URL и сохраняет остальные query-параметры), `label` (по умолчанию `"Pagination"`), `className`. При `totalPages <= 1` не рендерится. Также экспортирует `getPageItems` и тип `PageItem`; раскладка всегда 7 слотов, чтобы ширина не скакала.
 
 ## Tokens
 Semantic classes only: `bg-background`, `text-foreground`, `text-muted-foreground`, `text-text-secondary`, `text-text-tertiary`, `border-control-border`, `bg-disabled`, `text-disabled-foreground`, `text-primary`, `bg-primary`, `border-destructive`, `bg-secondary-hover`, `bg-secondary-active`, `bg-success|error|warning|info`, `bg-sidebar`, `bg-sidebar-accent`, `border-sidebar-border`. No raw hex except the logo mark.

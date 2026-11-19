@@ -27,12 +27,11 @@
 GRAPHQL_URL="http://localhost:3001/api/graphql"
 ```
 
-Её читают `src/shared/api/graphql.ts`, `src/features/users/api/raw-request.ts` и `scripts/export-schema.mjs`. `NEXT_PUBLIC_` не нужен, пока весь доступ к API идёт с сервера.
+Её читает `src/shared/config/env.ts` (`getGraphQLUrl`) через `src/shared/api/graphql/graphql.ts`. `NEXT_PUBLIC_` не нужен, пока весь доступ к API идёт с сервера.
 
-Обновить `schema.graphql` и `introspectionSchema.full.json` с запущенного бэкенда:
+`schema.graphql` и `introspectionSchema.full.json` обновляются из Playground / introspection бэкенда вручную (скрипта экспорта в репозитории нет), после чего:
 
 ```sh
-node scripts/export-schema.mjs
 npm run codegen
 ```
 
@@ -167,6 +166,12 @@ Apollo отдаёт `errors[].message` — это код на английско
 | `unauthorized`                                | любые защищённые операции | Нет/просрочен access-токен                   |
 | `invalidRefreshToken`                         | updateToken               | Нужен повторный вход                         |
 | `insufficientPermissions`                     | админские операции        | Не хватает роли                              |
+| `notOwnProfile`                               | updateProfile, аватар     | Попытка править чужой профиль                |
+| `profileNotFound`                             | profile                   | Профиль не найден                            |
+| `skillHasBeenAdded`                           | addSkill                  | Навык уже добавлен                           |
+| `languageHasBeenAdded`                        | addLanguage               | Язык уже добавлен                            |
+| `cvNotFound`                                  | cv, updateCv, deleteCv     | Резюме не найдено                            |
+| `notOwnCv`                                    | CV-мутации                | Попытка управлять чужим резюме               |
 
 ## Пользователи и роли
 
@@ -210,16 +215,15 @@ type User {
 
 ## Что уже есть во фронтенде
 
-- `src/shared/api/session.ts` — сессия в httpOnly-cookie `access_token` / `refresh_token` (10 минут / 7 дней), функции `getSession`, `saveSession`, `clearSession`, `refreshSession`.
-- `src/features/users/api/raw-request.ts` — `loginRequest`, `refreshRequest` и `authedRequest` с автоматическим обновлением access-токена и повтором запроса.
-- `src/app/(platform)/layout.tsx` — `AuthGate`: при отсутствии сессии редиректит на `/login`.
+- `src/shared/api/session/session.ts` — сессия в httpOnly-cookie `access_token` / `refresh_token` (10 минут / 7 дней), функции `getSession`, `saveSession`, `clearSession`, `refreshSession`.
+- `src/shared/api/graphql/graphql.ts` — `gqlRequest` с заголовками `Authorization` / `Origin`; `src/shared/api/authed-request/authed-request.ts` — `authedGqlRequest` и `authedGqlRequestWithRefresh` (refresh + один ретрай); `src/shared/api/protected/protected.ts` — `protectedRequest` для серверных запросов с редиректом при отсутствии сессии.
+- `src/proxy.ts` — проверка сессии и обновление пары токенов для приватных маршрутов, гостевые маршруты уводят авторизованного на `/`.
+- Страницы авторизации: `/sign-in`, `/sign-up`, `/forgot-password`, `/reset-password?token=...`, `/verify-email` — Server Actions в `src/features/auth/api`.
+- `src/app/(platform)/layout.tsx` — `AuthGate` без сессии редиректит на `/login`; реальный маршрут входа — `/sign-in`, поэтому редирект требует правки на `SIGN_IN_ROUTE`.
+- Модуль пользователей: список и CRUD (Admin), профиль и аватар, навыки и языки, CV сотрудника (Admin) — `src/features/users`.
 
 ## Что ещё нужно реализовать
 
-Маршруты, на которые бэкенд ссылается из писем:
-
-- `/login` — вход (`login`, затем `saveSession`).
-- `/verify-email` — ввод 6-значного OTP; доступен только с валидным access-токеном (сохранить после `signup`).
-- `/reset-password?token=...` — новый пароль, токен из query уходит в `Authorization`.
-
-Все три маршрута пока отсутствуют. Также нет middleware для защиты редактора — сейчас проверка сессии выполняется в layout route group `(platform)`.
+- Страницы разделов из сайдбара: `/skills`, `/languages`, `/cvs`, `/departments`, `/positions`, `/projects`.
+- Админские справочники (`/admin/*`), настройки (`/settings`).
+- Поправить серверные редиректы с несуществующего `/login` на `/sign-in` (`AuthGate`, `protectedRequest`).

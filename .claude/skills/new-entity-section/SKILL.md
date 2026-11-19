@@ -9,7 +9,7 @@ Template: the Employees section (`/users`, `/users/[userId]/profile|skills|langu
 
 ## Steps
 1. Read the entity's operations in the GraphQL schema (list query with `SearchPaginationInput`, single query, create/update/delete mutations).
-2. Create `features/<entity>/` per the `fsd-nextjs` skill: `index.ts`, `api/<entity>.queries.ts`, `api/<entity>.actions.ts`, `model/mappers.ts`, `ui/`.
+2. Create `features/<entity>/` per the `fsd-nextjs` skill: `index.ts`, `api/<entity>.queries.ts`, `api/<entity>.mutations.ts`, `api/<entity>.actions.ts`, `model/` (record, zod schema, permissions), `ui/`.
 3. List page: `<Entity>Page({ search })` with an unkeyed `<Suspense>` around `<Toolbar />` and a `key={search}` Suspense around the async list. Toolbar is a client component with a debounced `router.replace` and removes the param when empty.
 4. Table: `<Entity>Table` with a last-column `<Entity>ActionsMenu` (client dropdown: View / Update / Delete; Delete calls a Server Action then revalidates).
 5. Routes under `app/(platform)/<entity>/page.tsx` following `nextjs-runtime-data` (sync page, inner async component in Suspense).

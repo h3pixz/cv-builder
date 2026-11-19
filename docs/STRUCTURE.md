@@ -2,15 +2,10 @@
 
 Каноническая структура репозитория. Подход Feature-Sliced Design: `app` → `features` → `shared`, импорты только вниз. Страницы живут в `features/<domain>/ui`, а маршруты в `app` — тонкие обёртки без бизнес-логики.
 
-Разделы, помеченные `план`, ещё не реализованы: файлы создаются вместе с функционалом, в пустых папках лежит только `.gitkeep`.
+Разделы, помеченные `план`, ещё не реализованы: файлы создаются вместе с функционалом. Слои `views`, `entities` и `store` пока не выделены.
 
 ```
 cv-builder/
-│
-├── public/
-│   ├── images/
-│   ├── icons/
-│   └── fonts/
 │
 ├── src/
 │   │
@@ -27,42 +22,37 @@ cv-builder/
 │   │   │   └── verify-email/
 │   │   │       └── page.tsx
 │   │   │
-│   │   ├── (dashboard)/                # план
-│   │   │   ├── users/
-│   │   │   │   └── page.tsx
-│   │   │   ├── profile/
-│   │   │   │   └── page.tsx
-│   │   │   ├── cvs/
-│   │   │   │   ├── page.tsx
-│   │   │   │   └── [cvId]/
-│   │   │   │       ├── page.tsx
-│   │   │   │       └── preview/
-│   │   │   │           └── page.tsx
-│   │   │   ├── skills/
-│   │   │   │   └── page.tsx
-│   │   │   ├── languages/
-│   │   │   │   └── page.tsx
-│   │   │   ├── admin/
-│   │   │   │   ├── skills/
-│   │   │   │   │   └── page.tsx
-│   │   │   │   ├── languages/
-│   │   │   │   │   └── page.tsx
-│   │   │   │   ├── positions/
-│   │   │   │   │   └── page.tsx
-│   │   │   │   ├── departments/
-│   │   │   │   │   └── page.tsx
-│   │   │   │   └── projects/
-│   │   │   │       └── page.tsx
-│   │   │   └── settings/
-│   │   │       └── page.tsx
+│   │   ├── (platform)/
+│   │   │   ├── layout.tsx              # Sidebar + AuthGate
+│   │   │   └── users/
+│   │   │       ├── page.tsx            # список сотрудников
+│   │   │       ├── error.tsx
+│   │   │       └── [userId]/
+│   │   │           ├── layout.tsx      # breadcrumbs + табы
+│   │   │           ├── page.tsx        # редирект на /profile
+│   │   │           ├── profile/
+│   │   │           │   └── page.tsx
+│   │   │           ├── skills/
+│   │   │           │   ├── page.tsx
+│   │   │           │   └── error.tsx
+│   │   │           ├── languages/
+│   │   │           │   ├── page.tsx
+│   │   │           │   └── error.tsx
+│   │   │           └── cvs/
+│   │   │               ├── page.tsx
+│   │   │               ├── error.tsx
+│   │   │               └── [cvId]/
+│   │   │                   ├── page.tsx
+│   │   │                   └── error.tsx
 │   │   │
-│   │   ├── layout.tsx
+│   │   ├── layout.tsx                  # шрифт, тема, guards, Toaster
 │   │   ├── page.tsx
 │   │   ├── globals.css
-│   │   ├── not-found.tsx               # план
-│   │   └── error.tsx                   # план
+│   │   ├── error.tsx                   # No Internet
+│   │   ├── global-error.tsx
+│   │   └── not-found.tsx               # 404
 │   │
-│   ├── proxy.ts                        # проверка сессии для приватных маршрутов
+│   ├── proxy.ts                        # проверка сессии и refresh для приватных маршрутов
 │   │
 │   ├── features/
 │   │   │
@@ -92,7 +82,7 @@ cv-builder/
 │   │   │   │   ├── forgot-password.ts
 │   │   │   │   ├── reset-password.ts
 │   │   │   │   ├── logout.ts
-│   │   │   │   └── request-origin.ts
+│   │   │   │   └── token-payload.ts
 │   │   │   ├── model/                  # схемы валидации
 │   │   │   │   ├── validation.ts
 │   │   │   │   ├── sign-in-schema.ts
@@ -101,94 +91,183 @@ cv-builder/
 │   │   │   │   └── reset-password-schema.ts
 │   │   │   └── index.ts
 │   │   │
-│   │   ├── users/                      # план
+│   │   ├── errors/
 │   │   │   ├── ui/
-│   │   │   ├── api/
-│   │   │   ├── model/
+│   │   │   │   ├── no-internet-page.tsx
+│   │   │   │   ├── not-found-page.tsx
+│   │   │   │   ├── device-error-page.tsx
+│   │   │   │   ├── sad-monitor-illustration.tsx
+│   │   │   │   ├── offline-guard.tsx
+│   │   │   │   ├── device-guard.tsx
+│   │   │   │   └── *.test.tsx
 │   │   │   └── index.ts
 │   │   │
-│   │   ├── cvs/                        # план
+│   │   ├── users/
 │   │   │   ├── ui/
+│   │   │   │   ├── users-page.tsx
+│   │   │   │   ├── users-header.tsx
+│   │   │   │   ├── users-toolbar.tsx
+│   │   │   │   ├── users-table.tsx
+│   │   │   │   ├── users-pagination.tsx
+│   │   │   │   ├── create-user-dialog.tsx
+│   │   │   │   ├── update-user-dialog.tsx
+│   │   │   │   ├── delete-user-dialog.tsx
+│   │   │   │   ├── user-layout.tsx
+│   │   │   │   ├── user-breadcrumbs.tsx
+│   │   │   │   ├── user-tabs.tsx
+│   │   │   │   ├── user-current-page.tsx
+│   │   │   │   ├── profile/
+│   │   │   │   │   ├── user-profile-page.tsx
+│   │   │   │   │   ├── user-profile-form.tsx
+│   │   │   │   │   ├── avatar-upload.tsx
+│   │   │   │   │   └── profile-skeleton.tsx
+│   │   │   │   ├── skills/
+│   │   │   │   │   └── user-skills-page.tsx
+│   │   │   │   ├── languages/
+│   │   │   │   │   └── user-languages-page.tsx
+│   │   │   │   ├── levels/
+│   │   │   │   │   ├── level-manager.tsx
+│   │   │   │   │   └── level-list-skeleton.tsx
+│   │   │   │   └── cvs/
+│   │   │   │       ├── user-cvs-page.tsx
+│   │   │   │       ├── cvs-table.tsx
+│   │   │   │       ├── cvs-toolbar.tsx
+│   │   │   │       ├── cvs-sort-header.tsx
+│   │   │   │       ├── cvs-table-skeleton.tsx
+│   │   │   │       ├── cv-actions-menu.tsx
+│   │   │   │       ├── cv-dialog.tsx
+│   │   │   │       ├── delete-cv-dialog.tsx
+│   │   │   │       ├── user-cv-details-page.tsx
+│   │   │   │       └── cv-details.tsx
 │   │   │   ├── api/
+│   │   │   │   ├── users.queries.ts
+│   │   │   │   ├── users.mutations.ts
+│   │   │   │   ├── users.actions.ts
+│   │   │   │   ├── profile.queries.ts
+│   │   │   │   ├── profile.mutations.ts
+│   │   │   │   ├── profile.actions.ts
+│   │   │   │   ├── profile-levels.actions.ts
+│   │   │   │   ├── profile-revalidate.ts
+│   │   │   │   ├── cvs.queries.ts
+│   │   │   │   ├── cvs.mutations.ts
+│   │   │   │   ├── cvs.actions.ts
+│   │   │   │   └── run-authed.ts
 │   │   │   ├── model/
+│   │   │   │   ├── action-result.ts
+│   │   │   │   ├── user-schema.ts
+│   │   │   │   ├── user-record.ts
+│   │   │   │   ├── profile-schema.ts
+│   │   │   │   ├── profile-permissions.ts
+│   │   │   │   ├── avatar.ts
+│   │   │   │   ├── levels.ts
+│   │   │   │   ├── level-forms.ts
+│   │   │   │   ├── cv-schema.ts
+│   │   │   │   ├── cv-permissions.ts
+│   │   │   │   └── cv-record.ts
 │   │   │   └── index.ts
 │   │   │
+│   │   ├── cvs/                        # план: отдельная фича резюме
 │   │   ├── skills/                     # план
-│   │   │   ├── ui/
-│   │   │   ├── api/
-│   │   │   ├── model/
-│   │   │   └── index.ts
-│   │   │
 │   │   ├── languages/                  # план
-│   │   │   ├── ui/
-│   │   │   ├── api/
-│   │   │   ├── model/
-│   │   │   └── index.ts
-│   │   │
 │   │   ├── admin/                      # план
-│   │   │   ├── ui/
-│   │   │   ├── api/
-│   │   │   ├── model/
-│   │   │   └── index.ts
-│   │   │
 │   │   └── settings/                   # план
-│   │       ├── ui/
-│   │       ├── api/
-│   │       ├── model/
-│   │       └── index.ts
 │   │
 │   ├── shared/
-│   │   ├── ui/                         # UI-kit: button, input, textarea, select, level, toast
+│   │   ├── ui/
+│   │   │   ├── avatar/
+│   │   │   ├── breadcrumb/
+│   │   │   ├── button/
+│   │   │   ├── checkbox/
+│   │   │   ├── dialog/
+│   │   │   ├── dropdown-menu/
+│   │   │   ├── input/
+│   │   │   ├── label/
+│   │   │   ├── level/
+│   │   │   ├── pagination/
+│   │   │   ├── select/
+│   │   │   ├── table/
+│   │   │   ├── textarea/
+│   │   │   └── toast/
 │   │   ├── api/
 │   │   │   ├── graphql/
-│   │   │   │   ├── authed-request.ts   # запросы с access-токеном и refresh-ретраем
-│   │   │   │   ├── client.ts
-│   │   │   │   ├── errors.ts
-│   │   │   │   ├── generated/          # типы из схемы (codegen)
-│   │   │   │   │   ├── gql.ts
-│   │   │   │   │   ├── graphql.ts
-│   │   │   │   │   └── index.ts
-│   │   │   │   ├── documents.ts        # общие документы (UpdateToken)
-│   │   │   │   └── index.ts
-│   │   │   ├── jwt.ts                  # проверка срока access-токена (exp)
-│   │   │   ├── session.ts
-│   │   │   ├── session-cookies.ts      # имена cookie и настройки сессии
+│   │   │   │   ├── graphql.ts          # gqlRequest()
+│   │   │   │   └── generated/          # типы из схемы (codegen)
+│   │   │   ├── authed-request/
+│   │   │   │   └── authed-request.ts   # authedGqlRequest, authedGqlRequestWithRefresh
+│   │   │   ├── protected/
+│   │   │   │   └── protected.ts        # protectedRequest
+│   │   │   ├── documents/
+│   │   │   │   └── documents.ts        # общие документы (UpdateToken)
+│   │   │   ├── errors/
+│   │   │   │   └── errors.ts           # коды и тексты ошибок
+│   │   │   ├── jwt/
+│   │   │   │   └── jwt.ts              # проверка срока access-токена
+│   │   │   ├── session/
+│   │   │   │   └── session.ts
+│   │   │   ├── session-cookies/
+│   │   │   │   └── session-cookies.ts  # имена cookie и настройки сессии
+│   │   │   ├── request-origin.ts       # origin запроса для ссылок в письмах
 │   │   │   └── index.ts
-│   │   ├── config/                     # env и константы маршрутов
+│   │   ├── config/
 │   │   │   ├── env.ts
 │   │   │   ├── routes.ts
+│   │   │   ├── theme-script.ts
 │   │   │   └── index.ts
-│   │   ├── helpers/                    # переиспользуемые чистые функции
-│   │   │   └── redirect-path.ts        # безопасный next-редирект
-│   │   ├── hooks/                      # общие React-хуки
-│   │   └── types/                      # общие типы
+│   │   ├── helpers/
+│   │   │   ├── date-formatter.ts
+│   │   │   ├── go-back.ts
+│   │   │   ├── redirect-path.ts
+│   │   │   ├── reload-page.ts
+│   │   │   └── index.ts
+│   │   ├── hooks/
+│   │   │   ├── use-media-query.ts
+│   │   │   └── use-online-status.ts
+│   │   └── types/                      # план
+│   │
+│   ├── widgets/
+│   │   └── sidebar/
+│   │       ├── sidebar.tsx
+│   │       └── index.ts
 │   │
 │   ├── lib/
-│   │   ├── utils.ts                    # cn() и утилиты библиотек
+│   │   ├── utils.ts                    # cn()
 │   │   └── utils.test.ts
 │   │
 │   └── store/                          # план: глобальное состояние Zustand
-│       ├── index.ts
-│       ├── ui.store.ts
-│       └── user.store.ts
 │
 ├── e2e/                                # план: Playwright
 │
+├── docs/
+│   ├── BACKEND.md
+│   ├── PAGE_CODE.md                    # в .gitignore
+│   ├── PROGRESS.md
+│   ├── STRUCTURE.md
+│   ├── TZ.md
+│   └── reports/                        # в .gitignore
+│
 ├── .env.example
 ├── .gitignore
+├── AGENTS.md
+├── CLAUDE.md
+├── codegen.ts
 ├── components.json
 ├── eslint.config.mjs
+├── introspectionSchema.full.json
 ├── next.config.ts
+├── package.json
+├── postcss.config.mjs
+├── README.md
+├── schema.graphql
 ├── tsconfig.json
 ├── vitest.config.mts
-├── playwright.config.ts                # план
-└── package.json
+└── vitest.setup.ts
 ```
 
 ## Правила
 
 - Маршрут — тонкий `page.tsx` в `src/app/<route-group>/<route>/`; вся разметка и логика — в `features/<domain>/ui`.
+- Async-компоненты, читающие `params`, `searchParams`, `cookies()` или `headers()`, оборачиваются в `<Suspense>` в файле маршрута (Next 16 + `cacheComponents`).
 - Внутри фичи: `ui` не импортирует `api` вышестоящих слоёв; типы и схемы — в `model`, запросы и Server Actions — в `api`, наружу — только через `index.ts`.
 - Общее переиспользуемое — `shared` (сначала `shared/ui`, затем `shared/helpers`, `hooks`, `types`, `config`).
-- Глобальное клиентское состояние (черновик резюме, UI) — в `src/store` (Zustand); серверные данные в store не дублируются.
-- Тесты — рядом с модулем: `*.test.ts(x)` (Vitest + Testing Library); сквозные — в `e2e/` (Playwright).
+- Глобальное клиентское состояние (черновик резюме, UI) — в `src/store` (Zustand), когда слой появится; серверные данные в store не дублируются.
+- Тесты — рядом с модулем: `*.test.ts(x)` (Vitest + Testing Library); сквозные — в `e2e/` (Playwright, план).
