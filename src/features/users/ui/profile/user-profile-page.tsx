@@ -1,9 +1,8 @@
 import { notFound } from "next/navigation";
 
+import { getCurrentUser } from "@/shared/api";
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
 import { formatDate } from "@/shared/helpers";
-
-import { getCurrentUser } from "../../api/profile.queries";
 import {
   getDepartmentOptions,
   getPositionOptions,

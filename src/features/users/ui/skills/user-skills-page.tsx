@@ -1,12 +1,11 @@
-import { getSession } from "@/shared/api";
+import { getCurrentUser, getSession } from "@/shared/api";
+import { groupSkills, masteryLevel } from "@/shared/helpers";
 
 import {
-  getCurrentUser,
   getSkillCategories,
   getSkillOptions,
   getUserSkills,
 } from "../../api/profile.queries";
-import { groupSkills, masteryLevel } from "../../model/levels";
 import { getProfilePermissions } from "../../model/profile-permissions";
 import { LevelManager, type LevelOption } from "../levels/level-manager";
 

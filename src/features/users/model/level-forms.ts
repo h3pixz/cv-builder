@@ -3,7 +3,7 @@ import { z } from "zod";
 import {
   LANGUAGE_PROFICIENCY_VALUES,
   SKILL_MASTERY_VALUES,
-} from "./levels";
+} from "@/shared/helpers";
 
 /** Messages are different for skills and languages, the shape is the same. */
 export function createLevelFormSchema(messages: {

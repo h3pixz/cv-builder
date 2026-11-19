@@ -1,6 +1,5 @@
 import { z } from "zod";
 
-/** The backend accepts education as optional, but the UI requires it. */
 export const CV_TEXT_MAX = 255;
 
 export const cvSchema = z.object({

@@ -1,12 +1,14 @@
 import { Suspense } from "react";
-import { UserCvDetailsPage } from "@/features/users";
+import { redirect } from "next/navigation";
 
-type Params = Promise<{ userId: string; cvId: string }>;
+type Params = Promise<{ cvId: string }>;
 
 async function Content({ params }: { params: Params }) {
-  const { userId, cvId } = await params;
+  const { cvId } = await params;
 
-  return <UserCvDetailsPage userId={userId} cvId={cvId} />;
+  redirect(`/cvs/${cvId}/details`);
+
+  return null;
 }
 
 export default function Page({ params }: { params: Params }) {

@@ -3,8 +3,6 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-import { deleteCvAction } from "../../api/cvs.actions";
-import type { CvRecord } from "../../model/cv-record";
 import { Button } from "@/shared/ui/button";
 import {
   Dialog,
@@ -16,15 +14,16 @@ import {
 } from "@/shared/ui/dialog";
 import { toast } from "@/shared/ui/toast";
 
+import { deleteCvAction } from "../api/cvs.actions";
+import type { CvRecord } from "../model/cv-record";
+
 type DeleteCvDialogProps = {
-  userId: string;
   cv: CvRecord | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 };
 
 export function DeleteCvDialog({
-  userId,
   cv,
   open,
   onOpenChange,
@@ -40,7 +39,7 @@ export function DeleteCvDialog({
     setFormError(null);
 
     try {
-      const result = await deleteCvAction(userId, cv.id);
+      const result = await deleteCvAction(cv.ownerId, cv.id);
 
       if (!result.success) {
         setFormError(result.error);
@@ -70,9 +69,17 @@ export function DeleteCvDialog({
         <DialogHeader>
           <DialogTitle>Delete CV</DialogTitle>
           <DialogDescription>
-            {cv
-              ? `Are you sure you want to delete CV ${cv.name}?`
-              : "Are you sure you want to delete this CV?"}
+            {cv ? (
+              <>
+                Are you sure you want to delete CV{" "}
+                <strong className="font-semibold text-foreground">
+                  {cv.name}
+                </strong>
+                ?
+              </>
+            ) : (
+              "Are you sure you want to delete this CV?"
+            )}
           </DialogDescription>
         </DialogHeader>
 

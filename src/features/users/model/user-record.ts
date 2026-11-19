@@ -1,4 +1,4 @@
-import type { UserRoleValue } from "./user-schema";
+import type { UserRoleValue } from "@/shared/types/user-role";
 
 export type UserRecord = {
   id: string;

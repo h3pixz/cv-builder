@@ -1,24 +1,14 @@
 import "server-only";
 
-import {
-  ERROR_MESSAGES,
-  getSession,
-  isUnauthorizedError,
-  refreshSession,
-} from "@/shared/api";
+import { toActionError, type ActionResult } from "./action-result";
+import { ERROR_MESSAGES, isUnauthorizedError } from "./errors/errors";
+import { getSession, refreshSession } from "./session/session";
 
-import {
-  toUsersActionError,
-  type UsersActionResult,
-} from "../model/action-result";
+export type ActionFailure = Extract<ActionResult, { success: false }>;
 
-export type UsersActionFailure = Extract<UsersActionResult, { success: false }>;
+export type AuthedResult<T> = { success: true; data: T } | ActionFailure;
 
-export type AuthedResult<T> =
-  | { success: true; data: T }
-  | UsersActionFailure;
-
-export function unauthorizedFailure(): UsersActionFailure {
+export function unauthorizedFailure(): ActionFailure {
   return {
     success: false,
     error: ERROR_MESSAGES.unauthorized,
@@ -26,7 +16,7 @@ export function unauthorizedFailure(): UsersActionFailure {
   };
 }
 
-export function forbiddenFailure(): UsersActionFailure {
+export function forbiddenFailure(): ActionFailure {
   return {
     success: false,
     error: ERROR_MESSAGES.insufficientPermissions,
@@ -47,7 +37,7 @@ export async function runAuthed<T>(
     return { success: true, data: await operation(session.access_token) };
   } catch (error) {
     if (!isUnauthorizedError(error)) {
-      return toUsersActionError(error) as UsersActionFailure;
+      return toActionError(error) as ActionFailure;
     }
   }
 
@@ -63,6 +53,6 @@ export async function runAuthed<T>(
       data: await operation(refreshed.access_token),
     };
   } catch (error) {
-    return toUsersActionError(error) as UsersActionFailure;
+    return toActionError(error) as ActionFailure;
   }
 }

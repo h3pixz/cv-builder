@@ -7,11 +7,11 @@ type Props = {
   reset: () => void;
 };
 
-export default function CvDetailsError({ error, reset }: Props) {
+export default function CvsError({ error, reset }: Props) {
   return (
     <section className="flex min-h-64 flex-col items-center justify-center gap-4 text-center">
       <h2 className="text-base font-semibold text-foreground">
-        Failed to load CV details
+        Failed to load CVs
       </h2>
       <p className="max-w-md text-sm text-muted-foreground">
         {error.message || "Something went wrong. Please try again."}

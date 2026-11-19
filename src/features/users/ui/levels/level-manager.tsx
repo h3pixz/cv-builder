@@ -42,7 +42,7 @@ import {
   type LanguageProficiencyValue,
   type LevelGroup,
   type SkillMasteryValue,
-} from "../../model/levels";
+} from "@/shared/helpers";
 
 export type LevelOption = SelectOption & { categoryId?: string | null };
 

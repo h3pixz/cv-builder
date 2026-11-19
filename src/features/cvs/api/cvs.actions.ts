@@ -2,14 +2,18 @@
 
 import { revalidatePath } from "next/cache";
 
-import type { UsersActionResult } from "../model/action-result";
-import { canManageCvs } from "../model/cv-permissions";
+import {
+  type ActionResult,
+  forbiddenFailure,
+  getCurrentUser,
+  runAuthed,
+  unauthorizedFailure,
+} from "@/shared/api";
+
 import { cvSchema, type CvValues } from "../model/cv-schema";
 import { createCv, deleteCv, updateCv } from "./cvs.mutations";
-import { getCurrentUser } from "./profile.queries";
-import { forbiddenFailure, runAuthed } from "./run-authed";
 
-function invalid(message: string | undefined): UsersActionResult {
+function invalid(message: string | undefined): ActionResult {
   return {
     success: false,
     error: message ?? "Invalid CV data",
@@ -17,31 +21,35 @@ function invalid(message: string | undefined): UsersActionResult {
   };
 }
 
-async function canManage(): Promise<boolean> {
-  const me = await getCurrentUser();
+function revalidateCvs(ownerId: string | null, cvId?: string) {
+  revalidatePath("/cvs");
 
-  return canManageCvs(me.role);
-}
-
-function revalidateCvs(userId: string, cvId?: string) {
-  revalidatePath(`/users/${userId}/cvs`);
+  if (ownerId) {
+    revalidatePath(`/users/${ownerId}/cvs`);
+  }
 
   if (cvId) {
-    revalidatePath(`/users/${userId}/cvs/${cvId}`);
+    revalidatePath(`/cvs/${cvId}`, "layout");
   }
 }
 
 export async function createCvAction(
-  userId: string,
+  ownerUserId: string,
   values: CvValues,
-): Promise<UsersActionResult> {
+): Promise<ActionResult> {
   const parsed = cvSchema.safeParse(values);
 
   if (!parsed.success) {
     return invalid(parsed.error.issues[0]?.message);
   }
 
-  if (!(await canManage())) {
+  const me = await getCurrentUser();
+
+  if (!me.id) {
+    return unauthorizedFailure();
+  }
+
+  if (me.role !== "Admin" && me.id !== ownerUserId) {
     return forbiddenFailure();
   }
 
@@ -49,7 +57,7 @@ export async function createCvAction(
   const result = await runAuthed((accessToken) =>
     createCv(
       {
-        userId,
+        userId: ownerUserId,
         name: data.name,
         education: data.education,
         description: data.description,
@@ -62,24 +70,20 @@ export async function createCvAction(
     return result;
   }
 
-  revalidateCvs(userId);
+  revalidateCvs(ownerUserId);
 
   return { success: true };
 }
 
 export async function updateCvAction(
-  userId: string,
+  ownerUserId: string | null,
   cvId: string,
   values: CvValues,
-): Promise<UsersActionResult> {
+): Promise<ActionResult> {
   const parsed = cvSchema.safeParse(values);
 
   if (!parsed.success) {
     return invalid(parsed.error.issues[0]?.message);
-  }
-
-  if (!(await canManage())) {
-    return forbiddenFailure();
   }
 
   const data = parsed.data;
@@ -99,19 +103,15 @@ export async function updateCvAction(
     return result;
   }
 
-  revalidateCvs(userId, cvId);
+  revalidateCvs(ownerUserId, cvId);
 
   return { success: true };
 }
 
 export async function deleteCvAction(
-  userId: string,
+  ownerUserId: string | null,
   cvId: string,
-): Promise<UsersActionResult> {
-  if (!(await canManage())) {
-    return forbiddenFailure();
-  }
-
+): Promise<ActionResult> {
   const result = await runAuthed((accessToken) =>
     deleteCv(cvId, { accessToken }),
   );
@@ -120,7 +120,7 @@ export async function deleteCvAction(
     return result;
   }
 
-  revalidateCvs(userId, cvId);
+  revalidateCvs(ownerUserId, cvId);
 
   return { success: true };
 }

@@ -1,11 +1,7 @@
-import { getSession } from "@/shared/api";
+import { getCurrentUser, getSession } from "@/shared/api";
+import { proficiencyLevel, type LevelGroup } from "@/shared/helpers";
 
-import {
-  getCurrentUser,
-  getLanguageOptions,
-  getUserLanguages,
-} from "../../api/profile.queries";
-import { proficiencyLevel, type LevelGroup } from "../../model/levels";
+import { getLanguageOptions, getUserLanguages } from "../../api/profile.queries";
 import { getProfilePermissions } from "../../model/profile-permissions";
 import { LevelManager } from "../levels/level-manager";
 

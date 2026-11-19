@@ -10,10 +10,10 @@ import { Input } from "@/shared/ui/input";
 import { CvDialog } from "./cv-dialog";
 
 export function CvsToolbar({
-  userId,
+  ownerUserId,
   initialSearch,
 }: {
-  userId: string;
+  ownerUserId: string;
   initialSearch: string;
 }) {
   const router = useRouter();
@@ -25,8 +25,6 @@ export function CvsToolbar({
   const [isPending, startTransition] = useTransition();
   const previousUrlSearch = useRef(urlSearch);
 
-  // Follow external URL changes (Back/Forward) without clobbering what the user
-  // is currently typing.
   useEffect(() => {
     if (urlSearch === previousUrlSearch.current) return;
 
@@ -43,6 +41,7 @@ export function CvsToolbar({
 
     const timeoutId = setTimeout(() => {
       const params = new URLSearchParams(searchParams.toString());
+      params.delete("page");
 
       if (trimmed) {
         params.set("search", trimmed);
@@ -87,7 +86,7 @@ export function CvsToolbar({
 
       <CvDialog
         mode="create"
-        userId={userId}
+        ownerUserId={ownerUserId}
         open={createOpen}
         onOpenChange={setCreateOpen}
       />

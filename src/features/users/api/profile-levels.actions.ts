@@ -2,7 +2,13 @@
 
 import { z } from "zod";
 
-import type { UsersActionResult } from "../model/action-result";
+import {
+  type ActionResult,
+  forbiddenFailure,
+  getCurrentUser,
+  runAuthed,
+} from "@/shared/api";
+
 import {
   addLanguageSchema,
   addSkillSchema,
@@ -18,13 +24,8 @@ import {
   updateUserLanguage,
   updateUserSkill,
 } from "./profile.mutations";
-import {
-  getCurrentUser,
-  getUserLanguages,
-  getUserSkills,
-} from "./profile.queries";
+import { getUserLanguages, getUserSkills } from "./profile.queries";
 import { revalidateUser } from "./profile-revalidate";
-import { forbiddenFailure, runAuthed } from "./run-authed";
 
 type SkillValues = z.infer<typeof addSkillSchema>;
 type UpdateSkillValues = z.infer<typeof updateSkillSchema>;
@@ -35,7 +36,7 @@ const deleteSchema = z
   .array(z.string().trim().min(1))
   .min(1, "Select at least one item");
 
-function invalid(message: string | undefined): UsersActionResult {
+function invalid(message: string | undefined): ActionResult {
   return {
     success: false,
     error: message ?? "Invalid data",
@@ -60,7 +61,7 @@ async function canManageProfile(userId: string): Promise<boolean> {
 export async function addSkillAction(
   userId: string,
   values: SkillValues,
-): Promise<UsersActionResult> {
+): Promise<ActionResult> {
   const parsed = addSkillSchema.safeParse(values);
 
   if (!parsed.success) {
@@ -96,7 +97,7 @@ export async function addSkillAction(
 export async function updateSkillAction(
   userId: string,
   values: UpdateSkillValues,
-): Promise<UsersActionResult> {
+): Promise<ActionResult> {
   const parsed = updateSkillSchema.safeParse(values);
 
   if (!parsed.success) {
@@ -136,7 +137,7 @@ export async function updateSkillAction(
 export async function deleteSkillsAction(
   userId: string,
   names: string[],
-): Promise<UsersActionResult> {
+): Promise<ActionResult> {
   const parsed = deleteSchema.safeParse(names);
 
   if (!parsed.success) {
@@ -167,7 +168,7 @@ export async function deleteSkillsAction(
 export async function addLanguageAction(
   userId: string,
   values: LanguageValues,
-): Promise<UsersActionResult> {
+): Promise<ActionResult> {
   const parsed = addLanguageSchema.safeParse(values);
 
   if (!parsed.success) {
@@ -202,7 +203,7 @@ export async function addLanguageAction(
 export async function updateLanguageAction(
   userId: string,
   values: UpdateLanguageValues,
-): Promise<UsersActionResult> {
+): Promise<ActionResult> {
   const parsed = updateLanguageSchema.safeParse(values);
 
   if (!parsed.success) {
@@ -247,7 +248,7 @@ export async function updateLanguageAction(
 export async function deleteLanguagesAction(
   userId: string,
   names: string[],
-): Promise<UsersActionResult> {
+): Promise<ActionResult> {
   const parsed = deleteSchema.safeParse(names);
 
   if (!parsed.success) {

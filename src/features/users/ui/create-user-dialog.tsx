@@ -5,14 +5,11 @@ import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 
+import { type ActionResult } from "@/shared/api";
+import { USER_ROLES, type UserRoleValue } from "@/shared/types/user-role";
+
 import { createUserAction } from "../api/users.actions";
-import type { UsersActionResult } from "../model/action-result";
-import {
-  createUserSchema,
-  USER_ROLES,
-  type CreateUserValues,
-  type UserRoleValue,
-} from "../model/user-schema";
+import { createUserSchema, type CreateUserValues } from "../model/user-schema";
 import { Button } from "@/shared/ui/button";
 import {
   Dialog,
@@ -83,7 +80,7 @@ function CreateUserForm({
   async function onSubmit(values: CreateUserValues) {
     setFormError(null);
 
-    const result: UsersActionResult = await createUserAction(values);
+    const result: ActionResult = await createUserAction(values);
 
     if (!result.success) {
       if (result.code === "userAlreadyExists") {

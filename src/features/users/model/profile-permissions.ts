@@ -1,4 +1,4 @@
-import type { UserRoleValue } from "./user-schema";
+import type { UserRoleValue } from "@/shared/types/user-role";
 
 export type ProfilePermissions = {
   /** First/last name, department and position fields can be changed. */

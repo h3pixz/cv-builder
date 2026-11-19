@@ -5,15 +5,11 @@ import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, useWatch } from "react-hook-form";
 
-import { createCvAction, updateCvAction } from "../../api/cvs.actions";
-import type { UsersActionResult } from "../../model/action-result";
-import type { CvRecord } from "../../model/cv-record";
-import { CV_TEXT_MAX, cvSchema, type CvValues } from "../../model/cv-schema";
+import type { ActionResult } from "@/shared/api";
 import { Button } from "@/shared/ui/button";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -21,6 +17,10 @@ import {
 import { Input } from "@/shared/ui/input";
 import { Textarea } from "@/shared/ui/textarea";
 import { toast } from "@/shared/ui/toast";
+
+import { createCvAction, updateCvAction } from "../api/cvs.actions";
+import type { CvRecord } from "../model/cv-record";
+import { CV_TEXT_MAX, cvSchema, type CvValues } from "../model/cv-schema";
 
 const EMPTY_VALUES: CvValues = {
   name: "",
@@ -30,7 +30,7 @@ const EMPTY_VALUES: CvValues = {
 
 type CvDialogProps = {
   mode: "create" | "update";
-  userId: string;
+  ownerUserId: string;
   cv?: CvRecord | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -46,13 +46,13 @@ function toFormValues(cv: CvRecord): CvValues {
 
 function CvForm({
   mode,
-  userId,
+  ownerUserId,
   cv,
   onDone,
   onCancel,
 }: {
   mode: "create" | "update";
-  userId: string;
+  ownerUserId: string;
   cv?: CvRecord | null;
   onDone: () => void;
   onCancel: () => void;
@@ -86,12 +86,12 @@ function CvForm({
   async function onSubmit(values: CvValues) {
     setFormError(null);
 
-    let result: UsersActionResult;
+    let result: ActionResult;
 
     if (isCreate) {
-      result = await createCvAction(userId, values);
+      result = await createCvAction(ownerUserId, values);
     } else if (cv) {
-      result = await updateCvAction(userId, cv.id, values);
+      result = await updateCvAction(cv.ownerId ?? ownerUserId, cv.id, values);
     } else {
       return;
     }
@@ -118,15 +118,18 @@ function CvForm({
   return (
     <form className="space-y-4" noValidate onSubmit={handleSubmit(onSubmit)}>
       <div>
-        <label
-          htmlFor="cv-name"
-          className="mb-1 block text-xs text-muted-foreground"
-        >
-          Name
-        </label>
+        {!isCreate && (
+          <label
+            htmlFor="cv-name"
+            className="mb-1 block text-xs text-muted-foreground"
+          >
+            Name
+          </label>
+        )}
         <Input
           id="cv-name"
           placeholder="Name"
+          aria-label={isCreate ? "Name" : undefined}
           maxLength={CV_TEXT_MAX}
           variant={errors.name ? "error" : "default"}
           aria-invalid={errors.name ? true : undefined}
@@ -140,15 +143,18 @@ function CvForm({
       </div>
 
       <div>
-        <label
-          htmlFor="cv-education"
-          className="mb-1 block text-xs text-muted-foreground"
-        >
-          Education
-        </label>
+        {!isCreate && (
+          <label
+            htmlFor="cv-education"
+            className="mb-1 block text-xs text-muted-foreground"
+          >
+            Education
+          </label>
+        )}
         <Input
           id="cv-education"
           placeholder="Education"
+          aria-label={isCreate ? "Education" : undefined}
           maxLength={CV_TEXT_MAX}
           variant={errors.education ? "error" : "default"}
           aria-invalid={errors.education ? true : undefined}
@@ -162,15 +168,19 @@ function CvForm({
       </div>
 
       <div>
-        <label
-          htmlFor="cv-description"
-          className="mb-1 block text-xs text-muted-foreground"
-        >
-          Description
-        </label>
+        {!isCreate && (
+          <label
+            htmlFor="cv-description"
+            className="mb-1 block text-xs text-muted-foreground"
+          >
+            Description
+          </label>
+        )}
         <Textarea
           id="cv-description"
           placeholder="Description"
+          aria-label={isCreate ? "Description" : undefined}
+          className="min-h-40"
           variant={errors.description ? "error" : "default"}
           aria-invalid={errors.description ? true : undefined}
           {...register("description")}
@@ -202,7 +212,7 @@ function CvForm({
           variant="primary"
           disabled={isSubmitting || (isCreate && !isComplete)}
         >
-          {isCreate ? "Create" : "Save"}
+          {isCreate ? "Create" : "Update"}
         </Button>
       </DialogFooter>
     </form>
@@ -211,7 +221,7 @@ function CvForm({
 
 export function CvDialog({
   mode,
-  userId,
+  ownerUserId,
   cv,
   open,
   onOpenChange,
@@ -220,20 +230,15 @@ export function CvDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent className="max-w-xl">
         <DialogHeader>
           <DialogTitle>{isCreate ? "Create CV" : "Update CV"}</DialogTitle>
-          <DialogDescription>
-            {isCreate
-              ? "Create a CV for the selected employee."
-              : "Update the CV details."}
-          </DialogDescription>
         </DialogHeader>
 
         {isCreate || cv ? (
           <CvForm
             mode={mode}
-            userId={userId}
+            ownerUserId={ownerUserId}
             cv={cv}
             onCancel={() => onOpenChange(false)}
             onDone={() => onOpenChange(false)}

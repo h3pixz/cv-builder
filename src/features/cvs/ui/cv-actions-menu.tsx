@@ -4,7 +4,6 @@ import { useState } from "react";
 import Link from "next/link";
 import { MoreVerticalIcon } from "lucide-react";
 
-import type { CvRecord } from "../../model/cv-record";
 import { Button } from "@/shared/ui/button";
 import {
   DropdownMenu,
@@ -13,16 +12,11 @@ import {
   DropdownMenuTrigger,
 } from "@/shared/ui/dropdown-menu";
 
+import type { CvRecord } from "../model/cv-record";
 import { CvDialog } from "./cv-dialog";
 import { DeleteCvDialog } from "./delete-cv-dialog";
 
-export function CvActionsMenu({
-  userId,
-  cv,
-}: {
-  userId: string;
-  cv: CvRecord;
-}) {
+export function CvActionsMenu({ cv }: { cv: CvRecord }) {
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
 
@@ -41,9 +35,7 @@ export function CvActionsMenu({
           <MoreVerticalIcon className="size-4" />
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-auto min-w-32">
-          <DropdownMenuItem
-            render={<Link href={`/users/${userId}/cvs/${cv.id}`} />}
-          >
+          <DropdownMenuItem render={<Link href={`/cvs/${cv.id}`} />}>
             View
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => setEditOpen(true)}>
@@ -60,18 +52,13 @@ export function CvActionsMenu({
 
       <CvDialog
         mode="update"
-        userId={userId}
+        ownerUserId={cv.ownerId ?? ""}
         cv={cv}
         open={editOpen}
         onOpenChange={setEditOpen}
       />
 
-      <DeleteCvDialog
-        userId={userId}
-        cv={cv}
-        open={deleteOpen}
-        onOpenChange={setDeleteOpen}
-      />
+      <DeleteCvDialog cv={cv} open={deleteOpen} onOpenChange={setDeleteOpen} />
     </>
   );
 }

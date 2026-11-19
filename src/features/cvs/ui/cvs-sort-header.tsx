@@ -27,6 +27,7 @@ export function CvsSortHeader({
 
   function toggleSort() {
     const params = new URLSearchParams(searchParams.toString());
+    params.delete("page");
 
     if (order === undefined) {
       params.set("sort_by", "name");
