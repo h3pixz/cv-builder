@@ -26,7 +26,19 @@ cv-builder/
 │   │   │   ├── layout.tsx              # Sidebar + AuthGate
 │   │   │   ├── cvs/
 │   │   │   │   ├── page.tsx            # раздел CV
-│   │   │   │   └── error.tsx
+│   │   │   │   ├── error.tsx
+│   │   │   │   └── [cvId]/
+│   │   │   │       ├── layout.tsx      # breadcrumbs + табы CV
+│   │   │   │       ├── page.tsx        # редирект на /cvs/[cvId]/details
+│   │   │   │       ├── details/
+│   │   │   │       │   ├── page.tsx    # форма Details
+│   │   │   │       │   └── error.tsx
+│   │   │   │       ├── skills/
+│   │   │   │       │   ├── page.tsx    # навыки CV
+│   │   │   │       │   └── error.tsx
+│   │   │   │       └── projects/
+│   │   │   │           ├── page.tsx    # проекты CV
+│   │   │   │           └── error.tsx
 │   │   │   └── users/
 │   │   │       ├── page.tsx            # список сотрудников
 │   │   │       ├── error.tsx
@@ -162,7 +174,22 @@ cv-builder/
 │   │   │   │   ├── cv-actions-menu.tsx
 │   │   │   │   ├── cv-dialog.tsx
 │   │   │   │   ├── delete-cv-dialog.tsx
-│   │   │   │   └── user-cvs-page.tsx
+│   │   │   │   ├── user-cvs-page.tsx
+│   │   │   │   ├── cv-layout.tsx
+│   │   │   │   ├── cv-breadcrumbs.tsx
+│   │   │   │   ├── cv-tabs.tsx
+│   │   │   │   ├── cv-current-tab.tsx
+│   │   │   │   ├── cv-details-page.tsx
+│   │   │   │   ├── cv-details-form.tsx
+│   │   │   │   ├── cv-details-skeleton.tsx
+│   │   │   │   ├── cv-skills-page.tsx
+│   │   │   │   ├── cv-skills-manager.tsx
+│   │   │   │   ├── cv-skills-skeleton.tsx
+│   │   │   │   ├── cv-projects-page.tsx
+│   │   │   │   ├── cv-projects-manager.tsx
+│   │   │   │   ├── cv-project-dialog.tsx
+│   │   │   │   ├── cv-project-remove-dialog.tsx
+│   │   │   │   └── cv-projects-skeleton.tsx
 │   │   │   ├── api/
 │   │   │   │   ├── cvs.queries.ts
 │   │   │   │   ├── cvs.mutations.ts
@@ -175,6 +202,7 @@ cv-builder/
 │   │   │   │   ├── cv-permissions.ts
 │   │   │   │   ├── cv-skill-schema.ts
 │   │   │   │   ├── cv-project-schema.ts
+│   │   │   │   ├── cv-project-record.ts
 │   │   │   │   └── cv-tabs.ts
 │   │   │   └── index.ts
 │   │   │

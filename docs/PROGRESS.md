@@ -114,10 +114,13 @@
 - [x] Вынести CV из `features/users` в домен `cvs` и открыть отдельный раздел `/cvs` для Admin и Employee (вкладка `/users/[userId]/cvs` осталась для Admin)
 - [x] Список CV `/cvs`: таблица `Name` / `Education` / `Employee` с описанием под строкой, поиск, сортировка по имени, пагинация
 - [x] Список CV: состояния loading / empty / no results / error, `CREATE CV`, меню `View` / `Edit` / `Delete`, диалоги create / update / delete по макетам
-- [ ] Страница CV с вкладками `Details` / `Skills` / `Projects` / `Preview` и breadcrumbs `CVs > {CV name} > {Tab}`
-- [ ] Details: форма `Name` / `Education` / `Description`, `UPDATE` активна только при изменениях и без ошибок валидации
-- [ ] Skills: группировка по категориям, `ADD SKILL` из навыков владельца CV, `Update skill`, режим массового удаления
-- [ ] Projects: таблица с поиском и сортировкой, Add / Update / Remove, роли из активных ролей, даты в пределах длительности проекта
+- [x] Страница CV `/cvs/[cvId]`: layout с breadcrumbs `CVs > {CV name} > {Tab}`, табы `Details` / `Skills` / `Projects` / `Preview`, возврат к списку; неавторизованный доступ к чужому CV — 404
+- [x] Details: форма `Name` / `Education` / `Description`, предзаполнение, inline-валидация, `UPDATE` активна только при изменениях и без ошибок валидации, сохранение через `updateCvAction`, скелетон и ошибка `Failed to load CV details` с повтором
+- [x] Тесты Details: табы и их активное состояние, предзаполнение, dirty-гейт кнопки, сохранение, inline-ошибки, сохранение значений при сбое
+- [x] Skills: группировка по категориям, `ADD SKILL` из навыков владельца CV, `Update skill`, режим массового удаления; пустые категории скрыты, состояния loading (скелетон) / empty / error `Failed to load skills` с повтором
+- [x] Тесты Skills: группировка и пустое состояние, фильтрация вариантов добавления, inline- и системные ошибки, обновление навыка, выбор нескольких навыков и подтверждение удаления
+- [x] Projects: таблица `Name` / `Domain` / `Responsibilities` / `Start Date` / `End Date`, поиск по Name и Domain, сортировка по Name / Start Date / End Date, период «Till now»; каталог проектов (`projects`), Add / Update / Remove через диалоги, Domain / Description / Environment из каталога только для чтения, роли из активных ролей (минимум одна), даты в пределах длительности проекта; состояния loading (скелетон) / empty / no results / error `Failed to load projects` с повтором
+- [x] Тесты Projects: таблица и пустое состояние, фильтрация по Name / Domain, сортировка по колонкам, автозаполнение каталога, Add / Update / Remove, inline-ошибки дат, системные ошибки без сброса значений
 - [ ] Preview: резюме из профиля, языков, навыков и проектов; `Experience in Years` и `Last Used` по пересечению environment проектов CV
 - [ ] `EXPORT PDF` через бэкенд `exportPdf`, имя файла из названия CV
 - [ ] Права: Employee — только свои CV, Admin — любые; `notOwnCv` и прочие отказы — системной ошибкой

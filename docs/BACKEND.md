@@ -223,7 +223,7 @@ type User {
 - Страницы авторизации: `/sign-in`, `/sign-up`, `/forgot-password`, `/reset-password?token=...`, `/verify-email` — Server Actions в `src/features/auth/api`.
 - `src/app/(platform)/layout.tsx` — `AuthGate` без сессии редиректит на `/login`; реальный маршрут входа — `/sign-in`, поэтому редирект требует правки на `SIGN_IN_ROUTE`.
 - Модуль пользователей: список и CRUD (Admin), профиль и аватар, навыки и языки — `src/features/users`.
-- Модуль CV: список `/cvs` для Admin и Employee, создание, обновление и удаление, вкладка CV сотрудника (Admin) — `src/features/cvs`.
+- Модуль CV: список `/cvs` для Admin и Employee, создание, обновление и удаление, вкладка CV сотрудника (Admin), страница CV `/cvs/[cvId]` с вкладками и формой Details — `src/features/cvs`.
 
 ## Что ещё нужно реализовать
 

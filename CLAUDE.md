@@ -32,7 +32,12 @@
 - `(platform)/users/[userId]/cvs/page.tsx` — вкладка CV сотрудника (только Admin), читает `search`, `sort_by`, `sort_order`;
 - `(platform)/users/[userId]/cvs/[cvId]/page.tsx` — редирект на `/cvs/[cvId]/details`;
 - `(platform)/cvs/page.tsx` — раздел CV для Admin и Employee, читает `search`, `page`, `sort_by`, `sort_order`;
-- локальные `error.tsx` — у `/users`, `/cvs`, `/users/[userId]/cvs`, `/users/[userId]/skills`, `/users/[userId]/languages`.
+- `(platform)/cvs/[cvId]/layout.tsx` — breadcrumbs `CVs > {CV name} > {tab}`, табы Details / Skills / Projects / Preview и возврат к списку;
+- `(platform)/cvs/[cvId]/page.tsx` — редирект на `/cvs/[cvId]/details`;
+- `(platform)/cvs/[cvId]/details/page.tsx` — вкладка Details: форма `Name` / `Education` / `Description`;
+- `(platform)/cvs/[cvId]/skills/page.tsx` — вкладка Skills: навыки CV по категориям, добавление из навыков владельца, обновление и массовое удаление;
+- `(platform)/cvs/[cvId]/projects/page.tsx` — вкладка Projects: проекты CV с поиском и сортировкой, добавление из каталога, обновление и удаление;
+- локальные `error.tsx` — у `/users`, `/cvs`, `/cvs/[cvId]/details`, `/cvs/[cvId]/skills`, `/cvs/[cvId]/projects`, `/users/[userId]/cvs`, `/users/[userId]/skills`, `/users/[userId]/languages`.
 
 `src/proxy.ts` — защита маршрутов: приватные требуют валидную сессию (при истёкшем access-токене обновляет пару через refresh-токен), гостевые (`GUEST_ROUTES`: `/sign-in`, `/sign-up`, `/forgot-password`) отправляют авторизованного на `HOME_ROUTE`. Matcher — все страницы приложения, кроме API и статики (`api`, `_next`, картинки/иконки), поэтому новые маршруты защищены по умолчанию. Тесты — `src/proxy.test.ts`.
 
@@ -79,8 +84,8 @@
 - `api/cvs.mutations.ts` — create / update / delete CV;
 - `api/cvs.actions.ts` — Server Actions CV (`createCvAction` / `updateCvAction` / `deleteCvAction`);
 - `api/cv-skills.actions.ts`, `api/cv-projects.actions.ts` — Server Actions навыков и проектов внутри CV;
-- `model/` — `cv-record`, `cv-schema` (zod), `cv-permissions` (`canAccessCv`: Employee — только свои CV, Admin — любые), `cv-skill-schema`, `cv-project-schema`, `cv-tabs`;
-- `ui/` — `cvs-page`, `cvs-header`, `cvs-toolbar`, `cvs-table`, `cvs-sort-header`, `cvs-pagination`, `cvs-table-skeleton`, `cv-actions-menu`, `cv-dialog`, `delete-cv-dialog`, `user-cvs-page` (вкладка в `/users/[userId]/cvs`);
+- `model/` — `cv-record`, `cv-schema` (zod), `cv-permissions` (`canAccessCv`: Employee — только свои CV, Admin — любые), `cv-skill-schema`, `cv-project-schema`, `cv-project-record` (типы проекта CV и каталога, форматирование дат), `cv-tabs`;
+- `ui/` — `cvs-page`, `cvs-header`, `cvs-toolbar`, `cvs-table`, `cvs-sort-header`, `cvs-pagination`, `cvs-table-skeleton`, `cv-actions-menu`, `cv-dialog`, `delete-cv-dialog`, `user-cvs-page` (вкладка в `/users/[userId]/cvs`); страница CV — `cv-layout`, `cv-breadcrumbs`, `cv-tabs`, `cv-current-tab`, `cv-details-page`, `cv-details-form`, `cv-details-skeleton`, `cv-skills-page`, `cv-skills-manager`, `cv-skills-skeleton`, `cv-projects-page`, `cv-projects-manager`, `cv-project-dialog`, `cv-project-remove-dialog`, `cv-projects-skeleton`;
 - `index.ts` — публичный экспорт страниц.
 
 Все модули `api/` помечены `import "server-only"` — их нельзя импортировать из клиентских компонентов. Доступ:
