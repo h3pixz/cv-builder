@@ -8,9 +8,9 @@ import {
   masteryLevel,
 } from "@/features/skills";
 import { getSession } from "@/shared/api";
+import { getProfilePermissions } from "@/shared/helpers/profile-permissions";
 
 import { getCurrentUser } from "../../api/profile.queries";
-import { getProfilePermissions } from "../../model/profile-permissions";
 import { LevelManager, type LevelOption } from "../levels/level-manager";
 
 export async function UserSkillsPage({ userId }: { userId: string }) {
@@ -45,7 +45,6 @@ export async function UserSkillsPage({ userId }: { userId: string }) {
 
   return (
     <LevelManager
-      kind="skill"
       userId={userId}
       heading="Current skills"
       groups={groups}

@@ -245,7 +245,7 @@ Other exports: `Toast`, `ToastTitle`, `ToastDescription`, `ToastAction`, `ToastC
 
 ## level
 
-`Level` — шкала 0–5 на `role="meter"`. Props: `level: number` (округляется и зажимается в 0–5), `label?: string` (текст справа), `barClassName?: string` (переопределить полосу), плюс `HTMLAttributes<HTMLDivElement>` (`className`). Высота полосы `h-1`, ширина `w-34`, цвета уровней — токены `level-0..5-fill/track`. Для Mastery переводи значение в число через `masteryLevel` из `features/skills/model/skill-levels.ts`, для Proficiency — через `proficiencyLevel` из `features/users/model/levels.ts`.
+`Level` — шкала 0–5 на `role="meter"`. Props: `level: number` (округляется и зажимается в 0–5), `label?: string` (текст справа), `barClassName?: string` (переопределить полосу), плюс `HTMLAttributes<HTMLDivElement>` (`className`). Высота полосы `h-1`, ширина `w-34`, цвета уровней — токены `level-0..5-fill/track`. Для Mastery переводи значение в число через `masteryLevel` из `features/skills/model/skill-levels.ts`; для Proficiency — через `proficiencyLevel` из `features/languages/model/language-levels.ts` (личная страница и вкладка пользователя).
 
 ## pagination
 

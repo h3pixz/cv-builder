@@ -29,6 +29,12 @@ const managementNavigation = [
   { label: "Positions", href: "/positions", icon: BriefcaseBusiness },
   { label: "Projects", href: "/projects", icon: Folder },
   { label: "Skills", href: "/admin/skills", icon: TrendingUp, adminOnly: true },
+  {
+    label: "Languages",
+    href: "/admin/languages",
+    icon: Languages,
+    adminOnly: true,
+  },
 ];
 
 type NavItem = {

@@ -1,5 +1,8 @@
 import { Suspense } from "react";
-import { LevelListSkeleton, UserLanguagesPage } from "@/features/users";
+import {
+  LanguagesManagerSkeleton,
+  UserLanguagesPage,
+} from "@/features/languages";
 
 async function Content({ params }: { params: Promise<{ userId: string }> }) {
   const { userId } = await params;
@@ -12,7 +15,7 @@ export default function Page({
   params: Promise<{ userId: string }>;
 }) {
   return (
-    <Suspense fallback={<LevelListSkeleton />}>
+    <Suspense fallback={<LanguagesManagerSkeleton />}>
       <Content params={params} />
     </Suspense>
   );

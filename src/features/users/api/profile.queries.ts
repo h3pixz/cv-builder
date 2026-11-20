@@ -1,7 +1,6 @@
 import "server-only";
 
 import { cache } from "react";
-import type { VariablesOf } from "@graphql-typed-document-node/core";
 
 import {
   getSession,
@@ -106,63 +105,3 @@ export const getCurrentUserRole = cache(async () => {
   return data.me.role;
 });
 
-// -----------------------------------------------------
-// LANGUAGES REFERENCE DATA
-// -----------------------------------------------------
-
-const OPTIONS_LIMIT = 100;
-
-export const GetLanguageOptionsDocument = graphql(`
-  query GetLanguageOptions($params: SearchPaginationInput) {
-    languages(params: $params) {
-      items {
-        id
-        name
-        native_name
-      }
-      total
-      page
-      limit
-      total_pages
-    }
-  }
-`);
-
-export async function getLanguageOptions(options?: GraphQLRequestOptions) {
-  const data = await protectedRequest(
-    GetLanguageOptionsDocument,
-    { params: { page: 1, limit: OPTIONS_LIMIT } },
-    options,
-  );
-
-  return data.languages.items;
-}
-
-// -----------------------------------------------------
-// USER LANGUAGES
-// -----------------------------------------------------
-
-export const GetUserLanguagesDocument = graphql(`
-  query GetUserLanguages($userId: ID!) {
-    profile(userId: $userId) {
-      id
-      languages {
-        name
-        proficiency
-      }
-    }
-  }
-`);
-
-export async function getUserLanguages(
-  userId: VariablesOf<typeof GetUserLanguagesDocument>["userId"],
-  options?: GraphQLRequestOptions,
-) {
-  const data = await protectedRequest(
-    GetUserLanguagesDocument,
-    { userId },
-    options,
-  );
-
-  return data.profile.languages;
-}

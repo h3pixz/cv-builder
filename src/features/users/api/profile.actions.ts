@@ -1,6 +1,7 @@
 "use server";
 
 import { getRequestOrigin } from "@/shared/api/request-origin";
+import { getProfilePermissions } from "@/shared/helpers/profile-permissions";
 
 import type {
   AvatarUploadResult,
@@ -12,7 +13,6 @@ import {
   AVATAR_TYPE_ERROR,
   isAcceptedAvatarType,
 } from "../model/avatar";
-import { getProfilePermissions } from "../model/profile-permissions";
 import { profileSchema, type ProfileValues } from "../model/profile-schema";
 import {
   sendVerificationEmail,
