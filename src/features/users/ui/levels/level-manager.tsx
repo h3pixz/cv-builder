@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { PlusIcon, Trash2Icon } from "lucide-react";
 import { useForm, useWatch } from "react-hook-form";
 
+import type { SkillMasteryValue } from "@/features/skills";
 import { cn } from "@/lib/utils";
 import { Button } from "@/shared/ui/button";
 import { Checkbox } from "@/shared/ui/checkbox";
@@ -32,16 +33,11 @@ import {
 } from "../../api/profile-levels.actions";
 import {
   createLevelFormSchema,
-  LANGUAGE_FORM_MESSAGES,
-  SKILL_FORM_MESSAGES,
   type LevelFormValues,
 } from "../../model/level-forms";
 import {
-  LANGUAGE_PROFICIENCY_VALUES,
-  SKILL_MASTERY_VALUES,
   type LanguageProficiencyValue,
   type LevelGroup,
-  type SkillMasteryValue,
 } from "../../model/levels";
 
 export type LevelOption = SelectOption & { categoryId?: string | null };
@@ -54,22 +50,13 @@ type Props = {
   heading: string;
   groups: LevelGroup[];
   options: LevelOption[];
+  /** Mastery or proficiency values offered by the level select. */
+  levelOptions: SelectOption[];
+  /** Plain strings so the schema can be built on the client. */
+  formMessages: { nameRequired: string; levelRequired: string };
   canManage: boolean;
   /** Skills are grouped by category, languages live in a single section. */
   showGroupNames?: boolean;
-};
-
-const FORM_SCHEMAS = {
-  skill: createLevelFormSchema(SKILL_FORM_MESSAGES),
-  language: createLevelFormSchema(LANGUAGE_FORM_MESSAGES),
-};
-
-const LEVEL_OPTIONS: Record<LevelKind, SelectOption[]> = {
-  skill: SKILL_MASTERY_VALUES.map((value) => ({ value, label: value })),
-  language: LANGUAGE_PROFICIENCY_VALUES.map((value) => ({
-    value,
-    label: value,
-  })),
 };
 
 const CONFIG = {
@@ -165,12 +152,17 @@ export function LevelManager({
   heading,
   groups,
   options,
+  levelOptions,
+  formMessages,
   canManage,
   showGroupNames = true,
 }: Props) {
   const router = useRouter();
   const config = CONFIG[kind];
-  const schema = FORM_SCHEMAS[kind];
+  const schema = useMemo(
+    () => createLevelFormSchema(formMessages),
+    [formMessages],
+  );
 
   const [addOpen, setAddOpen] = useState(false);
   const [editing, setEditing] = useState<LevelGroup["items"][number] | null>(
@@ -488,7 +480,7 @@ export function LevelManager({
                 id="add-level-mastery"
                 name="mastery"
                 placeholder={config.levelLabel}
-                options={LEVEL_OPTIONS[kind]}
+                options={levelOptions}
                 value={addMastery || null}
                 onValueChange={(value) =>
                   addForm.setValue("mastery", value ?? "", {
@@ -570,7 +562,7 @@ export function LevelManager({
                 id="update-level-mastery"
                 name="mastery"
                 placeholder={config.levelLabel}
-                options={LEVEL_OPTIONS[kind]}
+                options={levelOptions}
                 value={updateMastery || null}
                 onValueChange={(value) =>
                   updateForm.setValue("mastery", value ?? "", {

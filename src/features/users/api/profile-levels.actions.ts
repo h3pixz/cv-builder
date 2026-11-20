@@ -2,32 +2,32 @@
 
 import { z } from "zod";
 
+import {
+  addMySkill,
+  addMySkillSchema,
+  deleteMySkill,
+  getUserSkills,
+  updateMySkill,
+  updateMySkillSchema,
+} from "@/features/skills";
+
 import type { UsersActionResult } from "../model/action-result";
 import {
   addLanguageSchema,
-  addSkillSchema,
   updateLanguageSchema,
-  updateSkillSchema,
 } from "../model/level-forms";
 import { getProfilePermissions } from "../model/profile-permissions";
 import {
   addUserLanguage,
-  addUserSkill,
   deleteUserLanguage,
-  deleteUserSkill,
   updateUserLanguage,
-  updateUserSkill,
 } from "./profile.mutations";
-import {
-  getCurrentUser,
-  getUserLanguages,
-  getUserSkills,
-} from "./profile.queries";
+import { getCurrentUser, getUserLanguages } from "./profile.queries";
 import { revalidateUser } from "./profile-revalidate";
 import { forbiddenFailure, runAuthed } from "./run-authed";
 
-type SkillValues = z.infer<typeof addSkillSchema>;
-type UpdateSkillValues = z.infer<typeof updateSkillSchema>;
+type SkillValues = z.infer<typeof addMySkillSchema>;
+type UpdateSkillValues = z.infer<typeof updateMySkillSchema>;
 type LanguageValues = z.infer<typeof addLanguageSchema>;
 type UpdateLanguageValues = z.infer<typeof updateLanguageSchema>;
 
@@ -61,7 +61,7 @@ export async function addSkillAction(
   userId: string,
   values: SkillValues,
 ): Promise<UsersActionResult> {
-  const parsed = addSkillSchema.safeParse(values);
+  const parsed = addMySkillSchema.safeParse(values);
 
   if (!parsed.success) {
     return invalid(parsed.error.issues[0]?.message);
@@ -73,7 +73,7 @@ export async function addSkillAction(
 
   const data = parsed.data;
   const result = await runAuthed((accessToken) =>
-    addUserSkill(
+    addMySkill(
       {
         userId,
         name: data.name,
@@ -97,7 +97,7 @@ export async function updateSkillAction(
   userId: string,
   values: UpdateSkillValues,
 ): Promise<UsersActionResult> {
-  const parsed = updateSkillSchema.safeParse(values);
+  const parsed = updateMySkillSchema.safeParse(values);
 
   if (!parsed.success) {
     return invalid(parsed.error.issues[0]?.message);
@@ -113,7 +113,7 @@ export async function updateSkillAction(
     const existing = skills.find((skill) => skill.name === data.name);
 
     // The update form does not touch the category, so keep the current one.
-    return updateUserSkill(
+    return updateMySkill(
       {
         userId,
         name: data.name,
@@ -148,7 +148,7 @@ export async function deleteSkillsAction(
   }
 
   const result = await runAuthed((accessToken) =>
-    deleteUserSkill({ userId, name: parsed.data }, { accessToken }),
+    deleteMySkill({ userId, name: parsed.data }, { accessToken }),
   );
 
   if (!result.success) {

@@ -220,10 +220,10 @@ type User {
 - `src/proxy.ts` — проверка сессии и обновление пары токенов для приватных маршрутов, гостевые маршруты уводят авторизованного на `/`.
 - Страницы авторизации: `/sign-in`, `/sign-up`, `/forgot-password`, `/reset-password?token=...`, `/verify-email` — Server Actions в `src/features/auth/api`.
 - `src/app/(platform)/layout.tsx` — `AuthGate` без сессии редиректит на `/login`; реальный маршрут входа — `/sign-in`, поэтому редирект требует правки на `SIGN_IN_ROUTE`.
-- Модуль пользователей: список и CRUD (Admin), профиль и аватар, навыки и языки, CV сотрудника (Admin) — `src/features/users`.
+- Модуль пользователей: список и CRUD (Admin), профиль и аватар, языки, CV сотрудника (Admin) — `src/features/users`; навыки и каталог навыков — `src/features/skills` (вкладка `/users/[userId]/skills` остаётся композицией в `users`).
 
 ## Что ещё нужно реализовать
 
-- Страницы разделов из сайдбара: `/skills`, `/languages`, `/cvs`, `/departments`, `/positions`, `/projects`.
+- Страницы разделов из сайдбара: `/languages`, `/cvs`, `/departments`, `/positions`, `/projects`.
 - Админские справочники (`/admin/*`), настройки (`/settings`).
 - Поправить серверные редиректы с несуществующего `/login` на `/sign-in` (`AuthGate`, `protectedRequest`).

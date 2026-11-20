@@ -2,56 +2,28 @@ import { describe, expect, it } from "vitest";
 
 import {
   addLanguageSchema,
-  addSkillSchema,
-  skillFormSchema,
-  updateSkillSchema,
+  languageFormSchema,
+  updateLanguageSchema,
 } from "./level-forms";
 
-describe("skillFormSchema", () => {
-  it("requires a skill and a mastery level", () => {
-    const result = skillFormSchema.safeParse({ name: "  ", mastery: "" });
+describe("languageFormSchema", () => {
+  it("requires a language and a proficiency level", () => {
+    const result = languageFormSchema.safeParse({ name: "  ", mastery: "" });
 
     expect(result.success).toBe(false);
     expect(result.error?.issues.map((issue) => issue.message)).toEqual([
-      "Skill is required",
-      "Skill mastery is required",
+      "Language is required",
+      "Language proficiency is required",
     ]);
   });
 
   it("accepts a trimmed name and a level", () => {
-    const result = skillFormSchema.parse({ name: " Node ", mastery: "Expert" });
-
-    expect(result.name).toBe("Node");
-  });
-});
-
-describe("addSkillSchema", () => {
-  it("rejects a mastery outside the backend enum", () => {
-    const result = addSkillSchema.safeParse({
-      name: "Node",
-      mastery: "Beginner",
+    const result = languageFormSchema.parse({
+      name: " German ",
+      mastery: "B2",
     });
 
-    expect(result.success).toBe(false);
-  });
-
-  it("keeps an optional category", () => {
-    const result = addSkillSchema.parse({
-      name: "Node",
-      mastery: "Expert",
-      categoryId: "backend",
-    });
-
-    expect(result.categoryId).toBe("backend");
-  });
-
-  it("does not require a category on update", () => {
-    const result = updateSkillSchema.safeParse({
-      name: "Node",
-      mastery: "Advanced",
-    });
-
-    expect(result.success).toBe(true);
+    expect(result.name).toBe("German");
   });
 });
 
@@ -78,5 +50,11 @@ describe("addLanguageSchema", () => {
     expect(
       addLanguageSchema.safeParse({ name: "German", mastery: "D1" }).success,
     ).toBe(false);
+  });
+
+  it("keeps the same rules on update", () => {
+    expect(
+      updateLanguageSchema.safeParse({ name: "German", mastery: "C1" }).success,
+    ).toBe(true);
   });
 });

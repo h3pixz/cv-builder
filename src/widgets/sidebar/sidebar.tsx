@@ -28,9 +28,17 @@ const managementNavigation = [
   { label: "Departments", href: "/departments", icon: Building2 },
   { label: "Positions", href: "/positions", icon: BriefcaseBusiness },
   { label: "Projects", href: "/projects", icon: Folder },
+  { label: "Skills", href: "/admin/skills", icon: TrendingUp, adminOnly: true },
 ];
 
-type NavItems = typeof mainNavigation;
+type NavItem = {
+  label: string;
+  href: string;
+  icon: typeof Users;
+  adminOnly?: boolean;
+};
+
+type NavItems = NavItem[];
 
 /** Pure rendering: no hooks, so it can be used as the Suspense fallback too. */
 function NavLinks({
@@ -84,8 +92,11 @@ function NavGroup(props: { items: NavItems; isCollapsed: boolean }) {
   );
 }
 
-export function Sidebar() {
+export function Sidebar({ isAdmin = false }: { isAdmin?: boolean }) {
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const managementItems = managementNavigation.filter(
+    (item) => !item.adminOnly || isAdmin,
+  );
 
   return (
     <aside
@@ -142,7 +153,7 @@ export function Sidebar() {
       <nav className="flex-1 overflow-y-auto py-3">
         <NavGroup items={mainNavigation} isCollapsed={isCollapsed} />
         <div className="mx-4 my-5 border-t border-sidebar-border" />
-        <NavGroup items={managementNavigation} isCollapsed={isCollapsed} />
+        <NavGroup items={managementItems} isCollapsed={isCollapsed} />
       </nav>
     </aside>
   );

@@ -1,12 +1,15 @@
-import { getSession } from "@/shared/api";
-
 import {
-  getCurrentUser,
+  SKILL_MASTERY_VALUES,
+  SKILL_MESSAGES,
   getSkillCategories,
   getSkillOptions,
   getUserSkills,
-} from "../../api/profile.queries";
-import { groupSkills, masteryLevel } from "../../model/levels";
+  groupSkills,
+  masteryLevel,
+} from "@/features/skills";
+import { getSession } from "@/shared/api";
+
+import { getCurrentUser } from "../../api/profile.queries";
 import { getProfilePermissions } from "../../model/profile-permissions";
 import { LevelManager, type LevelOption } from "../levels/level-manager";
 
@@ -17,7 +20,7 @@ export async function UserSkillsPage({ userId }: { userId: string }) {
   const [skills, currentUser, categories] = await Promise.all([
     getUserSkills(userId, { accessToken }),
     getCurrentUser(),
-    getSkillCategories({ accessToken }),
+    getSkillCategories(),
   ]);
 
   const { canEdit } = getProfilePermissions({
@@ -53,6 +56,14 @@ export async function UserSkillsPage({ userId }: { userId: string }) {
           categoryId: skill.category?.id ?? null,
         }),
       )}
+      levelOptions={SKILL_MASTERY_VALUES.map((value) => ({
+        value,
+        label: value,
+      }))}
+      formMessages={{
+        nameRequired: SKILL_MESSAGES.nameRequired,
+        levelRequired: SKILL_MESSAGES.masteryRequired,
+      }}
       canManage={canEdit}
     />
   );
