@@ -122,10 +122,10 @@
 - [x] Projects: таблица `Name` / `Domain` / `Responsibilities` / `Start Date` / `End Date`, поиск по Name и Domain, сортировка по Name / Start Date / End Date, период «Till now»; каталог проектов (`projects`), Add / Update / Remove через диалоги, Domain / Description / Environment из каталога только для чтения, роли из активных ролей (минимум одна), даты в пределах длительности проекта; состояния loading (скелетон) / empty / no results / error `Failed to load projects` с повтором
 - [x] Тесты Projects: таблица и пустое состояние, фильтрация по Name / Domain, сортировка по колонкам, автозаполнение каталога, Add / Update / Remove, inline-ошибки дат, системные ошибки без сброса значений
 - [x] Projects по макету: описание проекта под названием в ячейке `Name` (line-clamp-2), одна строка на проект; диалог Add / Update шире (`max-w-2xl`) с прокручиваемым телом, `Name` / `Domain` и `Start Date` / `End Date` — по две колонки, подписи полей в стиле `SelectField` (плавающие) и `Label` (Input / Textarea); `Description` и `Environment` только для чтения, `Roles` — мультивыбор строкой через запятую (`MultiselectField display="text"`), `Responsibilities` — многострочная `Textarea` (одна обязанность на строку), кнопка Update — `UPDATE`
-- [ ] Preview: резюме из профиля, языков, навыков и проектов; `Experience in Years` и `Last Used` по пересечению environment проектов CV
-- [ ] `EXPORT PDF` через бэкенд `exportPdf`, имя файла из названия CV
-- [ ] Права: Employee — только свои CV, Admin — любые; `notOwnCv` и прочие отказы — системной ошибкой
-- [ ] Тесты: список и модалки CV, права, расчёты Experience / Last Used, Preview
+- [x] Preview: резюме из профиля, языков, навыков и проектов; `Experience in Years` и `Last Used` по пересечению environment проектов CV, периоды `MM.YYYY - MM.YYYY` / `Present`; секции и категории без данных скрыты, пустое состояние `CV preview is not available`
+- [x] `EXPORT PDF` через бэкенд `exportPdf`: серверная сборка HTML резюме, скачивание base64, имя файла из названия CV, кнопка неактивна без данных
+- [x] Preview: скелетон загрузки и ошибка `Failed to load CV preview` с повтором; Employee — только свои CV, Admin — любые (`canAccessCv`)
+- [x] Тесты Preview: расчёты Experience / Last Used и округление, периоды, уникальные домены, группировка навыков, экранирование HTML, имя PDF, экспорт и ошибки кнопки
 
 ## Backlog
 

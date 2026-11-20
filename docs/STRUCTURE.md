@@ -36,8 +36,11 @@ cv-builder/
 │   │   │   │       ├── skills/
 │   │   │   │       │   ├── page.tsx    # навыки CV
 │   │   │   │       │   └── error.tsx
-│   │   │   │       └── projects/
-│   │   │   │           ├── page.tsx    # проекты CV
+│   │   │   │       ├── projects/
+│   │   │   │       │   ├── page.tsx    # проекты CV
+│   │   │   │       │   └── error.tsx
+│   │   │   │       └── preview/
+│   │   │   │           ├── page.tsx    # превью резюме + EXPORT PDF
 │   │   │   │           └── error.tsx
 │   │   │   └── users/
 │   │   │       ├── page.tsx            # список сотрудников
@@ -189,13 +192,18 @@ cv-builder/
 │   │   │   │   ├── cv-projects-manager.tsx
 │   │   │   │   ├── cv-project-dialog.tsx
 │   │   │   │   ├── cv-project-remove-dialog.tsx
-│   │   │   │   └── cv-projects-skeleton.tsx
+│   │   │   │   ├── cv-projects-skeleton.tsx
+│   │   │   │   ├── cv-preview-page.tsx
+│   │   │   │   ├── cv-preview-view.tsx
+│   │   │   │   ├── cv-preview-export-button.tsx
+│   │   │   │   └── cv-preview-skeleton.tsx
 │   │   │   ├── api/
 │   │   │   │   ├── cvs.queries.ts
 │   │   │   │   ├── cvs.mutations.ts
 │   │   │   │   ├── cvs.actions.ts
 │   │   │   │   ├── cv-skills.actions.ts
-│   │   │   │   └── cv-projects.actions.ts
+│   │   │   │   ├── cv-projects.actions.ts
+│   │   │   │   └── cv-preview.actions.ts
 │   │   │   ├── model/
 │   │   │   │   ├── cv-record.ts
 │   │   │   │   ├── cv-schema.ts
@@ -203,7 +211,8 @@ cv-builder/
 │   │   │   │   ├── cv-skill-schema.ts
 │   │   │   │   ├── cv-project-schema.ts
 │   │   │   │   ├── cv-project-record.ts
-│   │   │   │   └── cv-tabs.ts
+│   │   │   │   ├── cv-tabs.ts
+│   │   │   │   └── cv-preview.ts
 │   │   │   └── index.ts
 │   │   │
 │   │   ├── skills/                     # план
