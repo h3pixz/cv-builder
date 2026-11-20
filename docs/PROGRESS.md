@@ -90,12 +90,19 @@
 - [x] Профиль пользователя `/users/[userId]/profile`: имя и фамилия, email по роли, Server Actions `profile.actions.ts`
 - [x] Аватар: загрузка base64 через Server Action, лимит 5MB, png / jpg / gif, `serverActions.bodySizeLimit = "8mb"`
 - [x] Подтверждение email из профиля (`sendVerificationEmailAction`, только владелец профиля)
-- [x] Вкладка навыков `/users/[userId]/skills`: список с Mastery и группировкой по категориям, добавление, обновление и удаление через диалоги (`levels/level-manager.tsx`)
+- [x] Вкладка навыков `/users/[userId]/skills`: список с Mastery и группировкой по категориям, добавление, обновление и удаление через диалоги (`users/ui/skills/user-skills-page.tsx` + `users/ui/levels/level-manager.tsx`; данные и операции — из `features/skills`)
 - [x] Вкладка языков `/users/[userId]/languages`: список с Proficiency и CRUD через диалоги
 - [x] Вкладка CV (только Admin): таблица с поиском и сортировкой по имени, создание, обновление и удаление CV, страница деталей `/users/[userId]/cvs/[cvId]`; Employee получает 404 (`model/cv-permissions.ts`)
 - [x] Breadcrumbs и табы пользователя (`user-breadcrumbs`, `user-tabs`), редирект `/users/[userId]` → `/profile`
 - [x] Общий авторизованный серверный транспорт с refresh-ретраем: `api/run-authed.ts`
 - [x] Тесты: права профиля и CV, схемы, сортировка и пагинация, тулбар, диалоги CV, `level-manager`, Server Actions CV
+
+### Навыки
+
+- [x] Отдельная фича `src/features/skills`: модель Mastery и группировка по категориям (`model/skill-levels.ts`), zod-схемы (`model/skill-schema.ts`), запросы, мутации и Server Actions
+- [x] Личная страница `/skills`: навыки текущего пользователя, добавление, обновление Mastery и удаление (`ui/skills-page.tsx`, `ui/skills-manager.tsx`)
+- [x] Каталог навыков `/admin/skills` (только Admin): таблица с поиском и пагинацией, создание, редактирование и удаление (`ui/admin/*`)
+- [x] Логика навыков вынесена из `features/users`; вкладка `/users/[userId]/skills` остаётся композицией в `users` и импортирует `features/skills` через публичный `index.ts`
 
 ### Мержи
 

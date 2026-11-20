@@ -5,7 +5,12 @@ import {
   getLanguageOptions,
   getUserLanguages,
 } from "../../api/profile.queries";
-import { proficiencyLevel, type LevelGroup } from "../../model/levels";
+import { LANGUAGE_FORM_MESSAGES } from "../../model/level-forms";
+import {
+  LANGUAGE_PROFICIENCY_VALUES,
+  proficiencyLevel,
+  type LevelGroup,
+} from "../../model/levels";
 import { getProfilePermissions } from "../../model/profile-permissions";
 import { LevelManager } from "../levels/level-manager";
 
@@ -52,6 +57,11 @@ export async function UserLanguagesPage({ userId }: { userId: string }) {
         value: language.name,
         label: language.name,
       }))}
+      levelOptions={LANGUAGE_PROFICIENCY_VALUES.map((value) => ({
+        value,
+        label: value,
+      }))}
+      formMessages={LANGUAGE_FORM_MESSAGES}
       canManage={canEdit}
       showGroupNames={false}
     />

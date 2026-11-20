@@ -24,6 +24,11 @@ cv-builder/
 │   │   │
 │   │   ├── (platform)/
 │   │   │   ├── layout.tsx              # Sidebar + AuthGate
+│   │   │   ├── skills/
+│   │   │   │   └── page.tsx            # личные навыки текущего пользователя
+│   │   │   ├── admin/
+│   │   │   │   └── skills/
+│   │   │   │       └── page.tsx        # каталог навыков, только Admin
 │   │   │   └── users/
 │   │   │       ├── page.tsx            # список сотрудников
 │   │   │       ├── error.tsx
@@ -146,7 +151,7 @@ cv-builder/
 │   │   │   │   ├── profile.queries.ts
 │   │   │   │   ├── profile.mutations.ts
 │   │   │   │   ├── profile.actions.ts
-│   │   │   │   ├── profile-levels.actions.ts
+│   │   │   │   ├── profile-levels.actions.ts   # языки + обёртки навыков
 │   │   │   │   ├── profile-revalidate.ts
 │   │   │   │   ├── cvs.queries.ts
 │   │   │   │   ├── cvs.mutations.ts
@@ -159,15 +164,49 @@ cv-builder/
 │   │   │   │   ├── profile-schema.ts
 │   │   │   │   ├── profile-permissions.ts
 │   │   │   │   ├── avatar.ts
-│   │   │   │   ├── levels.ts
-│   │   │   │   ├── level-forms.ts
+│   │   │   │   ├── levels.ts           # Proficiency языков, типы LevelGroup
+│   │   │   │   ├── level-forms.ts      # zod-схемы языков
 │   │   │   │   ├── cv-schema.ts
 │   │   │   │   ├── cv-permissions.ts
 │   │   │   │   └── cv-record.ts
 │   │   │   └── index.ts
 │   │   │
+│   │   ├── skills/
+│   │   │   ├── ui/
+│   │   │   │   ├── skills-page.tsx
+│   │   │   │   ├── skills-manager.tsx
+│   │   │   │   ├── skills-manager-skeleton.tsx
+│   │   │   │   ├── skills-manager.test.tsx
+│   │   │   │   └── admin/
+│   │   │   │       ├── admin-skills-page.tsx
+│   │   │   │       ├── admin-skills-header.tsx
+│   │   │   │       ├── admin-skills-toolbar.tsx
+│   │   │   │       ├── admin-skills-table.tsx
+│   │   │   │       ├── admin-skills-table-skeleton.tsx
+│   │   │   │       ├── admin-skills-pagination.tsx
+│   │   │   │       ├── skill-actions-menu.tsx
+│   │   │   │       ├── skill-dialog.tsx
+│   │   │   │       └── delete-skill-dialog.tsx
+│   │   │   ├── api/
+│   │   │   │   ├── skills.queries.ts
+│   │   │   │   ├── profile-skills.mutations.ts
+│   │   │   │   ├── profile-skills.actions.ts
+│   │   │   │   ├── catalog.mutations.ts
+│   │   │   │   ├── catalog.actions.ts
+│   │   │   │   ├── skills-revalidate.ts
+│   │   │   │   ├── current-user.ts
+│   │   │   │   ├── run-authed.ts
+│   │   │   │   └── *.test.ts
+│   │   │   ├── model/
+│   │   │   │   ├── skill-levels.ts
+│   │   │   │   ├── skill-schema.ts
+│   │   │   │   ├── skill-record.ts
+│   │   │   │   ├── skill-permissions.ts
+│   │   │   │   ├── action-result.ts
+│   │   │   │   └── *.test.ts
+│   │   │   └── index.ts
+│   │   │
 │   │   ├── cvs/                        # план: отдельная фича резюме
-│   │   ├── skills/                     # план
 │   │   ├── languages/                  # план
 │   │   ├── admin/                      # план
 │   │   └── settings/                   # план

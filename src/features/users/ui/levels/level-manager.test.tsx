@@ -119,6 +119,34 @@ const skillOptions = [
   { value: "Node", label: "Node", categoryId: "backend" },
 ];
 
+const skillLevelOptions = [
+  { value: "Novice", label: "Novice" },
+  { value: "Advanced", label: "Advanced" },
+  { value: "Competent", label: "Competent" },
+  { value: "Proficient", label: "Proficient" },
+  { value: "Expert", label: "Expert" },
+];
+
+const skillMessages = {
+  nameRequired: "Skill is required",
+  levelRequired: "Skill mastery is required",
+};
+
+const languageLevelOptions = [
+  { value: "A1", label: "A1" },
+  { value: "A2", label: "A2" },
+  { value: "B1", label: "B1" },
+  { value: "B2", label: "B2" },
+  { value: "C1", label: "C1" },
+  { value: "C2", label: "C2" },
+  { value: "Native", label: "Native" },
+];
+
+const languageMessages = {
+  nameRequired: "Language is required",
+  levelRequired: "Language proficiency is required",
+};
+
 function renderSkills(
   overrides: Partial<React.ComponentProps<typeof LevelManager>> = {},
 ) {
@@ -129,6 +157,8 @@ function renderSkills(
       heading="Current skills"
       groups={skillGroups}
       options={skillOptions}
+      levelOptions={skillLevelOptions}
+      formMessages={skillMessages}
       canManage
       {...overrides}
     />,
@@ -323,6 +353,8 @@ describe("LevelManager", () => {
           { value: "English", label: "English" },
           { value: "German", label: "German" },
         ]}
+        levelOptions={languageLevelOptions}
+        formMessages={languageMessages}
         canManage
         showGroupNames={false}
       />,
@@ -360,6 +392,8 @@ describe("LevelManager", () => {
         heading="Current Languages"
         groups={[]}
         options={[]}
+        levelOptions={languageLevelOptions}
+        formMessages={languageMessages}
         canManage={false}
       />,
     );

@@ -20,6 +20,16 @@ type Documents = {
     "\n  mutation ResetPassword($auth: ResetPasswordInput!) {\n    resetPassword(auth: $auth)\n  }\n": typeof types.ResetPasswordDocument,
     "\n  mutation VerifyMail($mail: VerifyMailInput!) {\n    verifyMail(mail: $mail)\n  }\n": typeof types.VerifyMailDocument,
     "\n  mutation SendVerification($email: String!) {\n    sendVerification(email: $email)\n  }\n": typeof types.SendVerificationDocument,
+    "\n  mutation CreateSkill($skill: CreateSkillInput!) {\n    createSkill(skill: $skill) {\n      id\n      name\n      category {\n        id\n        name\n      }\n    }\n  }\n": typeof types.CreateSkillDocument,
+    "\n  mutation UpdateSkill($skill: UpdateSkillInput!) {\n    updateSkill(skill: $skill) {\n      id\n      name\n      category {\n        id\n        name\n      }\n    }\n  }\n": typeof types.UpdateSkillDocument,
+    "\n  mutation DeleteSkill($skill: DeleteSkillInput!) {\n    deleteSkill(skill: $skill) {\n      affected\n    }\n  }\n": typeof types.DeleteSkillDocument,
+    "\n  mutation AddMySkill($skill: AddProfileSkillInput!) {\n    addProfileSkill(skill: $skill) {\n      id\n      skills {\n        name\n        categoryId\n        mastery\n      }\n    }\n  }\n": typeof types.AddMySkillDocument,
+    "\n  mutation UpdateMySkill($skill: UpdateProfileSkillInput!) {\n    updateProfileSkill(skill: $skill) {\n      id\n      skills {\n        name\n        categoryId\n        mastery\n      }\n    }\n  }\n": typeof types.UpdateMySkillDocument,
+    "\n  mutation DeleteMySkill($skill: DeleteProfileSkillInput!) {\n    deleteProfileSkill(skill: $skill) {\n      id\n      skills {\n        name\n        categoryId\n        mastery\n      }\n    }\n  }\n": typeof types.DeleteMySkillDocument,
+    "\n  query GetMySkills {\n    me {\n      id\n      skills {\n        name\n        categoryId\n        mastery\n      }\n    }\n  }\n": typeof types.GetMySkillsDocument,
+    "\n  query GetUserSkills($userId: ID!) {\n    profile(userId: $userId) {\n      id\n      skills {\n        name\n        categoryId\n        mastery\n      }\n    }\n  }\n": typeof types.GetUserSkillsDocument,
+    "\n  query GetSkillsCatalog($params: SearchPaginationInput) {\n    skills(params: $params) {\n      items {\n        id\n        name\n        category {\n          id\n          name\n          parent {\n            id\n            name\n          }\n        }\n        category_name\n        category_parent_name\n      }\n      total\n      page\n      limit\n      total_pages\n    }\n  }\n": typeof types.GetSkillsCatalogDocument,
+    "\n  query GetSkillCategories {\n    skillCategories {\n      id\n      name\n      order\n      children {\n        id\n        name\n        order\n      }\n    }\n  }\n": typeof types.GetSkillCategoriesDocument,
     "\n  mutation CreateCv($cv: CreateCvInput!) {\n    createCv(cv: $cv) {\n      id\n      created_at\n      name\n      education\n      description\n    }\n  }\n": typeof types.CreateCvDocument,
     "\n  mutation UpdateCv($cv: UpdateCvInput!) {\n    updateCv(cv: $cv) {\n      id\n      created_at\n      name\n      education\n      description\n    }\n  }\n": typeof types.UpdateCvDocument,
     "\n  mutation DeleteCv($cv: DeleteCvInput!) {\n    deleteCv(cv: $cv) {\n      affected\n    }\n  }\n": typeof types.DeleteCvDocument,
@@ -28,17 +38,11 @@ type Documents = {
     "\n  mutation UpdateUserProfile($profile: UpdateProfileInput!) {\n    updateProfile(profile: $profile) {\n      id\n      first_name\n      last_name\n      full_name\n      avatar\n      email\n      is_verified\n      role\n    }\n  }\n": typeof types.UpdateUserProfileDocument,
     "\n  mutation UploadUserAvatar($avatar: UploadAvatarInput!) {\n    uploadAvatar(avatar: $avatar)\n  }\n": typeof types.UploadUserAvatarDocument,
     "\n  mutation DeleteUserAvatar($avatar: DeleteAvatarInput!) {\n    deleteAvatar(avatar: $avatar)\n  }\n": typeof types.DeleteUserAvatarDocument,
-    "\n  mutation AddUserSkill($skill: AddProfileSkillInput!) {\n    addProfileSkill(skill: $skill) {\n      id\n      skills {\n        name\n        categoryId\n        mastery\n      }\n    }\n  }\n": typeof types.AddUserSkillDocument,
-    "\n  mutation UpdateUserSkill($skill: UpdateProfileSkillInput!) {\n    updateProfileSkill(skill: $skill) {\n      id\n      skills {\n        name\n        categoryId\n        mastery\n      }\n    }\n  }\n": typeof types.UpdateUserSkillDocument,
-    "\n  mutation DeleteUserSkill($skill: DeleteProfileSkillInput!) {\n    deleteProfileSkill(skill: $skill) {\n      id\n      skills {\n        name\n        categoryId\n        mastery\n      }\n    }\n  }\n": typeof types.DeleteUserSkillDocument,
     "\n  mutation AddUserLanguage($language: AddProfileLanguageInput!) {\n    addProfileLanguage(language: $language) {\n      id\n      languages {\n        name\n        proficiency\n      }\n    }\n  }\n": typeof types.AddUserLanguageDocument,
     "\n  mutation UpdateUserLanguage($language: UpdateProfileLanguageInput!) {\n    updateProfileLanguage(language: $language) {\n      id\n      languages {\n        name\n        proficiency\n      }\n    }\n  }\n": typeof types.UpdateUserLanguageDocument,
     "\n  mutation DeleteUserLanguage($language: DeleteProfileLanguageInput!) {\n    deleteProfileLanguage(language: $language) {\n      id\n      languages {\n        name\n        proficiency\n      }\n    }\n  }\n": typeof types.DeleteUserLanguageDocument,
     "\n  query GetCurrentProfile {\n    me {\n      id\n      created_at\n      first_name\n      last_name\n      full_name\n      avatar\n      email\n      is_verified\n      role\n      skills {\n        name\n        categoryId\n        mastery\n      }\n      languages {\n        name\n        proficiency\n      }\n    }\n  }\n": typeof types.GetCurrentProfileDocument,
     "\n  query GetCurrentUserRole {\n    me {\n      id\n      role\n    }\n  }\n": typeof types.GetCurrentUserRoleDocument,
-    "\n  query GetUserSkills($userId: ID!) {\n    profile(userId: $userId) {\n      id\n      skills {\n        name\n        categoryId\n        mastery\n      }\n    }\n  }\n": typeof types.GetUserSkillsDocument,
-    "\n  query GetSkillOptions($params: SearchPaginationInput) {\n    skills(params: $params) {\n      items {\n        id\n        name\n        category {\n          id\n          name\n        }\n      }\n      total\n      page\n      limit\n      total_pages\n    }\n  }\n": typeof types.GetSkillOptionsDocument,
-    "\n  query GetSkillCategories {\n    skillCategories {\n      id\n      name\n      order\n      children {\n        id\n        name\n        order\n      }\n    }\n  }\n": typeof types.GetSkillCategoriesDocument,
     "\n  query GetLanguageOptions($params: SearchPaginationInput) {\n    languages(params: $params) {\n      items {\n        id\n        name\n        native_name\n      }\n      total\n      page\n      limit\n      total_pages\n    }\n  }\n": typeof types.GetLanguageOptionsDocument,
     "\n  query GetUserLanguages($userId: ID!) {\n    profile(userId: $userId) {\n      id\n      languages {\n        name\n        proficiency\n      }\n    }\n  }\n": typeof types.GetUserLanguagesDocument,
     "\n  mutation CreateUser($user: CreateUserInput!) {\n    createUser(user: $user) {\n      id\n      created_at\n      email\n      is_verified\n      role\n      profile {\n        id\n        first_name\n        last_name\n        full_name\n        avatar\n      }\n      department {\n        id\n        name\n      }\n      position {\n        id\n        name\n      }\n    }\n  }\n": typeof types.CreateUserDocument,
@@ -58,6 +62,16 @@ const documents: Documents = {
     "\n  mutation ResetPassword($auth: ResetPasswordInput!) {\n    resetPassword(auth: $auth)\n  }\n": types.ResetPasswordDocument,
     "\n  mutation VerifyMail($mail: VerifyMailInput!) {\n    verifyMail(mail: $mail)\n  }\n": types.VerifyMailDocument,
     "\n  mutation SendVerification($email: String!) {\n    sendVerification(email: $email)\n  }\n": types.SendVerificationDocument,
+    "\n  mutation CreateSkill($skill: CreateSkillInput!) {\n    createSkill(skill: $skill) {\n      id\n      name\n      category {\n        id\n        name\n      }\n    }\n  }\n": types.CreateSkillDocument,
+    "\n  mutation UpdateSkill($skill: UpdateSkillInput!) {\n    updateSkill(skill: $skill) {\n      id\n      name\n      category {\n        id\n        name\n      }\n    }\n  }\n": types.UpdateSkillDocument,
+    "\n  mutation DeleteSkill($skill: DeleteSkillInput!) {\n    deleteSkill(skill: $skill) {\n      affected\n    }\n  }\n": types.DeleteSkillDocument,
+    "\n  mutation AddMySkill($skill: AddProfileSkillInput!) {\n    addProfileSkill(skill: $skill) {\n      id\n      skills {\n        name\n        categoryId\n        mastery\n      }\n    }\n  }\n": types.AddMySkillDocument,
+    "\n  mutation UpdateMySkill($skill: UpdateProfileSkillInput!) {\n    updateProfileSkill(skill: $skill) {\n      id\n      skills {\n        name\n        categoryId\n        mastery\n      }\n    }\n  }\n": types.UpdateMySkillDocument,
+    "\n  mutation DeleteMySkill($skill: DeleteProfileSkillInput!) {\n    deleteProfileSkill(skill: $skill) {\n      id\n      skills {\n        name\n        categoryId\n        mastery\n      }\n    }\n  }\n": types.DeleteMySkillDocument,
+    "\n  query GetMySkills {\n    me {\n      id\n      skills {\n        name\n        categoryId\n        mastery\n      }\n    }\n  }\n": types.GetMySkillsDocument,
+    "\n  query GetUserSkills($userId: ID!) {\n    profile(userId: $userId) {\n      id\n      skills {\n        name\n        categoryId\n        mastery\n      }\n    }\n  }\n": types.GetUserSkillsDocument,
+    "\n  query GetSkillsCatalog($params: SearchPaginationInput) {\n    skills(params: $params) {\n      items {\n        id\n        name\n        category {\n          id\n          name\n          parent {\n            id\n            name\n          }\n        }\n        category_name\n        category_parent_name\n      }\n      total\n      page\n      limit\n      total_pages\n    }\n  }\n": types.GetSkillsCatalogDocument,
+    "\n  query GetSkillCategories {\n    skillCategories {\n      id\n      name\n      order\n      children {\n        id\n        name\n        order\n      }\n    }\n  }\n": types.GetSkillCategoriesDocument,
     "\n  mutation CreateCv($cv: CreateCvInput!) {\n    createCv(cv: $cv) {\n      id\n      created_at\n      name\n      education\n      description\n    }\n  }\n": types.CreateCvDocument,
     "\n  mutation UpdateCv($cv: UpdateCvInput!) {\n    updateCv(cv: $cv) {\n      id\n      created_at\n      name\n      education\n      description\n    }\n  }\n": types.UpdateCvDocument,
     "\n  mutation DeleteCv($cv: DeleteCvInput!) {\n    deleteCv(cv: $cv) {\n      affected\n    }\n  }\n": types.DeleteCvDocument,
@@ -66,17 +80,11 @@ const documents: Documents = {
     "\n  mutation UpdateUserProfile($profile: UpdateProfileInput!) {\n    updateProfile(profile: $profile) {\n      id\n      first_name\n      last_name\n      full_name\n      avatar\n      email\n      is_verified\n      role\n    }\n  }\n": types.UpdateUserProfileDocument,
     "\n  mutation UploadUserAvatar($avatar: UploadAvatarInput!) {\n    uploadAvatar(avatar: $avatar)\n  }\n": types.UploadUserAvatarDocument,
     "\n  mutation DeleteUserAvatar($avatar: DeleteAvatarInput!) {\n    deleteAvatar(avatar: $avatar)\n  }\n": types.DeleteUserAvatarDocument,
-    "\n  mutation AddUserSkill($skill: AddProfileSkillInput!) {\n    addProfileSkill(skill: $skill) {\n      id\n      skills {\n        name\n        categoryId\n        mastery\n      }\n    }\n  }\n": types.AddUserSkillDocument,
-    "\n  mutation UpdateUserSkill($skill: UpdateProfileSkillInput!) {\n    updateProfileSkill(skill: $skill) {\n      id\n      skills {\n        name\n        categoryId\n        mastery\n      }\n    }\n  }\n": types.UpdateUserSkillDocument,
-    "\n  mutation DeleteUserSkill($skill: DeleteProfileSkillInput!) {\n    deleteProfileSkill(skill: $skill) {\n      id\n      skills {\n        name\n        categoryId\n        mastery\n      }\n    }\n  }\n": types.DeleteUserSkillDocument,
     "\n  mutation AddUserLanguage($language: AddProfileLanguageInput!) {\n    addProfileLanguage(language: $language) {\n      id\n      languages {\n        name\n        proficiency\n      }\n    }\n  }\n": types.AddUserLanguageDocument,
     "\n  mutation UpdateUserLanguage($language: UpdateProfileLanguageInput!) {\n    updateProfileLanguage(language: $language) {\n      id\n      languages {\n        name\n        proficiency\n      }\n    }\n  }\n": types.UpdateUserLanguageDocument,
     "\n  mutation DeleteUserLanguage($language: DeleteProfileLanguageInput!) {\n    deleteProfileLanguage(language: $language) {\n      id\n      languages {\n        name\n        proficiency\n      }\n    }\n  }\n": types.DeleteUserLanguageDocument,
     "\n  query GetCurrentProfile {\n    me {\n      id\n      created_at\n      first_name\n      last_name\n      full_name\n      avatar\n      email\n      is_verified\n      role\n      skills {\n        name\n        categoryId\n        mastery\n      }\n      languages {\n        name\n        proficiency\n      }\n    }\n  }\n": types.GetCurrentProfileDocument,
     "\n  query GetCurrentUserRole {\n    me {\n      id\n      role\n    }\n  }\n": types.GetCurrentUserRoleDocument,
-    "\n  query GetUserSkills($userId: ID!) {\n    profile(userId: $userId) {\n      id\n      skills {\n        name\n        categoryId\n        mastery\n      }\n    }\n  }\n": types.GetUserSkillsDocument,
-    "\n  query GetSkillOptions($params: SearchPaginationInput) {\n    skills(params: $params) {\n      items {\n        id\n        name\n        category {\n          id\n          name\n        }\n      }\n      total\n      page\n      limit\n      total_pages\n    }\n  }\n": types.GetSkillOptionsDocument,
-    "\n  query GetSkillCategories {\n    skillCategories {\n      id\n      name\n      order\n      children {\n        id\n        name\n        order\n      }\n    }\n  }\n": types.GetSkillCategoriesDocument,
     "\n  query GetLanguageOptions($params: SearchPaginationInput) {\n    languages(params: $params) {\n      items {\n        id\n        name\n        native_name\n      }\n      total\n      page\n      limit\n      total_pages\n    }\n  }\n": types.GetLanguageOptionsDocument,
     "\n  query GetUserLanguages($userId: ID!) {\n    profile(userId: $userId) {\n      id\n      languages {\n        name\n        proficiency\n      }\n    }\n  }\n": types.GetUserLanguagesDocument,
     "\n  mutation CreateUser($user: CreateUserInput!) {\n    createUser(user: $user) {\n      id\n      created_at\n      email\n      is_verified\n      role\n      profile {\n        id\n        first_name\n        last_name\n        full_name\n        avatar\n      }\n      department {\n        id\n        name\n      }\n      position {\n        id\n        name\n      }\n    }\n  }\n": types.CreateUserDocument,
@@ -131,6 +139,46 @@ export function graphql(source: "\n  mutation SendVerification($email: String!) 
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
+export function graphql(source: "\n  mutation CreateSkill($skill: CreateSkillInput!) {\n    createSkill(skill: $skill) {\n      id\n      name\n      category {\n        id\n        name\n      }\n    }\n  }\n"): (typeof documents)["\n  mutation CreateSkill($skill: CreateSkillInput!) {\n    createSkill(skill: $skill) {\n      id\n      name\n      category {\n        id\n        name\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation UpdateSkill($skill: UpdateSkillInput!) {\n    updateSkill(skill: $skill) {\n      id\n      name\n      category {\n        id\n        name\n      }\n    }\n  }\n"): (typeof documents)["\n  mutation UpdateSkill($skill: UpdateSkillInput!) {\n    updateSkill(skill: $skill) {\n      id\n      name\n      category {\n        id\n        name\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation DeleteSkill($skill: DeleteSkillInput!) {\n    deleteSkill(skill: $skill) {\n      affected\n    }\n  }\n"): (typeof documents)["\n  mutation DeleteSkill($skill: DeleteSkillInput!) {\n    deleteSkill(skill: $skill) {\n      affected\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation AddMySkill($skill: AddProfileSkillInput!) {\n    addProfileSkill(skill: $skill) {\n      id\n      skills {\n        name\n        categoryId\n        mastery\n      }\n    }\n  }\n"): (typeof documents)["\n  mutation AddMySkill($skill: AddProfileSkillInput!) {\n    addProfileSkill(skill: $skill) {\n      id\n      skills {\n        name\n        categoryId\n        mastery\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation UpdateMySkill($skill: UpdateProfileSkillInput!) {\n    updateProfileSkill(skill: $skill) {\n      id\n      skills {\n        name\n        categoryId\n        mastery\n      }\n    }\n  }\n"): (typeof documents)["\n  mutation UpdateMySkill($skill: UpdateProfileSkillInput!) {\n    updateProfileSkill(skill: $skill) {\n      id\n      skills {\n        name\n        categoryId\n        mastery\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation DeleteMySkill($skill: DeleteProfileSkillInput!) {\n    deleteProfileSkill(skill: $skill) {\n      id\n      skills {\n        name\n        categoryId\n        mastery\n      }\n    }\n  }\n"): (typeof documents)["\n  mutation DeleteMySkill($skill: DeleteProfileSkillInput!) {\n    deleteProfileSkill(skill: $skill) {\n      id\n      skills {\n        name\n        categoryId\n        mastery\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query GetMySkills {\n    me {\n      id\n      skills {\n        name\n        categoryId\n        mastery\n      }\n    }\n  }\n"): (typeof documents)["\n  query GetMySkills {\n    me {\n      id\n      skills {\n        name\n        categoryId\n        mastery\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query GetUserSkills($userId: ID!) {\n    profile(userId: $userId) {\n      id\n      skills {\n        name\n        categoryId\n        mastery\n      }\n    }\n  }\n"): (typeof documents)["\n  query GetUserSkills($userId: ID!) {\n    profile(userId: $userId) {\n      id\n      skills {\n        name\n        categoryId\n        mastery\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query GetSkillsCatalog($params: SearchPaginationInput) {\n    skills(params: $params) {\n      items {\n        id\n        name\n        category {\n          id\n          name\n          parent {\n            id\n            name\n          }\n        }\n        category_name\n        category_parent_name\n      }\n      total\n      page\n      limit\n      total_pages\n    }\n  }\n"): (typeof documents)["\n  query GetSkillsCatalog($params: SearchPaginationInput) {\n    skills(params: $params) {\n      items {\n        id\n        name\n        category {\n          id\n          name\n          parent {\n            id\n            name\n          }\n        }\n        category_name\n        category_parent_name\n      }\n      total\n      page\n      limit\n      total_pages\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query GetSkillCategories {\n    skillCategories {\n      id\n      name\n      order\n      children {\n        id\n        name\n        order\n      }\n    }\n  }\n"): (typeof documents)["\n  query GetSkillCategories {\n    skillCategories {\n      id\n      name\n      order\n      children {\n        id\n        name\n        order\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
 export function graphql(source: "\n  mutation CreateCv($cv: CreateCvInput!) {\n    createCv(cv: $cv) {\n      id\n      created_at\n      name\n      education\n      description\n    }\n  }\n"): (typeof documents)["\n  mutation CreateCv($cv: CreateCvInput!) {\n    createCv(cv: $cv) {\n      id\n      created_at\n      name\n      education\n      description\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
@@ -163,18 +211,6 @@ export function graphql(source: "\n  mutation DeleteUserAvatar($avatar: DeleteAv
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  mutation AddUserSkill($skill: AddProfileSkillInput!) {\n    addProfileSkill(skill: $skill) {\n      id\n      skills {\n        name\n        categoryId\n        mastery\n      }\n    }\n  }\n"): (typeof documents)["\n  mutation AddUserSkill($skill: AddProfileSkillInput!) {\n    addProfileSkill(skill: $skill) {\n      id\n      skills {\n        name\n        categoryId\n        mastery\n      }\n    }\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(source: "\n  mutation UpdateUserSkill($skill: UpdateProfileSkillInput!) {\n    updateProfileSkill(skill: $skill) {\n      id\n      skills {\n        name\n        categoryId\n        mastery\n      }\n    }\n  }\n"): (typeof documents)["\n  mutation UpdateUserSkill($skill: UpdateProfileSkillInput!) {\n    updateProfileSkill(skill: $skill) {\n      id\n      skills {\n        name\n        categoryId\n        mastery\n      }\n    }\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(source: "\n  mutation DeleteUserSkill($skill: DeleteProfileSkillInput!) {\n    deleteProfileSkill(skill: $skill) {\n      id\n      skills {\n        name\n        categoryId\n        mastery\n      }\n    }\n  }\n"): (typeof documents)["\n  mutation DeleteUserSkill($skill: DeleteProfileSkillInput!) {\n    deleteProfileSkill(skill: $skill) {\n      id\n      skills {\n        name\n        categoryId\n        mastery\n      }\n    }\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
 export function graphql(source: "\n  mutation AddUserLanguage($language: AddProfileLanguageInput!) {\n    addProfileLanguage(language: $language) {\n      id\n      languages {\n        name\n        proficiency\n      }\n    }\n  }\n"): (typeof documents)["\n  mutation AddUserLanguage($language: AddProfileLanguageInput!) {\n    addProfileLanguage(language: $language) {\n      id\n      languages {\n        name\n        proficiency\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
@@ -192,18 +228,6 @@ export function graphql(source: "\n  query GetCurrentProfile {\n    me {\n      
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  query GetCurrentUserRole {\n    me {\n      id\n      role\n    }\n  }\n"): (typeof documents)["\n  query GetCurrentUserRole {\n    me {\n      id\n      role\n    }\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(source: "\n  query GetUserSkills($userId: ID!) {\n    profile(userId: $userId) {\n      id\n      skills {\n        name\n        categoryId\n        mastery\n      }\n    }\n  }\n"): (typeof documents)["\n  query GetUserSkills($userId: ID!) {\n    profile(userId: $userId) {\n      id\n      skills {\n        name\n        categoryId\n        mastery\n      }\n    }\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(source: "\n  query GetSkillOptions($params: SearchPaginationInput) {\n    skills(params: $params) {\n      items {\n        id\n        name\n        category {\n          id\n          name\n        }\n      }\n      total\n      page\n      limit\n      total_pages\n    }\n  }\n"): (typeof documents)["\n  query GetSkillOptions($params: SearchPaginationInput) {\n    skills(params: $params) {\n      items {\n        id\n        name\n        category {\n          id\n          name\n        }\n      }\n      total\n      page\n      limit\n      total_pages\n    }\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(source: "\n  query GetSkillCategories {\n    skillCategories {\n      id\n      name\n      order\n      children {\n        id\n        name\n        order\n      }\n    }\n  }\n"): (typeof documents)["\n  query GetSkillCategories {\n    skillCategories {\n      id\n      name\n      order\n      children {\n        id\n        name\n        order\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
