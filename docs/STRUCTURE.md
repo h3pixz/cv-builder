@@ -26,9 +26,13 @@ cv-builder/
 │   │   │   ├── layout.tsx              # Sidebar + AuthGate
 │   │   │   ├── skills/
 │   │   │   │   └── page.tsx            # личные навыки текущего пользователя
+│   │   │   ├── languages/
+│   │   │   │   └── page.tsx            # языки текущего пользователя
 │   │   │   ├── admin/
-│   │   │   │   └── skills/
-│   │   │   │       └── page.tsx        # каталог навыков, только Admin
+│   │   │   │   ├── skills/
+│   │   │   │   │   └── page.tsx        # каталог навыков, только Admin
+│   │   │   │   └── languages/
+│   │   │   │       └── page.tsx        # каталог языков, только Admin
 │   │   │   └── users/
 │   │   │       ├── page.tsx            # список сотрудников
 │   │   │       ├── error.tsx
@@ -128,8 +132,6 @@ cv-builder/
 │   │   │   │   │   └── profile-skeleton.tsx
 │   │   │   │   ├── skills/
 │   │   │   │   │   └── user-skills-page.tsx
-│   │   │   │   ├── languages/
-│   │   │   │   │   └── user-languages-page.tsx
 │   │   │   │   ├── levels/
 │   │   │   │   │   ├── level-manager.tsx
 │   │   │   │   │   └── level-list-skeleton.tsx
@@ -151,7 +153,7 @@ cv-builder/
 │   │   │   │   ├── profile.queries.ts
 │   │   │   │   ├── profile.mutations.ts
 │   │   │   │   ├── profile.actions.ts
-│   │   │   │   ├── profile-levels.actions.ts   # языки + обёртки навыков
+│   │   │   │   ├── profile-levels.actions.ts   # обёртки навыков
 │   │   │   │   ├── profile-revalidate.ts
 │   │   │   │   ├── cvs.queries.ts
 │   │   │   │   ├── cvs.mutations.ts
@@ -162,10 +164,9 @@ cv-builder/
 │   │   │   │   ├── user-schema.ts
 │   │   │   │   ├── user-record.ts
 │   │   │   │   ├── profile-schema.ts
-│   │   │   │   ├── profile-permissions.ts
 │   │   │   │   ├── avatar.ts
-│   │   │   │   ├── levels.ts           # Proficiency языков, типы LevelGroup
-│   │   │   │   ├── level-forms.ts      # zod-схемы языков
+│   │   │   │   ├── levels.ts           # типы LevelItem / LevelGroup
+│   │   │   │   ├── level-forms.ts      # клиентская zod-схема вкладки навыков
 │   │   │   │   ├── cv-schema.ts
 │   │   │   │   ├── cv-permissions.ts
 │   │   │   │   └── cv-record.ts
@@ -206,8 +207,42 @@ cv-builder/
 │   │   │   │   └── *.test.ts
 │   │   │   └── index.ts
 │   │   │
+│   │   ├── languages/
+│   │   │   ├── ui/
+│   │   │   │   ├── languages-page.tsx
+│   │   │   │   ├── user-languages-page.tsx
+│   │   │   │   ├── languages-manager.tsx
+│   │   │   │   ├── languages-manager-skeleton.tsx
+│   │   │   │   ├── languages-manager.test.tsx
+│   │   │   │   └── admin/
+│   │   │   │       ├── admin-languages-page.tsx
+│   │   │   │       ├── admin-languages-header.tsx
+│   │   │   │       ├── admin-languages-table.tsx
+│   │   │   │       ├── admin-languages-table-skeleton.tsx
+│   │   │   │       ├── admin-languages-pagination.tsx
+│   │   │   │       ├── language-actions-menu.tsx
+│   │   │   │       ├── language-dialog.tsx
+│   │   │   │       └── delete-language-dialog.tsx
+│   │   │   ├── api/
+│   │   │   │   ├── languages.queries.ts
+│   │   │   │   ├── profile-languages.mutations.ts
+│   │   │   │   ├── profile-languages.actions.ts
+│   │   │   │   ├── catalog.mutations.ts
+│   │   │   │   ├── catalog.actions.ts
+│   │   │   │   ├── languages-revalidate.ts
+│   │   │   │   ├── current-user.ts
+│   │   │   │   ├── run-authed.ts
+│   │   │   │   └── *.test.ts
+│   │   │   ├── model/
+│   │   │   │   ├── language-levels.ts
+│   │   │   │   ├── language-schema.ts
+│   │   │   │   ├── language-record.ts
+│   │   │   │   ├── language-permissions.ts
+│   │   │   │   ├── action-result.ts
+│   │   │   │   └── *.test.ts
+│   │   │   └── index.ts
+│   │   │
 │   │   ├── cvs/                        # план: отдельная фича резюме
-│   │   ├── languages/                  # план
 │   │   ├── admin/                      # план
 │   │   └── settings/                   # план
 │   │
@@ -254,6 +289,7 @@ cv-builder/
 │   │   │   └── index.ts
 │   │   ├── helpers/
 │   │   │   ├── date-formatter.ts
+│   │   │   ├── profile-permissions.ts
 │   │   │   ├── go-back.ts
 │   │   │   ├── redirect-path.ts
 │   │   │   ├── reload-page.ts

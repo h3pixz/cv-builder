@@ -3,7 +3,6 @@ export * from "./ui/user-layout";
 export { UserProfilePage } from "./ui/profile/user-profile-page";
 export { UserProfileSkeleton } from "./ui/profile/profile-skeleton";
 export { UserSkillsPage } from "./ui/skills/user-skills-page";
-export { UserLanguagesPage } from "./ui/languages/user-languages-page";
 export { LevelListSkeleton } from "./ui/levels/level-list-skeleton";
 export { UserCvsPage } from "./ui/cvs/user-cvs-page";
 export { UserCvDetailsPage } from "./ui/cvs/user-cv-details-page";

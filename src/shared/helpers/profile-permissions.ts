@@ -1,5 +1,3 @@
-import type { UserRoleValue } from "./user-schema";
-
 export type ProfilePermissions = {
   /** First/last name, department and position fields can be changed. */
   canEdit: boolean;
@@ -11,7 +9,7 @@ export type ProfilePermissions = {
 
 type ProfileAccessArgs = {
   currentUserId?: string | null;
-  currentUserRole?: UserRoleValue | null;
+  currentUserRole?: string | null;
   targetUserId: string;
 };
 

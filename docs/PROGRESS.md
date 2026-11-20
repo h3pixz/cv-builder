@@ -86,12 +86,12 @@
 
 - [x] Список сотрудников `/users`: поиск, пагинация по 50, сортировка по имени, фамилии, отделу и должности через `searchParams`; скелетон таблицы в `Suspense` (`src/features/users/ui/users-page.tsx`)
 - [x] CRUD пользователей для Admin: диалоги создания, редактирования и удаления, роли Admin / Employee, справочники departments / positions; Server Actions `users.actions.ts`, zod-схемы `model/user-schema.ts`, инвалидация `/users` и layout пользователя
-- [x] Права: Employee видит список, но не управляет пользователями; Admin управляет любым профилем, Employee — только своим (`model/profile-permissions.ts`)
+- [x] Права: Employee видит список, но не управляет пользователями; Admin управляет любым профилем, Employee — только своим (`shared/helpers/profile-permissions.ts`)
 - [x] Профиль пользователя `/users/[userId]/profile`: имя и фамилия, email по роли, Server Actions `profile.actions.ts`
 - [x] Аватар: загрузка base64 через Server Action, лимит 5MB, png / jpg / gif, `serverActions.bodySizeLimit = "8mb"`
 - [x] Подтверждение email из профиля (`sendVerificationEmailAction`, только владелец профиля)
 - [x] Вкладка навыков `/users/[userId]/skills`: список с Mastery и группировкой по категориям, добавление, обновление и удаление через диалоги (`users/ui/skills/user-skills-page.tsx` + `users/ui/levels/level-manager.tsx`; данные и операции — из `features/skills`)
-- [x] Вкладка языков `/users/[userId]/languages`: список с Proficiency и CRUD через диалоги
+- [x] Вкладка языков `/users/[userId]/languages`: список с Proficiency и CRUD через диалоги; композиция живёт в `features/languages` (`ui/user-languages-page.tsx`), права — общий `getProfilePermissions`
 - [x] Вкладка CV (только Admin): таблица с поиском и сортировкой по имени, создание, обновление и удаление CV, страница деталей `/users/[userId]/cvs/[cvId]`; Employee получает 404 (`model/cv-permissions.ts`)
 - [x] Breadcrumbs и табы пользователя (`user-breadcrumbs`, `user-tabs`), редирект `/users/[userId]` → `/profile`
 - [x] Общий авторизованный серверный транспорт с refresh-ретраем: `api/run-authed.ts`
@@ -103,6 +103,15 @@
 - [x] Личная страница `/skills`: навыки текущего пользователя, добавление, обновление Mastery и удаление (`ui/skills-page.tsx`, `ui/skills-manager.tsx`)
 - [x] Каталог навыков `/admin/skills` (только Admin): таблица с поиском и пагинацией, создание, редактирование и удаление (`ui/admin/*`)
 - [x] Логика навыков вынесена из `features/users`; вкладка `/users/[userId]/skills` остаётся композицией в `users` и импортирует `features/skills` через публичный `index.ts`
+
+### Языки
+
+- [x] Отдельная фича `src/features/languages`: модель Proficiency (`model/language-levels.ts`), zod-схемы (`model/language-schema.ts`), запросы, мутации и Server Actions
+- [x] Личная страница `/languages`: языки текущего пользователя, добавление, редактирование Proficiency и удаление (`ui/languages-page.tsx`, `ui/languages-manager.tsx`)
+- [x] Каталог языков `/admin/languages` (только Admin): таблица Name / ISO / Native Name, поиск, сортировка по Name и ISO, пагинация, создание, редактирование и удаление (`ui/admin/*`)
+- [x] Пункт `Languages` в management-навигации сайдбара виден только Admin
+- [x] Логика языков вынесена из `features/users`: запросы, мутации, схемы, константы Proficiency и вкладка `/users/[userId]/languages`; `LevelManager` в `users` стал менеджером только навыков, `getProfilePermissions` переехал в `shared/helpers`
+- [x] Тесты: Proficiency и схемы, Server Actions личных языков и каталога, права владельца / Admin, диалоги менеджера, пагинация каталога
 
 ### Мержи
 
@@ -119,7 +128,7 @@
 ### Маршруты и layout
 
 - [x] Создать общий layout приватной части: сайдбар, контейнер, breadcrumbs и табы пользователя
-- [ ] Добавить страницы разделов из сайдбара: `/skills`, `/languages`, `/cvs`, `/departments`, `/positions`, `/projects`
+- [ ] Добавить страницы разделов из сайдбара: `/cvs`, `/departments`, `/positions`, `/projects`
 - [ ] Редактор и превью резюме (`/cvs/[cvId]/preview`)
 - [ ] Применить SSR/SSG для страниц, где уместно
 

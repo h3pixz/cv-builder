@@ -1,26 +1,16 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { LevelManager } from "./level-manager";
 import type { LevelGroup } from "../../model/levels";
+import { LevelManager } from "./level-manager";
 
-const {
-  addSkillAction,
-  addLanguageAction,
-  updateSkillAction,
-  updateLanguageAction,
-  deleteSkillsAction,
-  deleteLanguagesAction,
-  refresh,
-} = vi.hoisted(() => ({
-  addSkillAction: vi.fn(),
-  addLanguageAction: vi.fn(),
-  updateSkillAction: vi.fn(),
-  updateLanguageAction: vi.fn(),
-  deleteSkillsAction: vi.fn(),
-  deleteLanguagesAction: vi.fn(),
-  refresh: vi.fn(),
-}));
+const { addSkillAction, updateSkillAction, deleteSkillsAction, refresh } =
+  vi.hoisted(() => ({
+    addSkillAction: vi.fn(),
+    updateSkillAction: vi.fn(),
+    deleteSkillsAction: vi.fn(),
+    refresh: vi.fn(),
+  }));
 
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ refresh }),
@@ -28,11 +18,8 @@ vi.mock("next/navigation", () => ({
 
 vi.mock("../../api/profile-levels.actions", () => ({
   addSkillAction,
-  addLanguageAction,
   updateSkillAction,
-  updateLanguageAction,
   deleteSkillsAction,
-  deleteLanguagesAction,
 }));
 
 vi.mock("@/shared/ui/toast", () => ({ toast: { add: vi.fn() } }));
@@ -127,38 +114,20 @@ const skillLevelOptions = [
   { value: "Expert", label: "Expert" },
 ];
 
-const skillMessages = {
-  nameRequired: "Skill is required",
-  levelRequired: "Skill mastery is required",
-};
-
-const languageLevelOptions = [
-  { value: "A1", label: "A1" },
-  { value: "A2", label: "A2" },
-  { value: "B1", label: "B1" },
-  { value: "B2", label: "B2" },
-  { value: "C1", label: "C1" },
-  { value: "C2", label: "C2" },
-  { value: "Native", label: "Native" },
-];
-
-const languageMessages = {
-  nameRequired: "Language is required",
-  levelRequired: "Language proficiency is required",
-};
-
 function renderSkills(
   overrides: Partial<React.ComponentProps<typeof LevelManager>> = {},
 ) {
   return render(
     <LevelManager
-      kind="skill"
       userId="user-1"
       heading="Current skills"
       groups={skillGroups}
       options={skillOptions}
       levelOptions={skillLevelOptions}
-      formMessages={skillMessages}
+      formMessages={{
+        nameRequired: "Skill is required",
+        levelRequired: "Skill mastery is required",
+      }}
       canManage
       {...overrides}
     />,
@@ -306,8 +275,8 @@ describe("LevelManager", () => {
     const removeButton = screen.getByRole("button", { name: /remove \(0\)/i });
     expect(removeButton).toBeDisabled();
 
-    fireEvent.click(screen.getByRole("button", { name: "Select React" }));
-    fireEvent.click(screen.getByRole("button", { name: "Select CSS" }));
+    fireEvent.click(screen.getByRole("checkbox", { name: "Select React" }));
+    fireEvent.click(screen.getByRole("checkbox", { name: "Select CSS" }));
 
     expect(
       screen.getByRole("button", { name: /remove \(2\)/i }),
@@ -331,73 +300,8 @@ describe("LevelManager", () => {
     expect(
       screen.queryByRole("button", { name: /remove \(\d\)/i }),
     ).toBeNull();
-    expect(screen.getByRole("button", { name: /add skill/i })).toBeInTheDocument();
-  });
-
-  it("uses language labels and messages", async () => {
-    addLanguageAction.mockResolvedValue({ success: true });
-
-    render(
-      <LevelManager
-        kind="language"
-        userId="user-1"
-        heading="Current Languages"
-        groups={[
-          {
-            id: "languages",
-            name: "Current Languages",
-            items: [{ name: "English", level: 7, levelLabel: "Native" }],
-          },
-        ]}
-        options={[
-          { value: "English", label: "English" },
-          { value: "German", label: "German" },
-        ]}
-        levelOptions={languageLevelOptions}
-        formMessages={languageMessages}
-        canManage
-        showGroupNames={false}
-      />,
-    );
-
-    fireEvent.click(screen.getByRole("button", { name: /add language/i }));
     expect(
-      screen.getByRole("heading", { name: "Add language" }),
+      screen.getByRole("button", { name: /add skill/i }),
     ).toBeInTheDocument();
-
-    fireEvent.change(screen.getByLabelText("Language"), {
-      target: { value: "German" },
-    });
-    fireEvent.change(screen.getByLabelText("Language Proficiency"), {
-      target: { value: "B1" },
-    });
-
-    const addButton = screen.getByRole("button", { name: "Add" });
-    await waitFor(() => expect(addButton).toBeEnabled());
-    fireEvent.click(addButton);
-
-    await waitFor(() => {
-      expect(addLanguageAction).toHaveBeenCalledWith("user-1", {
-        name: "German",
-        mastery: "B1",
-      });
-    });
-  });
-
-  it("shows the language empty state", () => {
-    render(
-      <LevelManager
-        kind="language"
-        userId="user-1"
-        heading="Current Languages"
-        groups={[]}
-        options={[]}
-        levelOptions={languageLevelOptions}
-        formMessages={languageMessages}
-        canManage={false}
-      />,
-    );
-
-    expect(screen.getByText("No languages added yet")).toBeInTheDocument();
   });
 });

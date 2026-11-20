@@ -20,6 +20,15 @@ type Documents = {
     "\n  mutation ResetPassword($auth: ResetPasswordInput!) {\n    resetPassword(auth: $auth)\n  }\n": typeof types.ResetPasswordDocument,
     "\n  mutation VerifyMail($mail: VerifyMailInput!) {\n    verifyMail(mail: $mail)\n  }\n": typeof types.VerifyMailDocument,
     "\n  mutation SendVerification($email: String!) {\n    sendVerification(email: $email)\n  }\n": typeof types.SendVerificationDocument,
+    "\n  mutation CreateLanguage($language: CreateLanguageInput!) {\n    createLanguage(language: $language) {\n      id\n      iso2\n      name\n      native_name\n    }\n  }\n": typeof types.CreateLanguageDocument,
+    "\n  mutation UpdateLanguage($language: UpdateLanguageInput!) {\n    updateLanguage(language: $language) {\n      id\n      iso2\n      name\n      native_name\n    }\n  }\n": typeof types.UpdateLanguageDocument,
+    "\n  mutation DeleteLanguage($language: DeleteLanguageInput!) {\n    deleteLanguage(language: $language) {\n      affected\n    }\n  }\n": typeof types.DeleteLanguageDocument,
+    "\n  query GetMyLanguages {\n    me {\n      id\n      languages {\n        name\n        proficiency\n      }\n    }\n  }\n": typeof types.GetMyLanguagesDocument,
+    "\n  query GetUserLanguages($userId: ID!) {\n    profile(userId: $userId) {\n      id\n      languages {\n        name\n        proficiency\n      }\n    }\n  }\n": typeof types.GetUserLanguagesDocument,
+    "\n  query GetLanguagesCatalog($params: SearchPaginationInput) {\n    languages(params: $params) {\n      items {\n        id\n        iso2\n        name\n        native_name\n      }\n      total\n      page\n      limit\n      total_pages\n    }\n  }\n": typeof types.GetLanguagesCatalogDocument,
+    "\n  mutation AddMyLanguage($language: AddProfileLanguageInput!) {\n    addProfileLanguage(language: $language) {\n      id\n      languages {\n        name\n        proficiency\n      }\n    }\n  }\n": typeof types.AddMyLanguageDocument,
+    "\n  mutation UpdateMyLanguage($language: UpdateProfileLanguageInput!) {\n    updateProfileLanguage(language: $language) {\n      id\n      languages {\n        name\n        proficiency\n      }\n    }\n  }\n": typeof types.UpdateMyLanguageDocument,
+    "\n  mutation DeleteMyLanguage($language: DeleteProfileLanguageInput!) {\n    deleteProfileLanguage(language: $language) {\n      id\n      languages {\n        name\n        proficiency\n      }\n    }\n  }\n": typeof types.DeleteMyLanguageDocument,
     "\n  mutation CreateSkill($skill: CreateSkillInput!) {\n    createSkill(skill: $skill) {\n      id\n      name\n      category {\n        id\n        name\n      }\n    }\n  }\n": typeof types.CreateSkillDocument,
     "\n  mutation UpdateSkill($skill: UpdateSkillInput!) {\n    updateSkill(skill: $skill) {\n      id\n      name\n      category {\n        id\n        name\n      }\n    }\n  }\n": typeof types.UpdateSkillDocument,
     "\n  mutation DeleteSkill($skill: DeleteSkillInput!) {\n    deleteSkill(skill: $skill) {\n      affected\n    }\n  }\n": typeof types.DeleteSkillDocument,
@@ -38,13 +47,8 @@ type Documents = {
     "\n  mutation UpdateUserProfile($profile: UpdateProfileInput!) {\n    updateProfile(profile: $profile) {\n      id\n      first_name\n      last_name\n      full_name\n      avatar\n      email\n      is_verified\n      role\n    }\n  }\n": typeof types.UpdateUserProfileDocument,
     "\n  mutation UploadUserAvatar($avatar: UploadAvatarInput!) {\n    uploadAvatar(avatar: $avatar)\n  }\n": typeof types.UploadUserAvatarDocument,
     "\n  mutation DeleteUserAvatar($avatar: DeleteAvatarInput!) {\n    deleteAvatar(avatar: $avatar)\n  }\n": typeof types.DeleteUserAvatarDocument,
-    "\n  mutation AddUserLanguage($language: AddProfileLanguageInput!) {\n    addProfileLanguage(language: $language) {\n      id\n      languages {\n        name\n        proficiency\n      }\n    }\n  }\n": typeof types.AddUserLanguageDocument,
-    "\n  mutation UpdateUserLanguage($language: UpdateProfileLanguageInput!) {\n    updateProfileLanguage(language: $language) {\n      id\n      languages {\n        name\n        proficiency\n      }\n    }\n  }\n": typeof types.UpdateUserLanguageDocument,
-    "\n  mutation DeleteUserLanguage($language: DeleteProfileLanguageInput!) {\n    deleteProfileLanguage(language: $language) {\n      id\n      languages {\n        name\n        proficiency\n      }\n    }\n  }\n": typeof types.DeleteUserLanguageDocument,
     "\n  query GetCurrentProfile {\n    me {\n      id\n      created_at\n      first_name\n      last_name\n      full_name\n      avatar\n      email\n      is_verified\n      role\n      skills {\n        name\n        categoryId\n        mastery\n      }\n      languages {\n        name\n        proficiency\n      }\n    }\n  }\n": typeof types.GetCurrentProfileDocument,
     "\n  query GetCurrentUserRole {\n    me {\n      id\n      role\n    }\n  }\n": typeof types.GetCurrentUserRoleDocument,
-    "\n  query GetLanguageOptions($params: SearchPaginationInput) {\n    languages(params: $params) {\n      items {\n        id\n        name\n        native_name\n      }\n      total\n      page\n      limit\n      total_pages\n    }\n  }\n": typeof types.GetLanguageOptionsDocument,
-    "\n  query GetUserLanguages($userId: ID!) {\n    profile(userId: $userId) {\n      id\n      languages {\n        name\n        proficiency\n      }\n    }\n  }\n": typeof types.GetUserLanguagesDocument,
     "\n  mutation CreateUser($user: CreateUserInput!) {\n    createUser(user: $user) {\n      id\n      created_at\n      email\n      is_verified\n      role\n      profile {\n        id\n        first_name\n        last_name\n        full_name\n        avatar\n      }\n      department {\n        id\n        name\n      }\n      position {\n        id\n        name\n      }\n    }\n  }\n": typeof types.CreateUserDocument,
     "\n  mutation UpdateUser($user: UpdateUserInput!) {\n    updateUser(user: $user) {\n      id\n      created_at\n      email\n      is_verified\n      role\n      profile {\n        id\n        first_name\n        last_name\n        full_name\n        avatar\n      }\n      department {\n        id\n        name\n      }\n      position {\n        id\n        name\n      }\n    }\n  }\n": typeof types.UpdateUserDocument,
     "\n  mutation DeleteUser($userId: ID!) {\n    deleteUser(userId: $userId) {\n      affected\n    }\n  }\n": typeof types.DeleteUserDocument,
@@ -62,6 +66,15 @@ const documents: Documents = {
     "\n  mutation ResetPassword($auth: ResetPasswordInput!) {\n    resetPassword(auth: $auth)\n  }\n": types.ResetPasswordDocument,
     "\n  mutation VerifyMail($mail: VerifyMailInput!) {\n    verifyMail(mail: $mail)\n  }\n": types.VerifyMailDocument,
     "\n  mutation SendVerification($email: String!) {\n    sendVerification(email: $email)\n  }\n": types.SendVerificationDocument,
+    "\n  mutation CreateLanguage($language: CreateLanguageInput!) {\n    createLanguage(language: $language) {\n      id\n      iso2\n      name\n      native_name\n    }\n  }\n": types.CreateLanguageDocument,
+    "\n  mutation UpdateLanguage($language: UpdateLanguageInput!) {\n    updateLanguage(language: $language) {\n      id\n      iso2\n      name\n      native_name\n    }\n  }\n": types.UpdateLanguageDocument,
+    "\n  mutation DeleteLanguage($language: DeleteLanguageInput!) {\n    deleteLanguage(language: $language) {\n      affected\n    }\n  }\n": types.DeleteLanguageDocument,
+    "\n  query GetMyLanguages {\n    me {\n      id\n      languages {\n        name\n        proficiency\n      }\n    }\n  }\n": types.GetMyLanguagesDocument,
+    "\n  query GetUserLanguages($userId: ID!) {\n    profile(userId: $userId) {\n      id\n      languages {\n        name\n        proficiency\n      }\n    }\n  }\n": types.GetUserLanguagesDocument,
+    "\n  query GetLanguagesCatalog($params: SearchPaginationInput) {\n    languages(params: $params) {\n      items {\n        id\n        iso2\n        name\n        native_name\n      }\n      total\n      page\n      limit\n      total_pages\n    }\n  }\n": types.GetLanguagesCatalogDocument,
+    "\n  mutation AddMyLanguage($language: AddProfileLanguageInput!) {\n    addProfileLanguage(language: $language) {\n      id\n      languages {\n        name\n        proficiency\n      }\n    }\n  }\n": types.AddMyLanguageDocument,
+    "\n  mutation UpdateMyLanguage($language: UpdateProfileLanguageInput!) {\n    updateProfileLanguage(language: $language) {\n      id\n      languages {\n        name\n        proficiency\n      }\n    }\n  }\n": types.UpdateMyLanguageDocument,
+    "\n  mutation DeleteMyLanguage($language: DeleteProfileLanguageInput!) {\n    deleteProfileLanguage(language: $language) {\n      id\n      languages {\n        name\n        proficiency\n      }\n    }\n  }\n": types.DeleteMyLanguageDocument,
     "\n  mutation CreateSkill($skill: CreateSkillInput!) {\n    createSkill(skill: $skill) {\n      id\n      name\n      category {\n        id\n        name\n      }\n    }\n  }\n": types.CreateSkillDocument,
     "\n  mutation UpdateSkill($skill: UpdateSkillInput!) {\n    updateSkill(skill: $skill) {\n      id\n      name\n      category {\n        id\n        name\n      }\n    }\n  }\n": types.UpdateSkillDocument,
     "\n  mutation DeleteSkill($skill: DeleteSkillInput!) {\n    deleteSkill(skill: $skill) {\n      affected\n    }\n  }\n": types.DeleteSkillDocument,
@@ -80,13 +93,8 @@ const documents: Documents = {
     "\n  mutation UpdateUserProfile($profile: UpdateProfileInput!) {\n    updateProfile(profile: $profile) {\n      id\n      first_name\n      last_name\n      full_name\n      avatar\n      email\n      is_verified\n      role\n    }\n  }\n": types.UpdateUserProfileDocument,
     "\n  mutation UploadUserAvatar($avatar: UploadAvatarInput!) {\n    uploadAvatar(avatar: $avatar)\n  }\n": types.UploadUserAvatarDocument,
     "\n  mutation DeleteUserAvatar($avatar: DeleteAvatarInput!) {\n    deleteAvatar(avatar: $avatar)\n  }\n": types.DeleteUserAvatarDocument,
-    "\n  mutation AddUserLanguage($language: AddProfileLanguageInput!) {\n    addProfileLanguage(language: $language) {\n      id\n      languages {\n        name\n        proficiency\n      }\n    }\n  }\n": types.AddUserLanguageDocument,
-    "\n  mutation UpdateUserLanguage($language: UpdateProfileLanguageInput!) {\n    updateProfileLanguage(language: $language) {\n      id\n      languages {\n        name\n        proficiency\n      }\n    }\n  }\n": types.UpdateUserLanguageDocument,
-    "\n  mutation DeleteUserLanguage($language: DeleteProfileLanguageInput!) {\n    deleteProfileLanguage(language: $language) {\n      id\n      languages {\n        name\n        proficiency\n      }\n    }\n  }\n": types.DeleteUserLanguageDocument,
     "\n  query GetCurrentProfile {\n    me {\n      id\n      created_at\n      first_name\n      last_name\n      full_name\n      avatar\n      email\n      is_verified\n      role\n      skills {\n        name\n        categoryId\n        mastery\n      }\n      languages {\n        name\n        proficiency\n      }\n    }\n  }\n": types.GetCurrentProfileDocument,
     "\n  query GetCurrentUserRole {\n    me {\n      id\n      role\n    }\n  }\n": types.GetCurrentUserRoleDocument,
-    "\n  query GetLanguageOptions($params: SearchPaginationInput) {\n    languages(params: $params) {\n      items {\n        id\n        name\n        native_name\n      }\n      total\n      page\n      limit\n      total_pages\n    }\n  }\n": types.GetLanguageOptionsDocument,
-    "\n  query GetUserLanguages($userId: ID!) {\n    profile(userId: $userId) {\n      id\n      languages {\n        name\n        proficiency\n      }\n    }\n  }\n": types.GetUserLanguagesDocument,
     "\n  mutation CreateUser($user: CreateUserInput!) {\n    createUser(user: $user) {\n      id\n      created_at\n      email\n      is_verified\n      role\n      profile {\n        id\n        first_name\n        last_name\n        full_name\n        avatar\n      }\n      department {\n        id\n        name\n      }\n      position {\n        id\n        name\n      }\n    }\n  }\n": types.CreateUserDocument,
     "\n  mutation UpdateUser($user: UpdateUserInput!) {\n    updateUser(user: $user) {\n      id\n      created_at\n      email\n      is_verified\n      role\n      profile {\n        id\n        first_name\n        last_name\n        full_name\n        avatar\n      }\n      department {\n        id\n        name\n      }\n      position {\n        id\n        name\n      }\n    }\n  }\n": types.UpdateUserDocument,
     "\n  mutation DeleteUser($userId: ID!) {\n    deleteUser(userId: $userId) {\n      affected\n    }\n  }\n": types.DeleteUserDocument,
@@ -136,6 +144,42 @@ export function graphql(source: "\n  mutation VerifyMail($mail: VerifyMailInput!
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  mutation SendVerification($email: String!) {\n    sendVerification(email: $email)\n  }\n"): (typeof documents)["\n  mutation SendVerification($email: String!) {\n    sendVerification(email: $email)\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation CreateLanguage($language: CreateLanguageInput!) {\n    createLanguage(language: $language) {\n      id\n      iso2\n      name\n      native_name\n    }\n  }\n"): (typeof documents)["\n  mutation CreateLanguage($language: CreateLanguageInput!) {\n    createLanguage(language: $language) {\n      id\n      iso2\n      name\n      native_name\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation UpdateLanguage($language: UpdateLanguageInput!) {\n    updateLanguage(language: $language) {\n      id\n      iso2\n      name\n      native_name\n    }\n  }\n"): (typeof documents)["\n  mutation UpdateLanguage($language: UpdateLanguageInput!) {\n    updateLanguage(language: $language) {\n      id\n      iso2\n      name\n      native_name\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation DeleteLanguage($language: DeleteLanguageInput!) {\n    deleteLanguage(language: $language) {\n      affected\n    }\n  }\n"): (typeof documents)["\n  mutation DeleteLanguage($language: DeleteLanguageInput!) {\n    deleteLanguage(language: $language) {\n      affected\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query GetMyLanguages {\n    me {\n      id\n      languages {\n        name\n        proficiency\n      }\n    }\n  }\n"): (typeof documents)["\n  query GetMyLanguages {\n    me {\n      id\n      languages {\n        name\n        proficiency\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query GetUserLanguages($userId: ID!) {\n    profile(userId: $userId) {\n      id\n      languages {\n        name\n        proficiency\n      }\n    }\n  }\n"): (typeof documents)["\n  query GetUserLanguages($userId: ID!) {\n    profile(userId: $userId) {\n      id\n      languages {\n        name\n        proficiency\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query GetLanguagesCatalog($params: SearchPaginationInput) {\n    languages(params: $params) {\n      items {\n        id\n        iso2\n        name\n        native_name\n      }\n      total\n      page\n      limit\n      total_pages\n    }\n  }\n"): (typeof documents)["\n  query GetLanguagesCatalog($params: SearchPaginationInput) {\n    languages(params: $params) {\n      items {\n        id\n        iso2\n        name\n        native_name\n      }\n      total\n      page\n      limit\n      total_pages\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation AddMyLanguage($language: AddProfileLanguageInput!) {\n    addProfileLanguage(language: $language) {\n      id\n      languages {\n        name\n        proficiency\n      }\n    }\n  }\n"): (typeof documents)["\n  mutation AddMyLanguage($language: AddProfileLanguageInput!) {\n    addProfileLanguage(language: $language) {\n      id\n      languages {\n        name\n        proficiency\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation UpdateMyLanguage($language: UpdateProfileLanguageInput!) {\n    updateProfileLanguage(language: $language) {\n      id\n      languages {\n        name\n        proficiency\n      }\n    }\n  }\n"): (typeof documents)["\n  mutation UpdateMyLanguage($language: UpdateProfileLanguageInput!) {\n    updateProfileLanguage(language: $language) {\n      id\n      languages {\n        name\n        proficiency\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation DeleteMyLanguage($language: DeleteProfileLanguageInput!) {\n    deleteProfileLanguage(language: $language) {\n      id\n      languages {\n        name\n        proficiency\n      }\n    }\n  }\n"): (typeof documents)["\n  mutation DeleteMyLanguage($language: DeleteProfileLanguageInput!) {\n    deleteProfileLanguage(language: $language) {\n      id\n      languages {\n        name\n        proficiency\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -211,31 +255,11 @@ export function graphql(source: "\n  mutation DeleteUserAvatar($avatar: DeleteAv
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  mutation AddUserLanguage($language: AddProfileLanguageInput!) {\n    addProfileLanguage(language: $language) {\n      id\n      languages {\n        name\n        proficiency\n      }\n    }\n  }\n"): (typeof documents)["\n  mutation AddUserLanguage($language: AddProfileLanguageInput!) {\n    addProfileLanguage(language: $language) {\n      id\n      languages {\n        name\n        proficiency\n      }\n    }\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(source: "\n  mutation UpdateUserLanguage($language: UpdateProfileLanguageInput!) {\n    updateProfileLanguage(language: $language) {\n      id\n      languages {\n        name\n        proficiency\n      }\n    }\n  }\n"): (typeof documents)["\n  mutation UpdateUserLanguage($language: UpdateProfileLanguageInput!) {\n    updateProfileLanguage(language: $language) {\n      id\n      languages {\n        name\n        proficiency\n      }\n    }\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(source: "\n  mutation DeleteUserLanguage($language: DeleteProfileLanguageInput!) {\n    deleteProfileLanguage(language: $language) {\n      id\n      languages {\n        name\n        proficiency\n      }\n    }\n  }\n"): (typeof documents)["\n  mutation DeleteUserLanguage($language: DeleteProfileLanguageInput!) {\n    deleteProfileLanguage(language: $language) {\n      id\n      languages {\n        name\n        proficiency\n      }\n    }\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
 export function graphql(source: "\n  query GetCurrentProfile {\n    me {\n      id\n      created_at\n      first_name\n      last_name\n      full_name\n      avatar\n      email\n      is_verified\n      role\n      skills {\n        name\n        categoryId\n        mastery\n      }\n      languages {\n        name\n        proficiency\n      }\n    }\n  }\n"): (typeof documents)["\n  query GetCurrentProfile {\n    me {\n      id\n      created_at\n      first_name\n      last_name\n      full_name\n      avatar\n      email\n      is_verified\n      role\n      skills {\n        name\n        categoryId\n        mastery\n      }\n      languages {\n        name\n        proficiency\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  query GetCurrentUserRole {\n    me {\n      id\n      role\n    }\n  }\n"): (typeof documents)["\n  query GetCurrentUserRole {\n    me {\n      id\n      role\n    }\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(source: "\n  query GetLanguageOptions($params: SearchPaginationInput) {\n    languages(params: $params) {\n      items {\n        id\n        name\n        native_name\n      }\n      total\n      page\n      limit\n      total_pages\n    }\n  }\n"): (typeof documents)["\n  query GetLanguageOptions($params: SearchPaginationInput) {\n    languages(params: $params) {\n      items {\n        id\n        name\n        native_name\n      }\n      total\n      page\n      limit\n      total_pages\n    }\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(source: "\n  query GetUserLanguages($userId: ID!) {\n    profile(userId: $userId) {\n      id\n      languages {\n        name\n        proficiency\n      }\n    }\n  }\n"): (typeof documents)["\n  query GetUserLanguages($userId: ID!) {\n    profile(userId: $userId) {\n      id\n      languages {\n        name\n        proficiency\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

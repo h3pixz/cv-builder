@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 
+import { formatDate, getProfilePermissions } from "@/shared/helpers";
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
-import { formatDate } from "@/shared/helpers";
 
 import { getCurrentUser } from "../../api/profile.queries";
 import {
@@ -9,7 +9,6 @@ import {
   getPositionOptions,
   getUser,
 } from "../../api/users.queries";
-import { getProfilePermissions } from "../../model/profile-permissions";
 import type { ProfileValues } from "../../model/profile-schema";
 import { AvatarUpload } from "./avatar-upload";
 import { UserProfileForm } from "./user-profile-form";

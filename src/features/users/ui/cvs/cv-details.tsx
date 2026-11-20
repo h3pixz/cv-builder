@@ -1,12 +1,11 @@
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 
+import { proficiencyLevel } from "@/features/languages";
 import { masteryLevel } from "@/features/skills";
 import type { GetCvQuery } from "@/shared/api/graphql/generated/graphql";
 import { Button } from "@/shared/ui/button";
 import { Level } from "@/shared/ui/level";
-
-import { proficiencyLevel } from "../../model/levels";
 
 type Cv = GetCvQuery["cv"];
 

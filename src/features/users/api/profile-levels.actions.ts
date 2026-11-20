@@ -10,26 +10,15 @@ import {
   updateMySkill,
   updateMySkillSchema,
 } from "@/features/skills";
+import { getProfilePermissions } from "@/shared/helpers/profile-permissions";
 
 import type { UsersActionResult } from "../model/action-result";
-import {
-  addLanguageSchema,
-  updateLanguageSchema,
-} from "../model/level-forms";
-import { getProfilePermissions } from "../model/profile-permissions";
-import {
-  addUserLanguage,
-  deleteUserLanguage,
-  updateUserLanguage,
-} from "./profile.mutations";
-import { getCurrentUser, getUserLanguages } from "./profile.queries";
+import { getCurrentUser } from "./profile.queries";
 import { revalidateUser } from "./profile-revalidate";
 import { forbiddenFailure, runAuthed } from "./run-authed";
 
 type SkillValues = z.infer<typeof addMySkillSchema>;
 type UpdateSkillValues = z.infer<typeof updateMySkillSchema>;
-type LanguageValues = z.infer<typeof addLanguageSchema>;
-type UpdateLanguageValues = z.infer<typeof updateLanguageSchema>;
 
 const deleteSchema = z
   .array(z.string().trim().min(1))
@@ -149,117 +138,6 @@ export async function deleteSkillsAction(
 
   const result = await runAuthed((accessToken) =>
     deleteMySkill({ userId, name: parsed.data }, { accessToken }),
-  );
-
-  if (!result.success) {
-    return result;
-  }
-
-  revalidateUser(userId);
-
-  return { success: true };
-}
-
-// -----------------------------------------------------
-// LANGUAGES
-// -----------------------------------------------------
-
-export async function addLanguageAction(
-  userId: string,
-  values: LanguageValues,
-): Promise<UsersActionResult> {
-  const parsed = addLanguageSchema.safeParse(values);
-
-  if (!parsed.success) {
-    return invalid(parsed.error.issues[0]?.message);
-  }
-
-  if (!(await canManageProfile(userId))) {
-    return forbiddenFailure();
-  }
-
-  const data = parsed.data;
-  const result = await runAuthed((accessToken) =>
-    addUserLanguage(
-      {
-        userId,
-        name: data.name,
-        proficiency: data.mastery,
-      },
-      { accessToken },
-    ),
-  );
-
-  if (!result.success) {
-    return result;
-  }
-
-  revalidateUser(userId);
-
-  return { success: true };
-}
-
-export async function updateLanguageAction(
-  userId: string,
-  values: UpdateLanguageValues,
-): Promise<UsersActionResult> {
-  const parsed = updateLanguageSchema.safeParse(values);
-
-  if (!parsed.success) {
-    return invalid(parsed.error.issues[0]?.message);
-  }
-
-  if (!(await canManageProfile(userId))) {
-    return forbiddenFailure();
-  }
-
-  const data = parsed.data;
-  const result = await runAuthed(async (accessToken) => {
-    // The backend requires the whole language, not just the new level.
-    const languages = await getUserLanguages(userId, { accessToken });
-    const existing = languages.find(
-      (language) => language.name === data.name,
-    );
-
-    if (!existing) {
-      throw new Error("Language not found");
-    }
-
-    return updateUserLanguage(
-      {
-        userId,
-        name: data.name,
-        proficiency: data.mastery,
-      },
-      { accessToken },
-    );
-  });
-
-  if (!result.success) {
-    return result;
-  }
-
-  revalidateUser(userId);
-
-  return { success: true };
-}
-
-export async function deleteLanguagesAction(
-  userId: string,
-  names: string[],
-): Promise<UsersActionResult> {
-  const parsed = deleteSchema.safeParse(names);
-
-  if (!parsed.success) {
-    return invalid(parsed.error.issues[0]?.message);
-  }
-
-  if (!(await canManageProfile(userId))) {
-    return forbiddenFailure();
-  }
-
-  const result = await runAuthed((accessToken) =>
-    deleteUserLanguage({ userId, name: parsed.data }, { accessToken }),
   );
 
   if (!result.success) {

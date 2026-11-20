@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { PROFICIENCY_MAX, proficiencyLevel } from "./levels";
+import { PROFICIENCY_MAX, proficiencyLevel } from "./language-levels";
 
 describe("proficiencyLevel", () => {
   it.each([
