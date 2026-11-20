@@ -16,6 +16,9 @@ const buttonVariants = cva(
         secondary:
           "border-control-border bg-background text-secondary-foreground hover:border-secondary-active hover:bg-secondary-hover hover:text-secondary-hover-foreground active:border-secondary-active active:bg-secondary-active active:text-secondary-active-foreground disabled:border-transparent disabled:bg-disabled disabled:text-disabled-foreground",
 
+        outline:
+          "border-primary bg-transparent text-primary hover:border-primary hover:bg-primary hover:text-primary-foreground active:border-primary active:bg-primary-active active:text-primary-active-foreground disabled:border-transparent disabled:bg-disabled disabled:text-disabled-foreground",
+
         ghost:
           "border-transparent bg-transparent text-muted-foreground hover:border-control-border hover:bg-background hover:text-muted-foreground active:border-secondary-hover active:bg-secondary-hover active:text-secondary-hover-foreground disabled:border-transparent disabled:bg-disabled disabled:text-disabled-foreground",
 

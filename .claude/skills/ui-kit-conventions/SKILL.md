@@ -14,7 +14,7 @@ All components are built on `@base-ui/react` (not Radix). Each lives in `shared/
 - Base UI uses `render={<Link />}` where Radix uses `asChild`.
 
 ## button
-`Button`, `buttonVariants`. Variants: `default` (text), `primary` (filled pill), `secondary` (outlined pill), `ghost`, `icon`. Base: `h-9 rounded-full px-6 text-[10px] font-semibold uppercase tracking-[0.02em]`. Add a variant instead of restyling per usage.
+`Button`, `buttonVariants`. Variants: `default` (text), `primary` (filled pill), `secondary` (gray outlined pill), `outline` (red outlined pill, fills red on hover — `EXPORT PDF`), `ghost`, `icon`. Base: `h-9 rounded-full px-6 text-[10px] font-semibold uppercase tracking-[0.02em]`. Add a variant instead of restyling per usage.
 
 ## input
 `Input`, `inputVariants`, `PasswordInput`, `CodeInput`.
