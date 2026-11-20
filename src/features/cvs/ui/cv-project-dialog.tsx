@@ -220,7 +220,7 @@ export function CvProjectDialog(props: Props) {
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="max-w-lg">
+      <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle>{isAdd ? "Add project" : "Update project"}</DialogTitle>
         </DialogHeader>
@@ -230,133 +230,118 @@ export function CvProjectDialog(props: Props) {
           noValidate
           onSubmit={form.handleSubmit(onSubmit)}
         >
-          <div className="space-y-1">
-            <Label
-              htmlFor={`${prefix}-project`}
-              className="text-[10px] text-muted-foreground"
-            >
-              Name
-            </Label>
-            <Controller
-              control={form.control}
-              name="projectId"
-              render={({ field }) => (
-                <SelectField
-                  id={`${prefix}-project`}
-                  name={field.name}
-                  placeholder="Name"
-                  options={projectOptions}
-                  value={field.value || null}
-                  onValueChange={onProjectChange}
-                  error={errors.projectId?.message}
-                  disabled={!isAdd}
-                  required
+          <div className="max-h-[70vh] space-y-4 overflow-y-auto pr-1">
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Controller
+                control={form.control}
+                name="projectId"
+                render={({ field }) => (
+                  <SelectField
+                    id={`${prefix}-project`}
+                    name={field.name}
+                    label="Name"
+                    placeholder="Name"
+                    options={projectOptions}
+                    value={field.value || null}
+                    onValueChange={onProjectChange}
+                    error={errors.projectId?.message}
+                    disabled={!isAdd}
+                    required
+                  />
+                )}
+              />
+
+              <div className="space-y-1">
+                <Label
+                  htmlFor={`${prefix}-domain`}
+                  className="text-xs text-muted-foreground"
+                >
+                  Domain
+                </Label>
+                <Input
+                  id={`${prefix}-domain`}
+                  placeholder="Domain"
+                  value={details?.domain ?? ""}
+                  readOnly
+                  disabled
                 />
-              )}
-            />
-          </div>
+              </div>
+            </div>
 
-          <div className="space-y-1">
-            <Label
-              htmlFor={`${prefix}-domain`}
-              className="text-[10px] text-muted-foreground"
-            >
-              Domain
-            </Label>
-            <Input
-              id={`${prefix}-domain`}
-              value={details?.domain ?? ""}
-              readOnly
-              disabled
-            />
-          </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-1">
+                <Label
+                  htmlFor={`${prefix}-start-date`}
+                  className="text-xs text-muted-foreground"
+                >
+                  Start Date
+                </Label>
+                <Input
+                  id={`${prefix}-start-date`}
+                  type="date"
+                  min={bounds?.startDate}
+                  max={bounds?.endDate ?? undefined}
+                  variant={errors.startDate ? "error" : "default"}
+                  aria-invalid={errors.startDate ? true : undefined}
+                  {...form.register("startDate")}
+                />
+                {errors.startDate && (
+                  <p role="alert" className="text-xs text-destructive">
+                    {errors.startDate.message}
+                  </p>
+                )}
+              </div>
 
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-1">
-              <Label
-                htmlFor={`${prefix}-start-date`}
-                className="text-[10px] text-muted-foreground"
-              >
-                Start Date
-              </Label>
-              <Input
-                id={`${prefix}-start-date`}
-                type="date"
-                min={bounds?.startDate}
-                max={bounds?.endDate ?? undefined}
-                variant={errors.startDate ? "error" : "default"}
-                aria-invalid={errors.startDate ? true : undefined}
-                {...form.register("startDate")}
-              />
-              {errors.startDate && (
-                <p role="alert" className="text-xs text-destructive">
-                  {errors.startDate.message}
-                </p>
-              )}
+              <div className="space-y-1">
+                <Label
+                  htmlFor={`${prefix}-end-date`}
+                  className="text-xs text-muted-foreground"
+                >
+                  End Date
+                </Label>
+                <Input
+                  id={`${prefix}-end-date`}
+                  type="date"
+                  min={startDate || bounds?.startDate}
+                  max={bounds?.endDate ?? undefined}
+                  variant={errors.endDate ? "error" : "default"}
+                  aria-invalid={errors.endDate ? true : undefined}
+                  {...form.register("endDate")}
+                />
+                {errors.endDate && (
+                  <p role="alert" className="text-xs text-destructive">
+                    {errors.endDate.message}
+                  </p>
+                )}
+              </div>
             </div>
 
             <div className="space-y-1">
               <Label
-                htmlFor={`${prefix}-end-date`}
-                className="text-[10px] text-muted-foreground"
+                htmlFor={`${prefix}-description`}
+                className="text-xs text-muted-foreground"
               >
-                End Date
+                Description
               </Label>
-              <Input
-                id={`${prefix}-end-date`}
-                type="date"
-                min={startDate || bounds?.startDate}
-                max={bounds?.endDate ?? undefined}
-                variant={errors.endDate ? "error" : "default"}
-                aria-invalid={errors.endDate ? true : undefined}
-                {...form.register("endDate")}
+              <Textarea
+                id={`${prefix}-description`}
+                placeholder="Description"
+                className="min-h-24"
+                value={details?.description ?? ""}
+                readOnly
+                disabled
               />
-              {errors.endDate && (
-                <p role="alert" className="text-xs text-destructive">
-                  {errors.endDate.message}
-                </p>
-              )}
             </div>
-          </div>
 
-          <div className="space-y-1">
-            <Label
-              htmlFor={`${prefix}-description`}
-              className="text-[10px] text-muted-foreground"
-            >
-              Description
-            </Label>
-            <Textarea
-              id={`${prefix}-description`}
-              value={details?.description ?? ""}
-              readOnly
-              disabled
-            />
-          </div>
-
-          <div className="space-y-1">
-            <Label
-              htmlFor={`${prefix}-environment`}
-              className="text-[10px] text-muted-foreground"
-            >
-              Environment
-            </Label>
             <MultiselectField
               id={`${prefix}-environment`}
+              label="Environment"
               placeholder="Environment"
               options={environmentOptions}
               value={details?.environment ?? []}
               disabled
             />
-          </div>
 
-          <div className="space-y-1">
-            <Label
-              htmlFor={`${prefix}-roles`}
-              className="text-[10px] text-muted-foreground"
-            >
-              Roles
-            </Label>
             <Controller
               control={form.control}
               name="roles"
@@ -364,38 +349,40 @@ export function CvProjectDialog(props: Props) {
                 <MultiselectField
                   id={`${prefix}-roles`}
                   name={field.name}
+                  label="Roles"
                   placeholder="Roles"
                   options={roleOptions}
                   value={field.value}
                   onValueChange={field.onChange}
                   error={errors.roles?.message}
+                  display="text"
                   required
                 />
               )}
             />
+
+            <div className="space-y-1">
+              <Label
+                htmlFor={`${prefix}-responsibilities`}
+                className="text-xs text-muted-foreground"
+              >
+                Responsibilities
+              </Label>
+              <Textarea
+                id={`${prefix}-responsibilities`}
+                placeholder="Responsibilities"
+                {...form.register("responsibilities")}
+              />
+            </div>
+
+            {formError && (
+              <p role="alert" className="text-xs text-destructive">
+                {formError}
+              </p>
+            )}
           </div>
 
-          <div className="space-y-1">
-            <Label
-              htmlFor={`${prefix}-responsibilities`}
-              className="text-[10px] text-muted-foreground"
-            >
-              Responsibilities
-            </Label>
-            <Textarea
-              id={`${prefix}-responsibilities`}
-              className="min-h-20"
-              {...form.register("responsibilities")}
-            />
-          </div>
-
-          {formError && (
-            <p role="alert" className="text-xs text-destructive">
-              {formError}
-            </p>
-          )}
-
-          <DialogFooter>
+          <DialogFooter className="mt-0">
             <Button
               type="button"
               variant="secondary"
@@ -409,7 +396,7 @@ export function CvProjectDialog(props: Props) {
               variant="primary"
               disabled={!canSubmit}
             >
-              {isAdd ? "Add" : "Save"}
+              {isAdd ? "Add" : "Update"}
             </Button>
           </DialogFooter>
         </form>

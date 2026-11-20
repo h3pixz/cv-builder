@@ -50,7 +50,7 @@ Primitives in `select.tsx`: `Select` (Base UI Root), `SelectTrigger` (`size`: `d
 `SelectOption = { value: string; label: string; disabled?: boolean }`. Value is `string | null`.
 
 ### MultiselectField (multi)
-Same props but `value` / `defaultValue` / `onValueChange` are `string[]`. Selected items render as removable chips; options show checkboxes.
+Same props but `value` / `defaultValue` / `onValueChange` are `string[]`. Selected items render as removable chips; options show checkboxes. `display`: `chips` (по умолчанию) | `text` — в режиме `text` выбранные значения показываются одной строкой через `, `, без чипов (Roles в диалоге проекта).
 
 Use these for Department, Position, mastery, proficiency and similar.
 

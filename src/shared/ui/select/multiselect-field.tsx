@@ -29,6 +29,7 @@ export interface MultiselectFieldProps {
   name?: string;
   id?: string;
   className?: string;
+  display?: "chips" | "text";
 }
 
 function Chip({
@@ -88,6 +89,7 @@ function MultiselectField({
   name,
   id,
   className,
+  display = "chips",
 }: MultiselectFieldProps) {
   const [internal, setInternal] = useState<string[]>(defaultValue);
   const [open, setOpen] = useState(false);
@@ -126,11 +128,17 @@ function MultiselectField({
           id={id}
           aria-invalid={error ? true : undefined}
           aria-describedby={error ? errorId : undefined}
-          className={current.length > 0 ? "py-1.75" : undefined}
+          className={
+            current.length > 0 && display === "chips" ? "py-1.75" : undefined
+          }
         >
           {current.length === 0 ? (
             <span className="truncate text-text-tertiary group-aria-invalid:text-destructive/50">
               {placeholder}
+            </span>
+          ) : display === "text" ? (
+            <span className="flex-1 truncate">
+              {current.map(labelOf).join(", ")}
             </span>
           ) : (
             <span className="flex min-w-0 flex-1 flex-wrap gap-2 whitespace-normal">

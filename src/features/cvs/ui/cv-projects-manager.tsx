@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import {
   ArrowDown,
   ArrowUp,
@@ -232,87 +232,84 @@ export function CvProjectsManager({ cvId, projects, catalog, roles }: Props) {
         <TableBody>
           {visible.length > 0 ? (
             visible.map((project) => (
-              <Fragment key={project.id}>
-                <TableRow className="border-b-0">
-                  <TableCell className="pt-4 pb-2 align-top text-xs text-foreground">
+              <TableRow key={project.id} className="border-b border-border">
+                <TableCell className="max-w-72 pt-4 pb-4 align-top whitespace-normal">
+                  <div className="text-sm font-medium text-foreground">
                     {project.name}
-                  </TableCell>
-                  <TableCell className="pt-4 pb-2 align-top text-xs text-foreground">
-                    {project.domain}
-                  </TableCell>
-                  <TableCell className="max-w-64 pt-4 pb-2 align-top text-xs whitespace-normal">
-                    {project.responsibilities.length > 0 ? (
-                      <span className="flex flex-wrap gap-1.5">
-                        {project.responsibilities.map((responsibility) => (
-                          <span
-                            key={responsibility}
-                            className="inline-flex items-center rounded-full bg-muted px-2.5 py-0.5 text-[10px] text-foreground"
-                          >
-                            {responsibility}
-                          </span>
-                        ))}
-                      </span>
-                    ) : (
-                      <span className="text-muted-foreground">—</span>
-                    )}
-                  </TableCell>
-                  <TableCell className="pt-4 pb-2 align-top text-xs text-foreground">
-                    {formatProjectDate(project.startDate)}
-                  </TableCell>
-                  <TableCell className="pt-4 pb-2 align-top text-xs text-foreground">
-                    {project.endDate
-                      ? formatProjectDate(project.endDate)
-                      : "Till now"}
-                  </TableCell>
-                  <TableCell className="pt-2 pb-2 text-right align-top">
-                    <DropdownMenu
-                      open={openMenuId === project.id}
-                      onOpenChange={(open) =>
-                        setOpenMenuId(open ? project.id : null)
+                  </div>
+                  {project.description && (
+                    <p className="mt-1 line-clamp-2 max-w-sm text-xs leading-relaxed text-muted-foreground">
+                      {project.description}
+                    </p>
+                  )}
+                </TableCell>
+                <TableCell className="pt-4 pb-4 align-top text-xs text-foreground">
+                  {project.domain}
+                </TableCell>
+                <TableCell className="max-w-64 pt-4 pb-4 align-top text-xs whitespace-normal">
+                  {project.responsibilities.length > 0 ? (
+                    <span className="flex flex-wrap gap-1.5">
+                      {project.responsibilities.map((responsibility) => (
+                        <span
+                          key={responsibility}
+                          className="inline-flex items-center rounded-full bg-muted px-2.5 py-0.5 text-[10px] text-foreground"
+                        >
+                          {responsibility}
+                        </span>
+                      ))}
+                    </span>
+                  ) : (
+                    <span className="text-muted-foreground">—</span>
+                  )}
+                </TableCell>
+                <TableCell className="pt-4 pb-4 align-top text-xs text-foreground">
+                  {formatProjectDate(project.startDate)}
+                </TableCell>
+                <TableCell className="pt-4 pb-4 align-top text-xs text-foreground">
+                  {project.endDate
+                    ? formatProjectDate(project.endDate)
+                    : "Till now"}
+                </TableCell>
+                <TableCell className="pt-2 pb-4 text-right align-top">
+                  <DropdownMenu
+                    open={openMenuId === project.id}
+                    onOpenChange={(open) =>
+                      setOpenMenuId(open ? project.id : null)
+                    }
+                  >
+                    <DropdownMenuTrigger
+                      render={
+                        <Button
+                          variant="icon"
+                          aria-label={`Actions for project ${project.name}`}
+                          className="size-8"
+                        />
                       }
                     >
-                      <DropdownMenuTrigger
-                        render={
-                          <Button
-                            variant="icon"
-                            aria-label={`Actions for project ${project.name}`}
-                            className="size-8"
-                          />
-                        }
+                      <MoreVerticalIcon className="size-4" />
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-auto min-w-32">
+                      <DropdownMenuItem
+                        onClick={() => {
+                          setOpenMenuId(null);
+                          setEditing(project);
+                        }}
                       >
-                        <MoreVerticalIcon className="size-4" />
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="w-auto min-w-32">
-                        <DropdownMenuItem
-                          onClick={() => {
-                            setOpenMenuId(null);
-                            setEditing(project);
-                          }}
-                        >
-                          Update
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          variant="destructive"
-                          onClick={() => {
-                            setOpenMenuId(null);
-                            setRemoving(project);
-                          }}
-                        >
-                          Delete
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
-                </TableRow>
-                <TableRow className="border-b border-border">
-                  <TableCell
-                    colSpan={COLUMN_COUNT}
-                    className="pt-0 pr-16 pb-4 text-xs leading-relaxed whitespace-normal text-muted-foreground"
-                  >
-                    {project.description}
-                  </TableCell>
-                </TableRow>
-              </Fragment>
+                        Update
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        variant="destructive"
+                        onClick={() => {
+                          setOpenMenuId(null);
+                          setRemoving(project);
+                        }}
+                      >
+                        Delete
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </TableCell>
+              </TableRow>
             ))
           ) : (
             <TableRow>

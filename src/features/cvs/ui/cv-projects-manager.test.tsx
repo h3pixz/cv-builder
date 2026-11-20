@@ -136,7 +136,9 @@ vi.mock("@/shared/ui/dialog", () => {
       open: boolean;
       children?: React.ReactNode;
     }) => (open ? <div>{children}</div> : null),
-    DialogContent: Wrapper,
+    DialogContent: ({ children }: { children?: React.ReactNode }) => (
+      <div role="dialog">{children}</div>
+    ),
     DialogHeader: Wrapper,
     DialogFooter: Wrapper,
     DialogTitle: ({ children }: { children?: React.ReactNode }) => (
@@ -259,6 +261,9 @@ describe("CvProjectsManager", () => {
     expect(screen.getByText("Business Process Automation")).toBeInTheDocument();
     expect(screen.getByText("IoT")).toBeInTheDocument();
     expect(
+      screen.getByText("A digital music, podcast, and video service."),
+    ).toBeInTheDocument();
+    expect(
       screen.getByText("Managed to write code in time"),
     ).toBeInTheDocument();
     expect(screen.getByText("08/21/2023")).toBeInTheDocument();
@@ -307,7 +312,7 @@ describe("CvProjectsManager", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "End Date" }));
     expect(tableRows()[1]).toHaveTextContent("Business Process Automation");
-    expect(tableRows()[3]).toHaveTextContent("SaaS Media Platform");
+    expect(tableRows()[2]).toHaveTextContent("SaaS Media Platform");
   });
 
   it("adds a project with auto-populated catalog data", async () => {
@@ -416,7 +421,7 @@ describe("CvProjectsManager", () => {
     );
   });
 
-  it("updates a project and disables Save until a change is made", async () => {
+  it("updates a project and disables Update until a change is made", async () => {
     updateCvProjectAction.mockResolvedValue({ success: true });
 
     renderManager();
@@ -439,15 +444,18 @@ describe("CvProjectsManager", () => {
       "Did something great\nDid not break production",
     );
 
-    const saveButton = screen.getByRole("button", { name: "Save" });
-    expect(saveButton).toBeDisabled();
+    const updateButton = within(screen.getByRole("dialog")).getByRole(
+      "button",
+      { name: "Update" },
+    );
+    expect(updateButton).toBeDisabled();
 
     fireEvent.change(screen.getByLabelText("Responsibilities"), {
-      target: { value: "Did something great" },
+      target: { value: "Did something great\nWrote tests" },
     });
 
-    await waitFor(() => expect(saveButton).toBeEnabled());
-    fireEvent.click(saveButton);
+    await waitFor(() => expect(updateButton).toBeEnabled());
+    fireEvent.click(updateButton);
 
     await waitFor(() =>
       expect(updateCvProjectAction).toHaveBeenCalledWith("cv-1", {
@@ -455,7 +463,7 @@ describe("CvProjectsManager", () => {
         startDate: "2023-01-20",
         endDate: "2023-06-19",
         roles: ["Backend Developer"],
-        responsibilities: "Did something great",
+        responsibilities: "Did something great\nWrote tests",
       }),
     );
     await waitFor(() => expect(refresh).toHaveBeenCalled());
@@ -476,7 +484,11 @@ describe("CvProjectsManager", () => {
     expect(
       await screen.findByText("Start date must be within project duration"),
     ).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Save" })).toBeDisabled();
+    expect(
+      within(screen.getByRole("dialog")).getByRole("button", {
+        name: "Update",
+      }),
+    ).toBeDisabled();
   });
 
   it("removes a project after confirmation", async () => {
