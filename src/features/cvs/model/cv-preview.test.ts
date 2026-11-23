@@ -188,12 +188,12 @@ describe("buildCvPreview", () => {
 });
 
 describe("isPreviewAvailable", () => {
-  it("requires the employee name and position", () => {
+  it("requires only the employee name", () => {
     const preview = buildCvPreview(source, categories, NOW);
 
     expect(isPreviewAvailable(preview)).toBe(true);
     expect(isPreviewAvailable({ ...preview, fullName: "" })).toBe(false);
-    expect(isPreviewAvailable({ ...preview, position: null })).toBe(false);
+    expect(isPreviewAvailable({ ...preview, position: null })).toBe(true);
   });
 });
 

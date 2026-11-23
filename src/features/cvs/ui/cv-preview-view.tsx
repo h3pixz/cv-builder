@@ -76,9 +76,11 @@ export function CvPreviewView({
           <h1 className="text-3xl font-normal text-foreground sm:text-4xl">
             {preview.fullName}
           </h1>
-          <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-muted-foreground">
-            {preview.position}
-          </p>
+          {preview.position && (
+            <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-muted-foreground">
+              {preview.position}
+            </p>
+          )}
         </div>
         <CvPreviewExportButton cvId={cvId} />
       </header>

@@ -261,7 +261,7 @@ export function buildCvPreview(
 }
 
 export function isPreviewAvailable(preview: CvPreview): boolean {
-  return Boolean(preview.fullName && preview.position);
+  return Boolean(preview.fullName);
 }
 
 function escapeHtml(value: string): string {
@@ -416,13 +416,15 @@ export function buildCvPreviewHtml(preview: CvPreview): string {
         )}</section>`
       : "";
 
+  const position = preview.position
+    ? `<p class="position">${escapeHtml(preview.position)}</p>`
+    : "";
+
   return `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>${escapeHtml(
     preview.name,
   )}</title><style>${PDF_STYLES}</style></head><body><header class="header"><div><h1>${escapeHtml(
     preview.fullName,
-  )}</h1><p class="position">${escapeHtml(
-    preview.position ?? "",
-  )}</p></div></header><section class="section"><div class="meta">${meta}</div><div class="main"><div class="skill-group"><h2>${escapeHtml(
+  )}</h1>${position}</div></header><section class="section"><div class="meta">${meta}</div><div class="main"><div class="skill-group"><h2>${escapeHtml(
     preview.name,
   )}</h2><p>${escapeHtml(
     preview.description,

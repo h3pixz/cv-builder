@@ -139,9 +139,37 @@ describe("CvPreviewView", () => {
     expect(within(reactRow as HTMLElement).getByText("2023")).toBeInTheDocument();
   });
 
-  it("shows the empty state and disables the export", () => {
+  it("renders without a position", () => {
     const preview = buildCvPreview(
       { ...source, user: { position: null, profile: source.user?.profile } },
+      categories,
+      NOW,
+    );
+
+    render(<CvPreviewView cvId="cv-1" preview={preview} />);
+
+    expect(
+      screen.getByRole("heading", { name: "Rostislav Harlanov" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Export PDF" }),
+    ).toBeEnabled();
+  });
+
+  it("shows the empty state and disables the export", () => {
+    const preview = buildCvPreview(
+      {
+        ...source,
+        user: {
+          position: source.user?.position ?? null,
+          profile: {
+            first_name: null,
+            last_name: null,
+            full_name: null,
+            languages: [],
+          },
+        },
+      },
       categories,
       NOW,
     );
