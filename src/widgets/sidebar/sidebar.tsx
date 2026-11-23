@@ -31,7 +31,12 @@ const managementNavigation = [
     icon: Building2,
     adminOnly: true,
   },
-  { label: "Positions", href: "/positions", icon: BriefcaseBusiness },
+  {
+    label: "Positions",
+    href: "/admin/positions",
+    icon: BriefcaseBusiness,
+    adminOnly: true,
+  },
   { label: "Projects", href: "/projects", icon: Folder },
   { label: "Skills", href: "/admin/skills", icon: TrendingUp, adminOnly: true },
   {
