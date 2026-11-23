@@ -13,6 +13,7 @@ import {
 import { graphql } from "@/shared/api/graphql/generated/gql";
 
 import { canAccessCv } from "../model/cv-permissions";
+import { CV_FALLBACK_ROLES } from "../model/cv-project-roles";
 
 const OPTIONS_LIMIT = 100;
 
@@ -208,7 +209,12 @@ export async function getCvRoleOptions(options?: GraphQLRequestOptions) {
     }
   }
 
-  return [...roles].sort((a, b) => a.localeCompare(b));
+  const known = new Set<string>(CV_FALLBACK_ROLES);
+  const extra = [...roles]
+    .filter((role) => !known.has(role))
+    .sort((a, b) => a.localeCompare(b));
+
+  return [...CV_FALLBACK_ROLES, ...extra];
 }
 
 export const GetCvProjectOptionsDocument = graphql(`
