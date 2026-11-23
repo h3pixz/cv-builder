@@ -24,15 +24,43 @@ cv-builder/
 │   │   │
 │   │   ├── (platform)/
 │   │   │   ├── layout.tsx              # Sidebar + AuthGate
-│   │   │   ├── skills/
-│   │   │   │   └── page.tsx            # личные навыки текущего пользователя
-│   │   │   ├── languages/
-│   │   │   │   └── page.tsx            # языки текущего пользователя
 │   │   │   ├── admin/
-│   │   │   │   ├── skills/
-│   │   │   │   │   └── page.tsx        # каталог навыков, только Admin
-│   │   │   │   └── languages/
-│   │   │   │       └── page.tsx        # каталог языков, только Admin
+│   │   │   │   ├── departments/
+│   │   │   │   │   ├── page.tsx        # каталог департаментов, только Admin
+│   │   │   │   │   └── error.tsx
+│   │   │   │   ├── languages/
+│   │   │   │   │   ├── page.tsx        # каталог языков, только Admin
+│   │   │   │   │   └── error.tsx
+│   │   │   │   ├── positions/
+│   │   │   │   │   ├── page.tsx        # каталог позиций, только Admin
+│   │   │   │   │   └── error.tsx
+│   │   │   │   └── skills/
+│   │   │   │       ├── page.tsx        # каталог навыков, только Admin
+│   │   │   │       └── error.tsx
+│   │   │   ├── cvs/
+│   │   │   │   ├── page.tsx            # раздел CV
+│   │   │   │   ├── error.tsx
+│   │   │   │   └── [cvId]/
+│   │   │   │       ├── layout.tsx      # breadcrumbs + табы CV
+│   │   │   │       ├── page.tsx        # редирект на /cvs/[cvId]/details
+│   │   │   │       ├── details/
+│   │   │   │       │   ├── page.tsx    # форма Details
+│   │   │   │       │   └── error.tsx
+│   │   │   │       ├── skills/
+│   │   │   │       │   ├── page.tsx    # навыки CV
+│   │   │   │       │   └── error.tsx
+│   │   │   │       ├── projects/
+│   │   │   │       │   ├── page.tsx    # проекты CV
+│   │   │   │       │   └── error.tsx
+│   │   │   │       └── preview/
+│   │   │   │           ├── page.tsx    # превью резюме + EXPORT PDF
+│   │   │   │           └── error.tsx
+│   │   │   ├── languages/
+│   │   │   │   ├── page.tsx            # языки текущего пользователя
+│   │   │   │   └── error.tsx
+│   │   │   ├── skills/
+│   │   │   │   ├── page.tsx            # личные навыки текущего пользователя
+│   │   │   │   └── error.tsx
 │   │   │   └── users/
 │   │   │       ├── page.tsx            # список сотрудников
 │   │   │       ├── error.tsx
@@ -47,12 +75,11 @@ cv-builder/
 │   │   │           ├── languages/
 │   │   │           │   ├── page.tsx
 │   │   │           │   └── error.tsx
-│   │   │           └── cvs/
+│   │   │           └── cvs/            # вкладка CV в профиле (Admin)
 │   │   │               ├── page.tsx
 │   │   │               ├── error.tsx
 │   │   │               └── [cvId]/
-│   │   │                   ├── page.tsx
-│   │   │                   └── error.tsx
+│   │   │                   └── page.tsx # редирект на /cvs/[cvId]/details
 │   │   │
 │   │   ├── layout.tsx                  # шрифт, тема, guards, Toaster
 │   │   ├── page.tsx
@@ -132,20 +159,9 @@ cv-builder/
 │   │   │   │   │   └── profile-skeleton.tsx
 │   │   │   │   ├── skills/
 │   │   │   │   │   └── user-skills-page.tsx
-│   │   │   │   ├── levels/
-│   │   │   │   │   ├── level-manager.tsx
-│   │   │   │   │   └── level-list-skeleton.tsx
-│   │   │   │   └── cvs/
-│   │   │   │       ├── user-cvs-page.tsx
-│   │   │   │       ├── cvs-table.tsx
-│   │   │   │       ├── cvs-toolbar.tsx
-│   │   │   │       ├── cvs-sort-header.tsx
-│   │   │   │       ├── cvs-table-skeleton.tsx
-│   │   │   │       ├── cv-actions-menu.tsx
-│   │   │   │       ├── cv-dialog.tsx
-│   │   │   │       ├── delete-cv-dialog.tsx
-│   │   │   │       ├── user-cv-details-page.tsx
-│   │   │   │       └── cv-details.tsx
+│   │   │   │   └── levels/
+│   │   │   │       ├── level-manager.tsx
+│   │   │   │       └── level-list-skeleton.tsx
 │   │   │   ├── api/
 │   │   │   │   ├── users.queries.ts
 │   │   │   │   ├── users.mutations.ts
@@ -154,11 +170,7 @@ cv-builder/
 │   │   │   │   ├── profile.mutations.ts
 │   │   │   │   ├── profile.actions.ts
 │   │   │   │   ├── profile-levels.actions.ts   # обёртки навыков
-│   │   │   │   ├── profile-revalidate.ts
-│   │   │   │   ├── cvs.queries.ts
-│   │   │   │   ├── cvs.mutations.ts
-│   │   │   │   ├── cvs.actions.ts
-│   │   │   │   └── run-authed.ts
+│   │   │   │   └── profile-revalidate.ts
 │   │   │   ├── model/
 │   │   │   │   ├── action-result.ts
 │   │   │   │   ├── user-schema.ts
@@ -167,9 +179,58 @@ cv-builder/
 │   │   │   │   ├── avatar.ts
 │   │   │   │   ├── levels.ts           # типы LevelItem / LevelGroup
 │   │   │   │   ├── level-forms.ts      # клиентская zod-схема вкладки навыков
+│   │   │   │   └── cv-permissions.ts
+│   │   │   └── index.ts
+│   │   │
+│   │   ├── cvs/
+│   │   │   ├── ui/
+│   │   │   │   ├── cvs-page.tsx
+│   │   │   │   ├── cvs-header.tsx
+│   │   │   │   ├── cvs-toolbar.tsx
+│   │   │   │   ├── cvs-table.tsx
+│   │   │   │   ├── cvs-sort-header.tsx
+│   │   │   │   ├── cvs-pagination.tsx
+│   │   │   │   ├── cvs-table-skeleton.tsx
+│   │   │   │   ├── cv-actions-menu.tsx
+│   │   │   │   ├── cv-dialog.tsx
+│   │   │   │   ├── delete-cv-dialog.tsx
+│   │   │   │   ├── user-cvs-page.tsx
+│   │   │   │   ├── cv-layout.tsx
+│   │   │   │   ├── cv-breadcrumbs.tsx
+│   │   │   │   ├── cv-tabs.tsx
+│   │   │   │   ├── cv-current-tab.tsx
+│   │   │   │   ├── cv-details-page.tsx
+│   │   │   │   ├── cv-details-form.tsx
+│   │   │   │   ├── cv-details-skeleton.tsx
+│   │   │   │   ├── cv-skills-page.tsx
+│   │   │   │   ├── cv-skills-manager.tsx
+│   │   │   │   ├── cv-skills-skeleton.tsx
+│   │   │   │   ├── cv-projects-page.tsx
+│   │   │   │   ├── cv-projects-manager.tsx
+│   │   │   │   ├── cv-project-dialog.tsx
+│   │   │   │   ├── cv-project-remove-dialog.tsx
+│   │   │   │   ├── cv-projects-skeleton.tsx
+│   │   │   │   ├── cv-preview-page.tsx
+│   │   │   │   ├── cv-preview-view.tsx
+│   │   │   │   ├── cv-preview-export-button.tsx
+│   │   │   │   └── cv-preview-skeleton.tsx
+│   │   │   ├── api/
+│   │   │   │   ├── cvs.queries.ts
+│   │   │   │   ├── cvs.mutations.ts
+│   │   │   │   ├── cvs.actions.ts
+│   │   │   │   ├── cv-skills.actions.ts
+│   │   │   │   ├── cv-projects.actions.ts
+│   │   │   │   └── cv-preview.actions.ts
+│   │   │   ├── model/
+│   │   │   │   ├── cv-record.ts
 │   │   │   │   ├── cv-schema.ts
 │   │   │   │   ├── cv-permissions.ts
-│   │   │   │   └── cv-record.ts
+│   │   │   │   ├── cv-skill-schema.ts
+│   │   │   │   ├── cv-project-schema.ts
+│   │   │   │   ├── cv-project-record.ts
+│   │   │   │   ├── cv-project-roles.ts
+│   │   │   │   ├── cv-tabs.ts
+│   │   │   │   └── cv-preview.ts
 │   │   │   └── index.ts
 │   │   │
 │   │   ├── skills/
@@ -242,7 +303,19 @@ cv-builder/
 │   │   │   │   └── *.test.ts
 │   │   │   └── index.ts
 │   │   │
-│   │   ├── cvs/                        # план: отдельная фича резюме
+│   │   ├── departments/
+│   │   │   ├── ui/admin/
+│   │   │   ├── api/
+│   │   │   ├── model/
+│   │   │   └── index.ts
+│   │   │
+│   │   ├── positions/
+│   │   │   ├── ui/admin/
+│   │   │   ├── api/
+│   │   │   ├── model/
+│   │   │   └── index.ts
+│   │   │
+
 │   │   ├── admin/                      # план
 │   │   └── settings/                   # план
 │   │
@@ -252,6 +325,7 @@ cv-builder/
 │   │   │   ├── breadcrumb/
 │   │   │   ├── button/
 │   │   │   ├── checkbox/
+│   │   │   ├── combobox/
 │   │   │   ├── dialog/
 │   │   │   ├── dropdown-menu/
 │   │   │   ├── input/
@@ -280,6 +354,9 @@ cv-builder/
 │   │   │   │   └── session.ts
 │   │   │   ├── session-cookies/
 │   │   │   │   └── session-cookies.ts  # имена cookie и настройки сессии
+│   │   │   ├── action-result.ts        # ActionResult, toActionError
+│   │   │   ├── current-user.ts         # getCurrentUser из claims токена
+│   │   │   ├── run-authed.ts           # runAuthed с refresh-ретраем
 │   │   │   ├── request-origin.ts       # origin запроса для ссылок в письмах
 │   │   │   └── index.ts
 │   │   ├── config/
@@ -297,7 +374,8 @@ cv-builder/
 │   │   ├── hooks/
 │   │   │   ├── use-media-query.ts
 │   │   │   └── use-online-status.ts
-│   │   └── types/                      # план
+│   │   └── types/
+│   │       └── user-role.ts
 │   │
 │   ├── widgets/
 │   │   └── sidebar/

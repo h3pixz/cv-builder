@@ -1,12 +1,15 @@
 "use server";
 
+import {
+  type ActionResult,
+  forbiddenFailure,
+  getCurrentUser,
+  runAuthed,
+} from "@/shared/api";
 import { getRequestOrigin } from "@/shared/api/request-origin";
 import { getProfilePermissions } from "@/shared/helpers/profile-permissions";
 
-import type {
-  AvatarUploadResult,
-  UsersActionResult,
-} from "../model/action-result";
+import type { AvatarUploadResult } from "../model/action-result";
 import {
   AVATAR_MAX_SIZE,
   AVATAR_SIZE_ERROR,
@@ -19,9 +22,7 @@ import {
   updateUserProfile,
   uploadUserAvatar,
 } from "./profile.mutations";
-import { getCurrentUser } from "./profile.queries";
 import { revalidateUser } from "./profile-revalidate";
-import { forbiddenFailure, runAuthed } from "./run-authed";
 import { getUser } from "./users.queries";
 import { updateUser } from "./users.mutations";
 
@@ -34,7 +35,7 @@ export type UploadAvatarValues = {
 export async function updateProfileAction(
   userId: string,
   values: ProfileValues,
-): Promise<UsersActionResult> {
+): Promise<ActionResult> {
   const parsed = profileSchema.safeParse(values);
 
   if (!parsed.success) {
@@ -139,7 +140,7 @@ export async function uploadAvatarAction(
   return { success: true, url: result.data };
 }
 
-export async function sendVerificationEmailAction(): Promise<UsersActionResult> {
+export async function sendVerificationEmailAction(): Promise<ActionResult> {
   const me = await getCurrentUser();
   const email = me.email;
 

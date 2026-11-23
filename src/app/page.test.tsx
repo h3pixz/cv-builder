@@ -1,11 +1,13 @@
-import { render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+import { redirect } from "next/navigation";
 import Home from "@/app/page";
 
-describe("Home", () => {
-  it("renders the greeting", () => {
-    render(<Home />);
+vi.mock("next/navigation", () => ({ redirect: vi.fn() }));
 
-    expect(screen.getByText("Hello world!")).toBeInTheDocument();
+describe("Home", () => {
+  it("redirects to the users list", () => {
+    Home();
+
+    expect(redirect).toHaveBeenCalledWith("/users");
   });
 });

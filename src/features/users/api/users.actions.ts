@@ -2,7 +2,8 @@
 
 import { revalidatePath } from "next/cache";
 
-import type { UsersActionResult } from "../model/action-result";
+import { type ActionResult, runAuthed } from "@/shared/api";
+
 import {
   createUserSchema,
   updateUserSchema,
@@ -10,7 +11,6 @@ import {
   type UpdateUserValues,
 } from "../model/user-schema";
 import { updateUserProfile } from "./profile.mutations";
-import { runAuthed } from "./run-authed";
 import { createUser, deleteUser, updateUser } from "./users.mutations";
 
 function revalidateUsers(userId?: string) {
@@ -23,7 +23,7 @@ function revalidateUsers(userId?: string) {
 
 export async function createUserAction(
   values: CreateUserValues,
-): Promise<UsersActionResult> {
+): Promise<ActionResult> {
   const parsed = createUserSchema.safeParse(values);
 
   if (!parsed.success) {
@@ -63,7 +63,7 @@ export async function createUserAction(
 export async function updateUserAction(
   userId: string,
   values: UpdateUserValues,
-): Promise<UsersActionResult> {
+): Promise<ActionResult> {
   const parsed = updateUserSchema.safeParse(values);
 
   if (!parsed.success) {
@@ -107,7 +107,7 @@ export async function updateUserAction(
 
 export async function deleteUserAction(
   userId: string,
-): Promise<UsersActionResult> {
+): Promise<ActionResult> {
   const result = await runAuthed((accessToken) =>
     deleteUser(userId, { accessToken }),
   );

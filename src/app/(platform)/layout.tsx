@@ -1,8 +1,7 @@
 import { Suspense } from "react";
 import { redirect } from "next/navigation";
 
-import { getCurrentUser } from "@/features/users/api/profile.queries";
-import { getSession } from "@/shared/api";
+import { getCurrentUser, getSession } from "@/shared/api";
 import { Sidebar } from "@/widgets/sidebar";
 
 async function AuthGate({ children }: { children: React.ReactNode }) {

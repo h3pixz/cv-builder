@@ -1,3 +1,5 @@
+import type { UserRoleValue } from "@/shared/types/user-role";
+
 export type ProfilePermissions = {
   /** First/last name, department and position fields can be changed. */
   canEdit: boolean;
@@ -9,7 +11,7 @@ export type ProfilePermissions = {
 
 type ProfileAccessArgs = {
   currentUserId?: string | null;
-  currentUserRole?: string | null;
+  currentUserRole?: UserRoleValue | null;
   targetUserId: string;
 };
 

@@ -5,6 +5,15 @@ export {
   isUnauthorizedError,
   type GraphQLErrorCode,
 } from "./errors/errors";
+export { type ActionResult, toActionError } from "./action-result";
+export { getCurrentUser, type SessionUser } from "./current-user";
+export {
+  type ActionFailure,
+  type AuthedResult,
+  forbiddenFailure,
+  runAuthed,
+  unauthorizedFailure,
+} from "./run-authed";
 export { gqlRequest, type GraphQLRequestOptions } from "./graphql/graphql";
 export {
   authedGqlRequest,

@@ -144,6 +144,90 @@
 
 ---
 
+## 💼 Раздел CVs
+
+Этап «CVs»: пункт `CVs` в сайдбаре, список резюме и страница CV с вкладками **Details**, **Skills**, **Projects**, **Preview**. Доступен **Admin** и **Employee**: Employee видит и управляет только своими CV, Admin — любыми.
+
+Общие требования ко всем экранам этапа:
+
+- состояния loading / empty / no search results / error, у ошибок — текст и повторная загрузка;
+- inline-валидация полей; сбой запроса даёт системную ошибку и не сбрасывает введённые значения;
+- полная навигация с клавиатуры и focus-visible, Escape закрывает меню и модалки, в модалках focus trap;
+- Light / Dark темы, адаптивность desktop / tablet.
+
+### CVs (список)
+
+- Таблица: `Name`, `Education`, `Employee` (email владельца CV). Employee видит только свои CV (в колонке `Employee` — свой email), Admin — CV всех пользователей.
+- Поиск без учёта регистра, обновление без перезагрузки, пустой поиск показывает всё: Employee — только по `Name`, Admin — по `Name` и email сотрудника.
+- Сортировка по `Name` (asc / desc) с видимой индикацией направления; пагинация работает вместе с поиском и сортировкой.
+- Кнопка `CREATE CV` над таблицей; в каждой строке меню `View` / `Edit` / `Delete` (открывается у строки, одновременно открыто только одно).
+- Create CV: `Name` (≤ 255), `Education` (≤ 255), `Description` (textarea) — все обязательные; `CREATE` неактивна до валидности формы; после создания CV появляется в таблице, модалка закрывается.
+- Update CV: те же поля, предзаполнены текущими значениями; `SAVE` сохраняет, обновлённые значения сразу видны в таблице.
+- Delete CV: подтверждение `Are you sure you want to delete CV {name}?`; после удаления строка пропадает, модалка закрывается.
+- Пустые состояния: Employee — `You have no CVs yet`, Admin и пустой поиск — `No CVs found`; ошибка — `Failed to load CVs` с повтором.
+- `View` открывает страницу CV, полная информация о выбранном CV загружается с сервера.
+
+### CV Details
+
+- Табы `Details` / `Skills` / `Projects` / `Preview`, активный подсвечен, `Details` открыт по умолчанию; breadcrumbs `CVs > {CV name} > Details`, `CVs` ведёт на список.
+- Форма: `Name` (≤ 255), `Education` (≤ 255), `Description` (textarea) — все обязательные, предзаполнены текущими значениями.
+- `UPDATE` неактивна, пока нет изменений или есть ошибки валидации; во время сохранения — loading и запрет повторной отправки; после сохранения новые значения остаются в форме.
+- Состояния: loading (скелетон, структура формы видна), saving, error — `Failed to load CV details` с повтором.
+
+### CV Skills
+
+- Только навыки выбранного CV, сгруппированы по категориям; категории без навыков не показываются; у навыка видны название и mastery, клик открывает `Update skill`.
+- `ADD SKILL`: выбор только из навыков, назначенных владельцу CV; уже добавленные в CV недоступны; поле обязательное.
+- `REMOVE SKILLS` включает режим выбора: отмечается несколько навыков, кнопка `REMOVE ({count})` неактивна без выбора; подтверждение — `Are you sure you want to remove {count} skills?`; после удаления режим выбора выключается.
+- Empty — `No skills added yet`; error — `Failed to load skills` с повтором.
+
+### CV Projects
+
+- Таблица: `Name`, `Domain`, `Responsibilities`, `Start Date`, `End Date`; отображаются только проекты выбранного CV.
+- Поиск по `Name` и `Domain` без учёта регистра; сортировка по `Name`, `Start Date`, `End Date`.
+- Add project: проект выбирается из каталога `projects`; `Domain`, `Description`, `Environment` заполняются из него автоматически и недоступны для правки. `Start Date` / `End Date` редактируются в пределах длительности проекта, `End Date` не раньше `Start Date`. `Roles` — мультивыбор из активных ролей, минимум одна; `Responsibilities` необязательны; `ADD` неактивна до валидности.
+- Update project: проект, `Domain`, `Description`, `Environment` заблокированы; редактируются даты, роли и обязанности; `SAVE` неактивна, пока ничего не изменено.
+- Remove project: подтверждение `Are you sure you want to remove project {name}?`.
+- Empty — `No projects added yet`, пустой поиск — `No projects found`, error — `Failed to load projects` с повтором.
+
+### CV Preview
+
+- Резюме собирается из данных CV, профиля сотрудника, его языков и навыков; редактирования на странице нет.
+- Шапка: имя и фамилия из профиля и должность сотрудника.
+- General information: образование из CV; все языки сотрудника с уровнем (например `English — C1`); домены проектов CV без повторов.
+- Summary: название и описание CV.
+- Skills: навыки CV по категориям, пустые категории скрыты.
+- Projects: для каждого проекта — название, описание; роли (секция скрыта, если ролей нет); период `MM.YYYY - MM.YYYY`, а без даты окончания — `MM.YYYY - Present` (даты участия из CV); обязанности из CV (секция скрыта, если пусто); environment.
+- Professional skills — таблица `Skills Category` / `Skill` / `Experience in Years` / `Last Used` только по навыкам CV, сгруппированным по категориям:
+  - `Experience in Years` — от стартовой даты самого раннего проекта текущего CV, в environment которого встречается навык, до сегодняшнего дня; полных лет, округление вниз. Если навыка нет ни в одном environment — значение не выводится.
+  - `Last Used` — год окончания самого позднего такого проекта; для активного проекта (`Present`) — текущий год.
+- `EXPORT PDF` (только на Preview): PDF формирует бэкенд (`exportPdf({ html, margin })` → base64), файл скачивается автоматически, имя строится из названия CV; кнопка неактивна, если данных для превью нет.
+- Empty — `CV preview is not available`; error — `Failed to load CV preview` с повтором.
+
+### Права
+
+| Действие | Employee | Admin |
+| --- | --- | --- |
+| Просмотр CV | только своих | любых |
+| Создание CV | своих | любых, в том числе с выбором владельца |
+| Обновление / удаление CV | только своих | любых |
+| Skills / Projects внутри CV | только своих CV | любых CV |
+| Preview и Export PDF | только своих CV | любых CV |
+
+Попытка управлять чужим резюме отклоняется бэкендом с ошибкой `notOwnCv` и показывается как системная.
+
+### Опора на бэкенд
+
+- Запросы: `cvs(params)` (все CV), `cvsByUserId(userId, params)`, `cv(cvId)`; поиск и пагинация — `SearchPaginationInput` (`search`, `sort_by`, `sort_order`, `page`, `limit`).
+- Мутации: `createCv`, `updateCv`, `deleteCv`; `addCvSkill` / `updateCvSkill` / `deleteCvSkill` (удаление списком имён); `addCvProject` / `updateCvProject` / `removeCvProject`; `exportPdf`.
+- Каталог проектов: `projects`, `project(projectId)` — `domain`, `start_date`, `end_date`, `environment`. Роли сохраняются строками `[String!]`, отдельной сущности Role в схеме нет.
+- Категории навыков — `skillCategories`; навыки владельца CV — из его профиля.
+- Ошибки: `cvNotFound`, `notOwnCv`, `unauthorized`, `insufficientPermissions`.
+
+> Исходные требования этапа: `C:\Users\рп\OneDrive\Рабочий стол\cv-tz\cvs\` (5 md-файлов с Figma-ссылками и полными AC по каждой странице).
+
+---
+
 ## 📤 Формат сдачи задачи
 
 1. **GitHub-репозиторий:**

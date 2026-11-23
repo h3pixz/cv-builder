@@ -94,7 +94,7 @@
 - [x] Вкладка языков `/users/[userId]/languages`: список с Proficiency и CRUD через диалоги; композиция живёт в `features/languages` (`ui/user-languages-page.tsx`), права — общий `getProfilePermissions`
 - [x] Вкладка CV (только Admin): таблица с поиском и сортировкой по имени, создание, обновление и удаление CV, страница деталей `/users/[userId]/cvs/[cvId]`; Employee получает 404 (`model/cv-permissions.ts`)
 - [x] Breadcrumbs и табы пользователя (`user-breadcrumbs`, `user-tabs`), редирект `/users/[userId]` → `/profile`
-- [x] Общий авторизованный серверный транспорт с refresh-ретраем: `api/run-authed.ts`
+- [x] Общий авторизованный серверный транспорт с refresh-ретраем: `shared/api/run-authed.ts`
 - [x] Тесты: права профиля и CV, схемы, сортировка и пагинация, тулбар, диалоги CV, `level-manager`, Server Actions CV
 
 ### Навыки
@@ -123,13 +123,33 @@
 
 ## In progress
 
+### Раздел CVs
+
+Этап начат 2026-11-19. Требования — `docs/TZ.md` («Раздел CVs»), исходники — `...\cv-tz\cvs\`.
+
+- [x] Вынести CV из `features/users` в домен `cvs` и открыть отдельный раздел `/cvs` для Admin и Employee (вкладка `/users/[userId]/cvs` осталась для Admin)
+- [x] Список CV `/cvs`: таблица `Name` / `Education` / `Employee` с описанием под строкой, поиск, сортировка по имени, пагинация
+- [x] Список CV: состояния loading / empty / no results / error, `CREATE CV`, меню `View` / `Edit` / `Delete`, диалоги create / update / delete по макетам
+- [x] Страница CV `/cvs/[cvId]`: layout с breadcrumbs `CVs > {CV name} > {Tab}`, табы `Details` / `Skills` / `Projects` / `Preview`, возврат к списку; неавторизованный доступ к чужому CV — 404
+- [x] Details: форма `Name` / `Education` / `Description`, предзаполнение, inline-валидация, `UPDATE` активна только при изменениях и без ошибок валидации, сохранение через `updateCvAction`, скелетон и ошибка `Failed to load CV details` с повтором; во время сохранения кнопка блокируется, показывает спиннер и `Saving...`
+- [x] Тесты Details: табы и их активное состояние, предзаполнение, dirty-гейт кнопки, сохранение, состояние сохранения (`Saving...` + `aria-busy`), inline-ошибки, сохранение значений при сбое
+- [x] Skills: группировка по категориям, `ADD SKILL` из навыков владельца CV, `Update skill`, режим массового удаления; пустые категории скрыты, состояния loading (скелетон) / empty / error `Failed to load skills` с повтором; если у владельца нет навыков в профиле, диалог `ADD SKILL` показывает подсказку добавить их в профиль
+- [x] Тесты Skills: группировка и пустое состояние, фильтрация вариантов добавления, подсказка при отсутствии доступных навыков, inline- и системные ошибки, обновление навыка, выбор нескольких навыков и подтверждение удаления
+- [x] Projects: таблица `Name` / `Domain` / `Responsibilities` / `Start Date` / `End Date`, поиск по Name и Domain, сортировка по Name / Start Date / End Date, период «Till now»; каталог проектов (`projects`), Add / Update / Remove через диалоги, Domain / Description / Environment из каталога только для чтения, роли из активных ролей (минимум одна), даты в пределах длительности проекта; роли — базовый набор из 10 ролей плюс роли из существующих проектов CV (раньше список был пуст, пока роли не введены ни в одном CV); состояния loading (скелетон) / empty / no results / error `Failed to load projects` с повтором
+- [x] Тесты Projects: таблица и пустое состояние, фильтрация по Name / Domain, сортировка по колонкам, автозаполнение каталога, Add / Update / Remove, inline-ошибки дат, системные ошибки без сброса значений
+- [x] Projects по макету: описание проекта под названием в ячейке `Name` (line-clamp-2), одна строка на проект; диалог Add / Update шире (`max-w-2xl`) с прокручиваемым телом, `Name` / `Domain` и `Start Date` / `End Date` — по две колонки, подписи полей в стиле `SelectField` (плавающие) и `Label` (Input / Textarea); `Description` и `Environment` только для чтения, `Roles` — мультивыбор строкой через запятую (`MultiselectField display="text"`), `Responsibilities` — многострочная `Textarea` (одна обязанность на строку), кнопка Update — `UPDATE`
+- [x] Preview: резюме из профиля, языков, навыков и проектов; `Experience in Years` и `Last Used` по пересечению environment проектов CV, периоды `MM.YYYY - MM.YYYY` / `Present`; секции и категории без данных скрыты, пустое состояние `CV preview is not available`; должность необязательна — превью и экспорт доступны без неё, строка должности скрыта
+- [x] `EXPORT PDF` через бэкенд `exportPdf`: серверная сборка HTML резюме, скачивание base64, имя файла из названия CV, кнопка неактивна без данных
+- [x] Preview: скелетон загрузки и ошибка `Failed to load CV preview` с повтором; Employee — только свои CV, Admin — любые (`canAccessCv`)
+- [x] Тесты Preview: расчёты Experience / Last Used и округление, периоды, уникальные домены, группировка навыков, экранирование HTML, имя PDF, экспорт и ошибки кнопки, рендер без должности
+
 ## Backlog
 
 ### Маршруты и layout
 
 - [x] Создать общий layout приватной части: сайдбар, контейнер, breadcrumbs и табы пользователя
-- [ ] Добавить страницы разделов из сайдбара: `/cvs`, `/departments`, `/positions`, `/projects`
-- [ ] Редактор и превью резюме (`/cvs/[cvId]/preview`)
+- [x] Главная `/` перенаправляет на `/users` (стаб «Hello world» снят)
+- [ ] Добавить страницы разделов из сайдбара: `/departments`, `/positions`, `/projects`
 - [ ] Применить SSR/SSG для страниц, где уместно
 
 ### Авторизация — остатки
@@ -141,11 +161,8 @@
 
 - [x] Описать схему и поднять локальный GraphQL-бэкенд (`cv-backend`, Docker)
 - [x] CRUD резюме сотрудника и инвалидация кэша через `revalidatePath` (вкладка CV на странице пользователя, Admin)
-- [ ] Редактор резюме с формами: личные данные и контакты, опыт работы, образование и навыки
+- [ ] Раздел CV (список, Details / Skills / Projects / Preview, PDF) — вынесен в «In progress → Раздел CVs»
 - [ ] Хранить черновик резюме в Zustand (`src/store` пока не создан)
-- [ ] Валидация полей формы (Zod + React Hook Form)
-- [ ] Живое превью резюме
-- [ ] PDF-экспорт резюме
 
 ### Качество и сдача
 

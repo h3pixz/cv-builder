@@ -82,7 +82,6 @@ describe("groupSkills", () => {
       categories,
     );
 
-    // Backend and React share order 2, so the name breaks the tie.
     expect(groups.map((group) => group.name)).toEqual(["Backend", "React"]);
   });
 

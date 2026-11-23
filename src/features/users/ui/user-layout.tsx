@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 
-import { getCurrentUser } from "../api/profile.queries";
+import { getCurrentUser } from "@/shared/api";
+
 import { canManageCvs } from "../model/cv-permissions";
 import { UserBreadcrumbs } from "./user-breadcrumbs";
 import { UserTabs } from "./user-tabs";

@@ -22,6 +22,8 @@ export const ERROR_MESSAGES = {
   languageHasBeenAdded: "This language has already been added",
   cvNotFound: "CV not found",
   notOwnCv: "You can only manage your own CVs",
+  cvProjectNotFound: "This project is not part of the CV",
+  projectHasBeenAdded: "This project has already been added",
 } as const;
 
 export type GraphQLErrorCode = keyof typeof ERROR_MESSAGES;

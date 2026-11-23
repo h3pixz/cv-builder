@@ -5,15 +5,12 @@ import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 
+import { type ActionResult } from "@/shared/api";
+import { USER_ROLES, type UserRoleValue } from "@/shared/types/user-role";
+
 import { updateUserAction } from "../api/users.actions";
-import type { UsersActionResult } from "../model/action-result";
 import type { UserRecord } from "../model/user-record";
-import {
-  updateUserSchema,
-  USER_ROLES,
-  type UpdateUserValues,
-  type UserRoleValue,
-} from "../model/user-schema";
+import { updateUserSchema, type UpdateUserValues } from "../model/user-schema";
 import { Button } from "@/shared/ui/button";
 import {
   Dialog,
@@ -86,7 +83,7 @@ function UpdateUserForm({
   async function onSubmit(values: UpdateUserValues) {
     setFormError(null);
 
-    const result: UsersActionResult = await updateUserAction(user.id, values);
+    const result: ActionResult = await updateUserAction(user.id, values);
 
     if (!result.success) {
       setFormError(result.error);

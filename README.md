@@ -61,12 +61,13 @@ npm run codegen
 src/
   app/                  # маршруты и layout-ы Next.js
     (auth)/             # sign-in, sign-up, forgot/reset password, verify-email
-    (platform)/         # защищённая часть: sidebar + AuthGate, users/**
+    (platform)/         # защищённая часть: sidebar + AuthGate, users/**, cvs/**
   proxy.ts              # проверка сессии и refresh токенов
   features/
     auth/               # страницы и Server Actions авторизации
     errors/             # 404, No Internet, Device Error
-    users/              # сотрудники: список, профиль, навыки, языки, CV
+    cvs/                # резюме: список, создание и редактирование
+    users/              # сотрудники: список, профиль, навыки, языки
   widgets/sidebar/      # боковое меню
   shared/
     api/                # GraphQL-клиент, сессия, ошибки, generated/

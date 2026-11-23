@@ -3,7 +3,7 @@
 - FSD-подход: `app` (тонкие маршруты) → `features/<domain>/{ui,api,model}` (страницы и сценарии) → `shared/{ui,api,config,helpers,hooks,types}` → `lib`; импорты только вниз. Канон структуры — `docs/STRUCTURE.md`, обоснование — `docs/TZ.md`.
 - Команда: 2 разработчика, работа в паре.
 - Сейчас реально используются `app`, `widgets`, `features`, `shared`. Слоёв `views`, `entities`, `store` пока нет: композиция страниц лежит в `src/features/<name>/ui`, а файлы `src/app/**` только собирают её. Новые страницы можно класть туда же, пока `views` не выделен.
-- Домены фич: `auth`, `users`, `errors`, `skills`, `languages`. CV пока живёт внутри `users` (`users/ui/cvs`), отдельной фичи `cvs` нет; вкладка языков пользователя (`/users/[userId]/languages`) теперь в `features/languages`. Личная страница `/languages` и каталог `/admin/languages` — там же; навыки — в `features/skills`.
+- Домены фич: `auth`, `users`, `cvs`, `errors`, `skills`, `languages`. Навыки живут в `features/skills` (`/skills`, `/admin/skills`, вкладка `/users/[userId]/skills` — обёртка в `users`), языки — в `features/languages` (`/languages`, `/admin/languages`, вкладка `/users/[userId]/languages`); CV — в `features/cvs`.
 - Next.js 16 (App Router) + React 19. `params` и `searchParams` — `Promise`, их нужно `await`. В `next.config.ts` включены `cacheComponents` и `partialPrefetching`.
 - Компоненты, читающие `params`, `searchParams`, `cookies()` или `headers()`, обёрнуты в `<Suspense>` в файлах маршрутов — иначе Next 16 падает с blocking-prerender.
 - `experimental.serverActions.bodySizeLimit = "8mb"` — аватар уходит в Server Action как base64 (файл до 5MB).
@@ -18,7 +18,7 @@
 `src/app/`:
 
 - `layout.tsx` — корневой layout: шрифт Roboto, `globals.css`, `THEME_SCRIPT` (тема до гидрации), `DeviceGuard` + `OfflineGuard`, `Toaster`;
-- `page.tsx` — заглушка главной;
+- `page.tsx` — редирект с `/` на `/users`;
 - `globals.css` — Tailwind-тема;
 - `error.tsx` — глобальная ошибка с `RETRY` (рендерит `NoInternetPage`), `global-error.tsx` — собственные `html`/`body`, `not-found.tsx` — страница 404 (`NotFoundPage`);
 - `(auth)/sign-in`, `(auth)/sign-up`, `(auth)/forgot-password`, `(auth)/reset-password`, `(auth)/verify-email` — гостевые страницы (URL без префикса группы);
@@ -30,18 +30,25 @@
 - `(platform)/users/[userId]/skills/page.tsx` — навыки пользователя;
 - `(platform)/users/[userId]/languages/page.tsx` — языки пользователя;
 - `(platform)/users/[userId]/cvs/page.tsx` — вкладка CV сотрудника (только Admin), читает `search`, `sort_by`, `sort_order`;
-- `(platform)/users/[userId]/cvs/[cvId]/page.tsx` — детали CV;
+- `(platform)/users/[userId]/cvs/[cvId]/page.tsx` — редирект на `/cvs/[cvId]/details`;
 - `(platform)/skills/page.tsx` — личные навыки текущего пользователя;
 - `(platform)/languages/page.tsx` — личные языки текущего пользователя;
 - `(platform)/admin/skills/page.tsx` — каталог навыков, только Admin: таблица, создание, редактирование, удаление;
 - `(platform)/admin/languages/page.tsx` — каталог языков, только Admin: поиск, сортировка по Name и ISO, пагинация, CRUD;
-- локальные `error.tsx` — у `/users`, `/users/[userId]/cvs`, `/users/[userId]/cvs/[cvId]`, `/users/[userId]/skills`, `/users/[userId]/languages`, `/skills`, `/languages`, `/admin/skills`, `/admin/languages`.
+- `(platform)/cvs/page.tsx` — раздел CV для Admin и Employee, читает `search`, `page`, `sort_by`, `sort_order`;
+- `(platform)/cvs/[cvId]/layout.tsx` — breadcrumbs `CVs > {CV name} > {tab}`, табы Details / Skills / Projects / Preview и возврат к списку;
+- `(platform)/cvs/[cvId]/page.tsx` — редирект на `/cvs/[cvId]/details`;
+- `(platform)/cvs/[cvId]/details/page.tsx` — вкладка Details: форма `Name` / `Education` / `Description`;
+- `(platform)/cvs/[cvId]/skills/page.tsx` — вкладка Skills: навыки CV по категориям, добавление из навыков владельца, обновление и массовое удаление;
+- `(platform)/cvs/[cvId]/projects/page.tsx` — вкладка Projects: проекты CV с поиском и сортировкой, добавление из каталога, обновление и удаление;
+- `(platform)/cvs/[cvId]/preview/page.tsx` — вкладка Preview: резюме из CV, профиля, языков и навыков, расчёт Experience / Last Used и `EXPORT PDF` через бэкенд; при нехватке данных — `CV preview is not available`;
+- локальные `error.tsx` — у `/users`, `/cvs`, `/cvs/[cvId]/details`, `/cvs/[cvId]/skills`, `/cvs/[cvId]/projects`, `/cvs/[cvId]/preview`, `/users/[userId]/cvs`, `/users/[userId]/skills`, `/users/[userId]/languages`, `/skills`, `/languages`, `/admin/skills`, `/admin/languages`.
 
-`src/proxy.ts` — защита маршрутов: приватные требуют валидную сессию (при истёкшем access-токене обновляет пару через refresh-токен), гостевые (`GUEST_ROUTES`: `/sign-in`, `/sign-up`, `/forgot-password`) отправляют авторизованного на `HOME_ROUTE`. Matcher — `/`, гостевые страницы, `/verify-email`, `/users/*`, `/profile/*`, `/cvs/*`, `/skills/*`, `/languages/*`, `/admin/*`, `/settings/*`. Тесты — `src/proxy.test.ts`.
+`src/proxy.ts` — защита маршрутов: приватные требуют валидную сессию (при истёкшем access-токене обновляет пару через refresh-токен), гостевые (`GUEST_ROUTES`: `/sign-in`, `/sign-up`, `/forgot-password`) отправляют авторизованного на `HOME_ROUTE`. Matcher — все страницы приложения, кроме API и статики (`api`, `_next`, картинки/иконки), поэтому новые маршруты защищены по умолчанию. Тесты — `src/proxy.test.ts`.
 
 Известные пробелы:
 
-- страниц `/cvs`, `/departments`, `/positions`, `/projects`, на которые ведут ссылки сайдбара, пока нет;
+- страниц `/departments`, `/positions`, `/projects`, на которые ведут ссылки сайдбара, пока нет (каталоги `/admin/departments`, `/admin/positions` есть);
 - серверная проверка сессии в `(platform)/layout.tsx` (`AuthGate`) и `protectedRequest` редиректят на `/login`, хотя реальный маршрут входа — `/sign-in`; это известный баг, требующий правки кода;
 - `scripts/export-schema.mjs`, на который ссылаются старые инструкции, в репозитории отсутствует (папки `scripts/` нет).
 
@@ -67,24 +74,32 @@
 - `api/users.queries.ts` — `getUsers`, `getUser`, справочники `getDepartmentOptions` / `getPositionOptions` (обёрнуты в `cache`);
 - `api/users.mutations.ts` — CRUD пользователей и `changeUserPassword`;
 - `api/users.actions.ts` — Server Actions пользователей (`createUserAction`, `updateUserAction`, `deleteUserAction`) с валидацией и `revalidatePath`;
-- `api/profile.queries.ts` — `getCurrentProfile`, `getCurrentUser` / `getCurrentUserRole` (id/email/role из claims access-токена; `me.id` — это id профиля, а не пользователя);
-- `api/profile.mutations.ts` — мутации профиля, аватара, отправки письма подтверждения и языков;
+- `api/profile.queries.ts` — `getCurrentProfile`, `getCurrentUserRole`; текущий пользователь (`getCurrentUser`) — в `shared/api/current-user.ts`;
+- `api/profile.mutations.ts` — мутации профиля, аватара, отправки письма подтверждения;
 - `api/profile.actions.ts` — Server Actions профиля (`updateProfileAction`, `uploadAvatarAction`, `sendVerificationEmailAction`) с проверкой прав;
 - `api/profile-levels.actions.ts` — Server Actions обёрток навыков для вкладки `/users/[userId]/skills`: проверяют `getProfilePermissions`, а операции с навыками берут из `@/features/skills`;
-- `api/cvs.queries.ts` — `getUserCvs` (поиск по имени и сортировка) и `getCv`;
-- `api/cvs.mutations.ts` — создание/обновление/удаление CV;
-- `api/cvs.actions.ts` — Server Actions CV (`createCvAction`, `updateCvAction`, `deleteCvAction`) только для Admin;
-- `api/run-authed.ts` — `runAuthed`: выполнение операции с access-токеном и refresh-повтором, хелперы `unauthorizedFailure` / `forbiddenFailure`;
 - `api/profile-revalidate.ts` — `revalidateUser` (список `/users` и layout всех вкладок пользователя);
-- `model/` — `action-result` (`UsersActionResult`, `AvatarUploadResult`), `user-schema` (zod + `USER_ROLES`, create/update), `user-record`, `profile-schema` (zod), `avatar` (типы и лимит 5MB), `levels` (типы `LevelItem` / `LevelGroup` для вкладки навыков), `level-forms` (клиентская zod-схема вкладки навыков: `createLevelFormSchema` / `LevelFormValues`, чтобы клиентский `LevelManager` не тянул рантайм из барреля `skills`), `cv-schema`, `cv-permissions`, `cv-record`;
-- `ui/` — `users-page`, `users-header`, `users-toolbar`, `users-table`, `users-pagination`, диалоги `create-user-dialog` / `update-user-dialog` / `delete-user-dialog`; `user-layout`, `user-breadcrumbs`, `user-tabs`, `user-current-page`; `profile/user-profile-page`, `profile/user-profile-form`, `profile/avatar-upload`, `profile/profile-skeleton`; `skills/user-skills-page`, `levels/level-manager` (менеджер навыков: списки и диалоги добавления/обновления/удаления), `levels/level-list-skeleton`; `cvs/user-cvs-page`, `cvs/cvs-table`, `cvs/cvs-toolbar`, `cvs/cvs-sort-header`, `cvs/cvs-table-skeleton`, `cvs/cv-actions-menu`, `cvs/cv-dialog`, `cvs/delete-cv-dialog`, `cvs/user-cv-details-page`, `cvs/cv-details`;
+- `model/` — `action-result` (`AvatarUploadResult`), `user-schema` (zod, create/update), `user-record`, `profile-schema` (zod), `avatar` (типы и лимит 5MB), `levels` (типы `LevelItem` / `LevelGroup` для вкладки навыков), `level-forms` (клиентская zod-схема вкладки навыков: `createLevelFormSchema` / `LevelFormValues`, чтобы клиентский `LevelManager` не тянул рантайм из барреля `skills`), `cv-permissions` (видимость вкладки CV);
+- `ui/` — `users-page`, `users-header`, `users-toolbar`, `users-table`, `users-pagination`, диалоги `create-user-dialog` / `update-user-dialog` / `delete-user-dialog`; `user-layout`, `user-breadcrumbs`, `user-tabs`, `user-current-page`; `profile/user-profile-page`, `profile/user-profile-form`, `profile/avatar-upload`, `profile/profile-skeleton`; `skills/user-skills-page`, `levels/level-manager` (менеджер навыков: списки и диалоги добавления/обновления/удаления), `levels/level-list-skeleton`;
 - `index.ts` — публичный экспорт страниц и layout-а.
+
+`src/features/cvs/`:
+
+- `api/cvs.queries.ts` — `getCvs` (все CV, поиск/пагинация), `getCvsByUserId` (вкладка пользователя), `getCv` / `getCvContext` (CV с проверкой доступа), справочники ролей, проектов и категорий навыков;
+- `api/cvs.mutations.ts` — create / update / delete CV;
+- `api/cvs.actions.ts` — Server Actions CV (`createCvAction` / `updateCvAction` / `deleteCvAction`);
+- `api/cv-skills.actions.ts`, `api/cv-projects.actions.ts` — Server Actions навыков и проектов внутри CV;
+- `api/cv-preview.actions.ts` — Server Action `exportCvPdfAction`: проверка доступа, сборка HTML резюме и `exportPdf` (base64 + имя файла из названия CV);
+- `model/` — `cv-record`, `cv-schema` (zod), `cv-permissions` (`canAccessCv`: Employee — только свои CV, Admin — любые), `cv-skill-schema`, `cv-project-schema`, `cv-project-record` (типы проекта CV и каталога, форматирование дат), `cv-project-roles` (базовый набор ролей проекта), `cv-tabs`, `cv-preview` (сборка резюме, периоды, расчёты Experience / Last Used, PDF-HTML, имя файла);
+- `ui/` — `cvs-page`, `cvs-header`, `cvs-toolbar`, `cvs-table`, `cvs-sort-header`, `cvs-pagination`, `cvs-table-skeleton`, `cv-actions-menu`, `cv-dialog`, `delete-cv-dialog`, `user-cvs-page` (вкладка в `/users/[userId]/cvs`); страница CV — `cv-layout`, `cv-breadcrumbs`, `cv-tabs`, `cv-current-tab`, `cv-details-page`, `cv-details-form`, `cv-details-skeleton`, `cv-skills-page`, `cv-skills-manager`, `cv-skills-skeleton`, `cv-projects-page`, `cv-projects-manager`, `cv-project-dialog`, `cv-project-remove-dialog`, `cv-projects-skeleton`, `cv-preview-page`, `cv-preview-view`, `cv-preview-export-button`, `cv-preview-skeleton`;
+- `index.ts` — публичный экспорт страниц.
 
 Все модули `api/` помечены `import "server-only"` — их нельзя импортировать из клиентских компонентов. Доступ:
 
 - Admin управляет пользователями (создание, редактирование, удаление) и любыми профилями и аватарами; Employee видит список, но не управляет пользователями;
 - Employee правит только свой профиль и аватар, собственные навыки и языки; подтверждение email — только владелец (`model/profile-permissions.ts`);
-- вкладка CV доступна только Admin (`model/cv-permissions.ts`); Employee при прямом заходе получает 404.
+- вкладка CV в профиле пользователя доступна только Admin (`model/cv-permissions.ts`); Employee при прямом заходе получает 404;
+- раздел `/cvs` доступен Admin и Employee: Employee видит и меняет только свои CV, Admin — любые (`cvs/model/cv-permissions.ts`); отказ бэкенда `notOwnCv` показывается как системная ошибка.
 
 `src/features/skills/` — навыки и каталог навыков:
 
@@ -137,6 +152,9 @@
 - `session/session.ts` — httpOnly-cookies `access_token` / `refresh_token`, `getSession` / `saveSession` / `clearSession` / `refreshSession`;
 - `session-cookies/session-cookies.ts` — имена cookies, `ACCESS_TOKEN_MAX_AGE`, `REFRESH_TOKEN_MAX_AGE`, `ACCESS_TOKEN_REFRESH_SKEW`, `sessionCookieOptions` (без `next/headers`, можно использовать в `proxy.ts`);
 - `jwt/jwt.ts` — `getTokenPayload`, `getTokenSubject`, `isTokenExpired`;
+- `action-result.ts` — общий `ActionResult` и `toActionError`;
+- `current-user.ts` — `getCurrentUser` / `SessionUser` (id/email/role из claims access-токена; `me.id` — это id профиля, а не пользователя);
+- `run-authed.ts` — `runAuthed`: операция с access-токеном и refresh-повтором, `unauthorizedFailure` / `forbiddenFailure`;
 - `request-origin.ts` — `getRequestOrigin` (публичный origin запроса для ссылок в письмах);
 - `index.ts` — публичный реэкспорт.
 
@@ -146,11 +164,11 @@
 
 `src/shared/hooks/` — `use-media-query.ts`, `use-online-status.ts`.
 
-`src/shared/types/` пока нет — создавай при первом использовании.
+`src/shared/types/` — `user-role.ts` (`USER_ROLES`, `UserRoleValue`).
 
 UI-kit — `src/shared/ui/<component>/`, экспорт через `index.ts`:
 
-- `button` — `Button` (default / primary / secondary / ghost / icon), `buttonVariants`;
+- `button` — `Button` (default / primary / secondary / outline / ghost / icon), `buttonVariants`;
 - `input` — `Input` (default / error), `PasswordInput`, `CodeInput` (6-значный OTP);
 - `textarea` — `Textarea` (default / error);
 - `select` — `SelectField`, `MultiselectField`, тип `SelectOption`; примитивы `Select*` лежат в `select.tsx`, но из `index.ts` не реэкспортируются;
@@ -170,7 +188,7 @@ UI-kit — `src/shared/ui/<component>/`, экспорт через `index.ts`:
 ### Куда класть новое
 
 - страница и её сценарии → `src/features/<domain>/ui/`, запросы и Server Actions → `api/`, типы и схемы → `model/`, публичный экспорт → `index.ts`;
-- домены: `auth`, `users`, `errors`, `skills`, `languages`; планируемые — `admin`, `settings` (CV пока внутри `users`);
+- домены: `auth`, `users`, `cvs`, `errors`, `skills`, `languages`; планируемые — `admin`, `settings`;
 - маршрут → тонкий `src/app/<route-group>/<route>/page.tsx` (приватные — в `(platform)`, гостевые — в `(auth)`);
 - `views` не выделен: композиция страниц живёт в `features/<domain>/ui`;
 - `widgets` — только существующий `sidebar`; новые блоки интерфейса кладём в `features/<domain>/ui` или `shared`;

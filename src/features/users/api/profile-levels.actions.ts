@@ -10,12 +10,15 @@ import {
   updateMySkill,
   updateMySkillSchema,
 } from "@/features/skills";
+import {
+  type ActionResult,
+  forbiddenFailure,
+  getCurrentUser,
+  runAuthed,
+} from "@/shared/api";
 import { getProfilePermissions } from "@/shared/helpers/profile-permissions";
 
-import type { UsersActionResult } from "../model/action-result";
-import { getCurrentUser } from "./profile.queries";
 import { revalidateUser } from "./profile-revalidate";
-import { forbiddenFailure, runAuthed } from "./run-authed";
 
 type SkillValues = z.infer<typeof addMySkillSchema>;
 type UpdateSkillValues = z.infer<typeof updateMySkillSchema>;
@@ -24,7 +27,7 @@ const deleteSchema = z
   .array(z.string().trim().min(1))
   .min(1, "Select at least one item");
 
-function invalid(message: string | undefined): UsersActionResult {
+function invalid(message: string | undefined): ActionResult {
   return {
     success: false,
     error: message ?? "Invalid data",
@@ -49,7 +52,7 @@ async function canManageProfile(userId: string): Promise<boolean> {
 export async function addSkillAction(
   userId: string,
   values: SkillValues,
-): Promise<UsersActionResult> {
+): Promise<ActionResult> {
   const parsed = addMySkillSchema.safeParse(values);
 
   if (!parsed.success) {
@@ -85,7 +88,7 @@ export async function addSkillAction(
 export async function updateSkillAction(
   userId: string,
   values: UpdateSkillValues,
-): Promise<UsersActionResult> {
+): Promise<ActionResult> {
   const parsed = updateMySkillSchema.safeParse(values);
 
   if (!parsed.success) {
@@ -125,7 +128,7 @@ export async function updateSkillAction(
 export async function deleteSkillsAction(
   userId: string,
   names: string[],
-): Promise<UsersActionResult> {
+): Promise<ActionResult> {
   const parsed = deleteSchema.safeParse(names);
 
   if (!parsed.success) {

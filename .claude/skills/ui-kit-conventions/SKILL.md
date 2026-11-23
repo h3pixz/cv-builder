@@ -15,8 +15,7 @@ All components are built on `@base-ui/react` (not Radix). Each lives in `shared/
 - Base UI uses `render={<Link />}` where Radix uses `asChild`.
 
 ## button
-
-`Button`, `buttonVariants`. Variants: `default` (text), `primary` (filled pill), `secondary` (outlined pill), `ghost`, `icon`. Base: `h-9 rounded-full px-6 text-[10px] font-semibold uppercase tracking-[0.02em]`. Add a variant instead of restyling per usage.
+`Button`, `buttonVariants`. Variants: `default` (text), `primary` (filled pill), `secondary` (gray outlined pill), `outline` (red outlined pill, fills red on hover — `EXPORT PDF`), `ghost`, `icon`. Base: `h-9 rounded-full px-6 text-[10px] font-semibold uppercase tracking-[0.02em]`. Add a variant instead of restyling per usage.
 
 ## input
 
@@ -61,8 +60,7 @@ Primitives in `select.tsx`: `Select` (Base UI Root), `SelectTrigger` (`size`: `d
 `SelectOption = { value: string; label: string; disabled?: boolean }`. Value is `string | null`.
 
 ### MultiselectField (multi)
-
-Same props but `value` / `defaultValue` / `onValueChange` are `string[]`. Selected items render as removable chips; options show checkboxes.
+Same props but `value` / `defaultValue` / `onValueChange` are `string[]`. Selected items render as removable chips; options show checkboxes. `display`: `chips` (по умолчанию) | `text` — в режиме `text` выбранные значения показываются одной строкой через `, `, без чипов (Roles в диалоге проекта).
 
 Use these for Department, Position, mastery, proficiency and similar.
 
@@ -244,8 +242,7 @@ toast.add({
 Other exports: `Toast`, `ToastTitle`, `ToastDescription`, `ToastAction`, `ToastClose`, `ToastProvider`, `ToastViewport`, `createToastManager`, `useToastManager`.
 
 ## level
-
-`Level` — шкала 0–5 на `role="meter"`. Props: `level: number` (округляется и зажимается в 0–5), `label?: string` (текст справа), `barClassName?: string` (переопределить полосу), плюс `HTMLAttributes<HTMLDivElement>` (`className`). Высота полосы `h-1`, ширина `w-34`, цвета уровней — токены `level-0..5-fill/track`. Для Mastery переводи значение в число через `masteryLevel` из `features/skills/model/skill-levels.ts`; для Proficiency — через `proficiencyLevel` из `features/languages/model/language-levels.ts` (личная страница и вкладка пользователя).
+`Level` — шкала 0–5 на `role="meter"`. Props: `level: number` (округляется и зажимается в 0–5), `label?: string` (текст справа), `barClassName?: string` (переопределить полосу), плюс `HTMLAttributes<HTMLDivElement>` (`className`). Высота полосы `h-1`, ширина `w-34`, цвета уровней — токены `level-0..5-fill/track`. Для Mastery переводи значение в число через `masteryLevel` из `@/features/skills`; для Proficiency — через `proficiencyLevel` из `@/features/languages`.
 
 ## pagination
 

@@ -66,6 +66,12 @@ function redirectHome(request: NextRequest) {
   return NextResponse.redirect(new URL(HOME_ROUTE, request.url));
 }
 
+function redirectHomeWithTokens(request: NextRequest, tokens: Tokens) {
+  const response = NextResponse.redirect(new URL(HOME_ROUTE, request.url));
+  persistTokens(response, tokens);
+  return response;
+}
+
 function nextWithTokens(request: NextRequest, tokens: Tokens) {
   request.cookies.set(ACCESS_TOKEN_COOKIE, tokens.access_token);
   request.cookies.set(REFRESH_TOKEN_COOKIE, tokens.refresh_token);
@@ -90,7 +96,7 @@ export async function proxy(request: NextRequest) {
 
     if (refreshToken) {
       const tokens = await refreshTokens(refreshToken);
-      if (tokens) return nextWithTokens(request, tokens);
+      if (tokens) return redirectHomeWithTokens(request, tokens);
     }
 
     const response = NextResponse.next();
@@ -110,9 +116,7 @@ export async function proxy(request: NextRequest) {
     const tokens = await refreshTokens(refreshToken);
 
     if (tokens) {
-      const response = NextResponse.next();
-      persistTokens(response, tokens);
-      return response;
+      return nextWithTokens(request, tokens);
     }
   }
 
@@ -121,17 +125,6 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/",
-    "/sign-in",
-    "/sign-up",
-    "/forgot-password",
-    "/verify-email",
-    "/users/:path*",
-    "/profile/:path*",
-    "/cvs/:path*",
-    "/skills/:path*",
-    "/languages/:path*",
-    "/admin/:path*",
-    "/settings/:path*",
+    "/((?!api|_next|favicon\\.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)",
   ],
 };
