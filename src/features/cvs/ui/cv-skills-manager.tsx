@@ -336,33 +336,39 @@ export function CvSkillsManager({ cvId, groups, options }: Props) {
             noValidate
             onSubmit={addForm.handleSubmit(onAdd)}
           >
-            <div className="space-y-1">
-              <Label
-                htmlFor="cv-skill-add-name"
-                className="text-[10px] text-muted-foreground"
-              >
-                Skill
-              </Label>
-              <Controller
-                control={addForm.control}
-                name="name"
-                render={({ field }) => (
-                  <SelectField
-                    id="cv-skill-add-name"
-                    name={field.name}
-                    placeholder="Skill"
-                    options={availableOptions}
-                    value={field.value || null}
-                    onValueChange={(value) =>
-                      field.onChange(value ?? "")
-                    }
-                    error={addForm.formState.errors.name?.message}
-                    disabled={availableOptions.length === 0}
-                    required
-                  />
-                )}
-              />
-            </div>
+            {availableOptions.length === 0 ? (
+              <p className="text-sm text-muted-foreground">
+                No skills available. Add skills to the CV owner&apos;s profile
+                first.
+              </p>
+            ) : (
+              <div className="space-y-1">
+                <Label
+                  htmlFor="cv-skill-add-name"
+                  className="text-[10px] text-muted-foreground"
+                >
+                  Skill
+                </Label>
+                <Controller
+                  control={addForm.control}
+                  name="name"
+                  render={({ field }) => (
+                    <SelectField
+                      id="cv-skill-add-name"
+                      name={field.name}
+                      placeholder="Skill"
+                      options={availableOptions}
+                      value={field.value || null}
+                      onValueChange={(value) =>
+                        field.onChange(value ?? "")
+                      }
+                      error={addForm.formState.errors.name?.message}
+                      required
+                    />
+                  )}
+                />
+              </div>
+            )}
 
             {addError && (
               <p role="alert" className="text-xs text-destructive">

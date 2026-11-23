@@ -150,6 +150,22 @@ describe("CvSkillsManager", () => {
     expect(screen.getByRole("button", { name: /remove skills/i })).toBeDisabled();
   });
 
+  it("points to the profile when no skills are available to add", () => {
+    renderManager({
+      options: [
+        { value: "React", label: "React" },
+        { value: "CSS", label: "CSS" },
+        { value: "NestJS", label: "NestJS" },
+      ],
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: /add skill/i }));
+
+    expect(screen.getByText(/profile first/i)).toBeInTheDocument();
+    expect(screen.queryByLabelText("Skill")).toBeNull();
+    expect(screen.getByRole("button", { name: "Add" })).toBeDisabled();
+  });
+
   it("adds a skill from the owner list and closes the dialog", async () => {
     addCvSkillAction.mockResolvedValue({ success: true });
 
