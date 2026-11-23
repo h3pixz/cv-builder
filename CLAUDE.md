@@ -86,7 +86,7 @@
 - `api/cvs.actions.ts` — Server Actions CV (`createCvAction` / `updateCvAction` / `deleteCvAction`);
 - `api/cv-skills.actions.ts`, `api/cv-projects.actions.ts` — Server Actions навыков и проектов внутри CV;
 - `api/cv-preview.actions.ts` — Server Action `exportCvPdfAction`: проверка доступа, сборка HTML резюме и `exportPdf` (base64 + имя файла из названия CV);
-- `model/` — `cv-record`, `cv-schema` (zod), `cv-permissions` (`canAccessCv`: Employee — только свои CV, Admin — любые), `cv-skill-schema`, `cv-project-schema`, `cv-project-record` (типы проекта CV и каталога, форматирование дат), `cv-tabs`, `cv-preview` (сборка резюме, периоды, расчёты Experience / Last Used, PDF-HTML, имя файла);
+- `model/` — `cv-record`, `cv-schema` (zod), `cv-permissions` (`canAccessCv`: Employee — только свои CV, Admin — любые), `cv-skill-schema`, `cv-project-schema`, `cv-project-record` (типы проекта CV и каталога, форматирование дат), `cv-project-roles` (базовый набор ролей проекта), `cv-tabs`, `cv-preview` (сборка резюме, периоды, расчёты Experience / Last Used, PDF-HTML, имя файла);
 - `ui/` — `cvs-page`, `cvs-header`, `cvs-toolbar`, `cvs-table`, `cvs-sort-header`, `cvs-pagination`, `cvs-table-skeleton`, `cv-actions-menu`, `cv-dialog`, `delete-cv-dialog`, `user-cvs-page` (вкладка в `/users/[userId]/cvs`); страница CV — `cv-layout`, `cv-breadcrumbs`, `cv-tabs`, `cv-current-tab`, `cv-details-page`, `cv-details-form`, `cv-details-skeleton`, `cv-skills-page`, `cv-skills-manager`, `cv-skills-skeleton`, `cv-projects-page`, `cv-projects-manager`, `cv-project-dialog`, `cv-project-remove-dialog`, `cv-projects-skeleton`, `cv-preview-page`, `cv-preview-view`, `cv-preview-export-button`, `cv-preview-skeleton`;
 - `index.ts` — публичный экспорт страниц.
 

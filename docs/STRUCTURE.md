@@ -211,6 +211,7 @@ cv-builder/
 │   │   │   │   ├── cv-skill-schema.ts
 │   │   │   │   ├── cv-project-schema.ts
 │   │   │   │   ├── cv-project-record.ts
+│   │   │   │   ├── cv-project-roles.ts
 │   │   │   │   ├── cv-tabs.ts
 │   │   │   │   └── cv-preview.ts
 │   │   │   └── index.ts
