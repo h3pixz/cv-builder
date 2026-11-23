@@ -34,6 +34,11 @@ type Documents = {
     "\n  mutation AddMyLanguage($language: AddProfileLanguageInput!) {\n    addProfileLanguage(language: $language) {\n      id\n      languages {\n        name\n        proficiency\n      }\n    }\n  }\n": typeof types.AddMyLanguageDocument,
     "\n  mutation UpdateMyLanguage($language: UpdateProfileLanguageInput!) {\n    updateProfileLanguage(language: $language) {\n      id\n      languages {\n        name\n        proficiency\n      }\n    }\n  }\n": typeof types.UpdateMyLanguageDocument,
     "\n  mutation DeleteMyLanguage($language: DeleteProfileLanguageInput!) {\n    deleteProfileLanguage(language: $language) {\n      id\n      languages {\n        name\n        proficiency\n      }\n    }\n  }\n": typeof types.DeleteMyLanguageDocument,
+    "\n  mutation CreatePosition($position: CreatePositionInput!) {\n    createPosition(position: $position) {\n      id\n      created_at\n      name\n    }\n  }\n": typeof types.CreatePositionDocument,
+    "\n  mutation UpdatePosition($position: UpdatePositionInput!) {\n    updatePosition(position: $position) {\n      id\n      created_at\n      name\n    }\n  }\n": typeof types.UpdatePositionDocument,
+    "\n  mutation DeletePosition($position: DeletePositionInput!) {\n    deletePosition(position: $position) {\n      affected\n    }\n  }\n": typeof types.DeletePositionDocument,
+    "\n  query GetPositions($params: SearchPaginationInput) {\n    positions(params: $params) {\n      items {\n        id\n        created_at\n        name\n      }\n      total\n      page\n      limit\n      total_pages\n    }\n  }\n": typeof types.GetPositionsDocument,
+    "\n  query GetPositionUsage($params: SearchPaginationInput) {\n    users(params: $params) {\n      items {\n        id\n        position {\n          id\n        }\n      }\n      total\n      page\n      limit\n      total_pages\n    }\n  }\n": typeof types.GetPositionUsageDocument,
     "\n  mutation CreateSkill($skill: CreateSkillInput!) {\n    createSkill(skill: $skill) {\n      id\n      name\n      category {\n        id\n        name\n      }\n    }\n  }\n": typeof types.CreateSkillDocument,
     "\n  mutation UpdateSkill($skill: UpdateSkillInput!) {\n    updateSkill(skill: $skill) {\n      id\n      name\n      category {\n        id\n        name\n      }\n    }\n  }\n": typeof types.UpdateSkillDocument,
     "\n  mutation DeleteSkill($skill: DeleteSkillInput!) {\n    deleteSkill(skill: $skill) {\n      affected\n    }\n  }\n": typeof types.DeleteSkillDocument,
@@ -85,6 +90,11 @@ const documents: Documents = {
     "\n  mutation AddMyLanguage($language: AddProfileLanguageInput!) {\n    addProfileLanguage(language: $language) {\n      id\n      languages {\n        name\n        proficiency\n      }\n    }\n  }\n": types.AddMyLanguageDocument,
     "\n  mutation UpdateMyLanguage($language: UpdateProfileLanguageInput!) {\n    updateProfileLanguage(language: $language) {\n      id\n      languages {\n        name\n        proficiency\n      }\n    }\n  }\n": types.UpdateMyLanguageDocument,
     "\n  mutation DeleteMyLanguage($language: DeleteProfileLanguageInput!) {\n    deleteProfileLanguage(language: $language) {\n      id\n      languages {\n        name\n        proficiency\n      }\n    }\n  }\n": types.DeleteMyLanguageDocument,
+    "\n  mutation CreatePosition($position: CreatePositionInput!) {\n    createPosition(position: $position) {\n      id\n      created_at\n      name\n    }\n  }\n": types.CreatePositionDocument,
+    "\n  mutation UpdatePosition($position: UpdatePositionInput!) {\n    updatePosition(position: $position) {\n      id\n      created_at\n      name\n    }\n  }\n": types.UpdatePositionDocument,
+    "\n  mutation DeletePosition($position: DeletePositionInput!) {\n    deletePosition(position: $position) {\n      affected\n    }\n  }\n": types.DeletePositionDocument,
+    "\n  query GetPositions($params: SearchPaginationInput) {\n    positions(params: $params) {\n      items {\n        id\n        created_at\n        name\n      }\n      total\n      page\n      limit\n      total_pages\n    }\n  }\n": types.GetPositionsDocument,
+    "\n  query GetPositionUsage($params: SearchPaginationInput) {\n    users(params: $params) {\n      items {\n        id\n        position {\n          id\n        }\n      }\n      total\n      page\n      limit\n      total_pages\n    }\n  }\n": types.GetPositionUsageDocument,
     "\n  mutation CreateSkill($skill: CreateSkillInput!) {\n    createSkill(skill: $skill) {\n      id\n      name\n      category {\n        id\n        name\n      }\n    }\n  }\n": types.CreateSkillDocument,
     "\n  mutation UpdateSkill($skill: UpdateSkillInput!) {\n    updateSkill(skill: $skill) {\n      id\n      name\n      category {\n        id\n        name\n      }\n    }\n  }\n": types.UpdateSkillDocument,
     "\n  mutation DeleteSkill($skill: DeleteSkillInput!) {\n    deleteSkill(skill: $skill) {\n      affected\n    }\n  }\n": types.DeleteSkillDocument,
@@ -210,6 +220,26 @@ export function graphql(source: "\n  mutation UpdateMyLanguage($language: Update
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  mutation DeleteMyLanguage($language: DeleteProfileLanguageInput!) {\n    deleteProfileLanguage(language: $language) {\n      id\n      languages {\n        name\n        proficiency\n      }\n    }\n  }\n"): (typeof documents)["\n  mutation DeleteMyLanguage($language: DeleteProfileLanguageInput!) {\n    deleteProfileLanguage(language: $language) {\n      id\n      languages {\n        name\n        proficiency\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation CreatePosition($position: CreatePositionInput!) {\n    createPosition(position: $position) {\n      id\n      created_at\n      name\n    }\n  }\n"): (typeof documents)["\n  mutation CreatePosition($position: CreatePositionInput!) {\n    createPosition(position: $position) {\n      id\n      created_at\n      name\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation UpdatePosition($position: UpdatePositionInput!) {\n    updatePosition(position: $position) {\n      id\n      created_at\n      name\n    }\n  }\n"): (typeof documents)["\n  mutation UpdatePosition($position: UpdatePositionInput!) {\n    updatePosition(position: $position) {\n      id\n      created_at\n      name\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation DeletePosition($position: DeletePositionInput!) {\n    deletePosition(position: $position) {\n      affected\n    }\n  }\n"): (typeof documents)["\n  mutation DeletePosition($position: DeletePositionInput!) {\n    deletePosition(position: $position) {\n      affected\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query GetPositions($params: SearchPaginationInput) {\n    positions(params: $params) {\n      items {\n        id\n        created_at\n        name\n      }\n      total\n      page\n      limit\n      total_pages\n    }\n  }\n"): (typeof documents)["\n  query GetPositions($params: SearchPaginationInput) {\n    positions(params: $params) {\n      items {\n        id\n        created_at\n        name\n      }\n      total\n      page\n      limit\n      total_pages\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query GetPositionUsage($params: SearchPaginationInput) {\n    users(params: $params) {\n      items {\n        id\n        position {\n          id\n        }\n      }\n      total\n      page\n      limit\n      total_pages\n    }\n  }\n"): (typeof documents)["\n  query GetPositionUsage($params: SearchPaginationInput) {\n    users(params: $params) {\n      items {\n        id\n        position {\n          id\n        }\n      }\n      total\n      page\n      limit\n      total_pages\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
