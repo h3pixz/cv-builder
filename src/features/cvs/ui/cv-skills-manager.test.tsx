@@ -1,9 +1,7 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import type { LevelGroup } from "@/shared/helpers";
-
-import { CvSkillsManager } from "./cv-skills-manager";
+import { CvSkillsManager, type CvSkillGroup } from "./cv-skills-manager";
 
 const {
   addCvSkillAction,
@@ -96,7 +94,7 @@ vi.mock("@/shared/ui/dialog", () => {
   };
 });
 
-const groups: LevelGroup[] = [
+const groups: CvSkillGroup[] = [
   {
     id: "frontend",
     name: "Frontend",

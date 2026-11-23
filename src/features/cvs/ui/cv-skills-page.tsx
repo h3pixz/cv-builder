@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 
-import { groupSkills, masteryLevel } from "@/shared/helpers";
+import { groupSkills, masteryLevel } from "@/features/skills";
 
 import { getCvContext, getCvSkillCategories } from "../api/cvs.queries";
 import { CvSkillsManager } from "./cv-skills-manager";

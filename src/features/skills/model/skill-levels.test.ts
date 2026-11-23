@@ -1,11 +1,6 @@
 import { describe, expect, it } from "vitest";
-import {
-  MASTERY_MAX,
-  PROFICIENCY_MAX,
-  groupSkills,
-  masteryLevel,
-  proficiencyLevel,
-} from "./levels";
+
+import { MASTERY_MAX, groupSkills, masteryLevel } from "./skill-levels";
 
 describe("masteryLevel", () => {
   it.each([
@@ -27,28 +22,6 @@ describe("masteryLevel", () => {
   });
 });
 
-describe("proficiencyLevel", () => {
-  it.each([
-    ["A1", 1],
-    ["A2", 2],
-    ["B1", 3],
-    ["B2", 4],
-    ["C1", 5],
-    ["C2", 6],
-    ["Native", 7],
-  ])("maps %s to %i", (value, expected) => {
-    expect(proficiencyLevel(value)).toBe(expected);
-  });
-
-  it("returns 0 for an unknown proficiency", () => {
-    expect(proficiencyLevel("unknown")).toBe(0);
-  });
-
-  it("matches the number of proficiency levels", () => {
-    expect(PROFICIENCY_MAX).toBe(7);
-  });
-});
-
 describe("groupSkills", () => {
   const categories = [
     {
@@ -57,29 +30,47 @@ describe("groupSkills", () => {
       order: 1,
       children: [{ id: "react", name: "React", order: 2 }],
     },
-    { id: "backend", name: "Backend", order: 2, children: [] },
+    {
+      id: "backend",
+      name: "Backend",
+      order: 2,
+      children: [],
+    },
   ];
 
-  it("groups skills by their category, including child categories", () => {
+  it("groups skills by category and skips empty categories", () => {
     const groups = groupSkills(
       [
         { name: "TypeScript", categoryId: "frontend", mastery: "Expert" },
-        { name: "Hooks", categoryId: "react", mastery: "Proficient" },
         { name: "Node", categoryId: "backend", mastery: "Advanced" },
       ],
       categories,
     );
 
-    expect(groups.map((group) => group.name)).toEqual([
-      "Frontend",
-      "Backend",
-      "React",
-    ]);
-    expect(groups.map((group) => group.skills.map((s) => s.name))).toEqual([
-      ["TypeScript"],
-      ["Node"],
-      ["Hooks"],
-    ]);
+    expect(groups.map((group) => group.name)).toEqual(["Frontend", "Backend"]);
+  });
+
+  it("resolves child categories", () => {
+    const groups = groupSkills(
+      [{ name: "Hooks", categoryId: "react", mastery: "Proficient" }],
+      categories,
+    );
+
+    expect(groups).toHaveLength(1);
+    expect(groups[0].name).toBe("React");
+  });
+
+  it("puts skills without a category into an Other group at the end", () => {
+    const groups = groupSkills(
+      [
+        { name: "Mystery", mastery: "Novice" },
+        { name: "TypeScript", categoryId: "frontend", mastery: "Expert" },
+      ],
+      categories,
+    );
+
+    expect(groups.map((group) => group.name)).toEqual(["Frontend", "Other"]);
+    expect(groups[1].order).toBe(Number.MAX_SAFE_INTEGER);
   });
 
   it("sorts groups by order and then by name", () => {
@@ -92,21 +83,6 @@ describe("groupSkills", () => {
     );
 
     expect(groups.map((group) => group.name)).toEqual(["Backend", "React"]);
-  });
-
-  it("puts skills without a category into an Other group at the end", () => {
-    const groups = groupSkills(
-      [
-        { name: "Uncategorized", mastery: "Competent" },
-        { name: "TypeScript", categoryId: "frontend", mastery: "Expert" },
-      ],
-      categories,
-    );
-
-    expect(groups.map((group) => group.name)).toEqual(["Frontend", "Other"]);
-    expect(groups[1].skills.map((skill) => skill.name)).toEqual([
-      "Uncategorized",
-    ]);
   });
 
   it("falls back to Other for an unknown category id", () => {

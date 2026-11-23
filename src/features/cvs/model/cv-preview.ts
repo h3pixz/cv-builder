@@ -1,4 +1,4 @@
-import { groupSkills } from "@/shared/helpers";
+import { groupSkills } from "@/features/skills";
 
 type PreviewLanguage = {
   name: string;

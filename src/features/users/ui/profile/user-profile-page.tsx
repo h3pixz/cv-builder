@@ -1,14 +1,13 @@
 import { notFound } from "next/navigation";
 
 import { getCurrentUser } from "@/shared/api";
+import { formatDate, getProfilePermissions } from "@/shared/helpers";
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
-import { formatDate } from "@/shared/helpers";
 import {
   getDepartmentOptions,
   getPositionOptions,
   getUser,
 } from "../../api/users.queries";
-import { getProfilePermissions } from "../../model/profile-permissions";
 import type { ProfileValues } from "../../model/profile-schema";
 import { AvatarUpload } from "./avatar-upload";
 import { UserProfileForm } from "./user-profile-form";

@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { PlusIcon, Trash2Icon } from "lucide-react";
 import { useForm, useWatch } from "react-hook-form";
 
+import type { SkillMasteryValue } from "@/features/skills";
 import { cn } from "@/lib/utils";
 import { Button } from "@/shared/ui/button";
 import { Checkbox } from "@/shared/ui/checkbox";
@@ -23,77 +24,42 @@ import { SelectField, type SelectOption } from "@/shared/ui/select";
 import { toast } from "@/shared/ui/toast";
 
 import {
-  addLanguageAction,
   addSkillAction,
-  deleteLanguagesAction,
   deleteSkillsAction,
-  updateLanguageAction,
   updateSkillAction,
 } from "../../api/profile-levels.actions";
 import {
   createLevelFormSchema,
-  LANGUAGE_FORM_MESSAGES,
-  SKILL_FORM_MESSAGES,
   type LevelFormValues,
 } from "../../model/level-forms";
-import {
-  LANGUAGE_PROFICIENCY_VALUES,
-  SKILL_MASTERY_VALUES,
-  type LanguageProficiencyValue,
-  type LevelGroup,
-  type SkillMasteryValue,
-} from "@/shared/helpers";
+import type { LevelGroup } from "../../model/levels";
 
 export type LevelOption = SelectOption & { categoryId?: string | null };
 
-type LevelKind = "skill" | "language";
-
 type Props = {
-  kind: LevelKind;
   userId: string;
   heading: string;
   groups: LevelGroup[];
   options: LevelOption[];
+  /** Mastery values offered by the level select. */
+  levelOptions: SelectOption[];
+  /** Plain strings so the schema can be built on the client. */
+  formMessages: { nameRequired: string; levelRequired: string };
   canManage: boolean;
-  /** Skills are grouped by category, languages live in a single section. */
+  /** Skills are grouped by category; hide the group titles when not needed. */
   showGroupNames?: boolean;
 };
 
-const FORM_SCHEMAS = {
-  skill: createLevelFormSchema(SKILL_FORM_MESSAGES),
-  language: createLevelFormSchema(LANGUAGE_FORM_MESSAGES),
-};
-
-const LEVEL_OPTIONS: Record<LevelKind, SelectOption[]> = {
-  skill: SKILL_MASTERY_VALUES.map((value) => ({ value, label: value })),
-  language: LANGUAGE_PROFICIENCY_VALUES.map((value) => ({
-    value,
-    label: value,
-  })),
-};
-
 const CONFIG = {
-  skill: {
-    addTitle: "Add skill",
-    updateTitle: "Update skill",
-    removeTitle: "Remove skills",
-    nameLabel: "Skill",
-    levelLabel: "Skill Mastery",
-    emptyMessage: "No skills added yet",
-    removeQuestion: (count: number) =>
-      `Are you sure you want to remove ${count} skills?`,
-  },
-  language: {
-    addTitle: "Add language",
-    updateTitle: "Update language",
-    removeTitle: "Remove languages",
-    nameLabel: "Language",
-    levelLabel: "Language Proficiency",
-    emptyMessage: "No languages added yet",
-    removeQuestion: (count: number) =>
-      `Are you sure you want to remove ${count} languages?`,
-  },
-} satisfies Record<LevelKind, unknown>;
+  addTitle: "Add skill",
+  updateTitle: "Update skill",
+  removeTitle: "Remove skills",
+  nameLabel: "Skill",
+  levelLabel: "Skill Mastery",
+  emptyMessage: "No skills added yet",
+  removeQuestion: (count: number) =>
+    `Are you sure you want to remove ${count} skills?`,
+};
 
 function LevelRow({
   item,
@@ -160,17 +126,21 @@ function LevelRow({
 }
 
 export function LevelManager({
-  kind,
   userId,
   heading,
   groups,
   options,
+  levelOptions,
+  formMessages,
   canManage,
   showGroupNames = true,
 }: Props) {
   const router = useRouter();
-  const config = CONFIG[kind];
-  const schema = FORM_SCHEMAS[kind];
+  const config = CONFIG;
+  const schema = useMemo(
+    () => createLevelFormSchema(formMessages),
+    [formMessages],
+  );
 
   const [addOpen, setAddOpen] = useState(false);
   const [editing, setEditing] = useState<LevelGroup["items"][number] | null>(
@@ -257,23 +227,17 @@ export function LevelManager({
       (candidate) => candidate.value === values.name,
     );
 
-    const result =
-      kind === "skill"
-        ? await addSkillAction(userId, {
-            name: values.name,
-            mastery: values.mastery as SkillMasteryValue,
-            categoryId: option?.categoryId,
-          })
-        : await addLanguageAction(userId, {
-            name: values.name,
-            mastery: values.mastery as LanguageProficiencyValue,
-          });
+    const result = await addSkillAction(userId, {
+      name: values.name,
+      mastery: values.mastery as SkillMasteryValue,
+      categoryId: option?.categoryId,
+    });
 
     if (!result.success) {
       setAddError(result.error);
       toast.add({
         type: "error",
-        title: `Could not add the ${kind}`,
+        title: "Could not add the skill",
         description: result.error,
       });
       return;
@@ -281,7 +245,7 @@ export function LevelManager({
 
     toast.add({
       type: "success",
-      title: kind === "skill" ? "Skill added" : "Language added",
+      title: "Skill added",
       description: `${values.name} has been added.`,
     });
     onAddOpenChange(false);
@@ -291,22 +255,16 @@ export function LevelManager({
   async function onUpdate(values: LevelFormValues) {
     setUpdateError(null);
 
-    const result =
-      kind === "skill"
-        ? await updateSkillAction(userId, {
-            name: values.name,
-            mastery: values.mastery as SkillMasteryValue,
-          })
-        : await updateLanguageAction(userId, {
-            name: values.name,
-            mastery: values.mastery as LanguageProficiencyValue,
-          });
+    const result = await updateSkillAction(userId, {
+      name: values.name,
+      mastery: values.mastery as SkillMasteryValue,
+    });
 
     if (!result.success) {
       setUpdateError(result.error);
       toast.add({
         type: "error",
-        title: `Could not update the ${kind}`,
+        title: "Could not update the skill",
         description: result.error,
       });
       return;
@@ -314,7 +272,7 @@ export function LevelManager({
 
     toast.add({
       type: "success",
-      title: kind === "skill" ? "Skill updated" : "Language updated",
+      title: "Skill updated",
       description: `${values.name} has been updated.`,
     });
     setEditing(null);
@@ -325,15 +283,12 @@ export function LevelManager({
     setIsRemoving(true);
 
     try {
-      const result =
-        kind === "skill"
-          ? await deleteSkillsAction(userId, selected)
-          : await deleteLanguagesAction(userId, selected);
+      const result = await deleteSkillsAction(userId, selected);
 
       if (!result.success) {
         toast.add({
           type: "error",
-          title: `Could not remove the ${kind}s`,
+          title: "Could not remove the skills",
           description: result.error,
         });
         return;
@@ -341,9 +296,9 @@ export function LevelManager({
 
       toast.add({
         type: "success",
-        title: kind === "skill" ? "Skills removed" : "Languages removed",
+        title: "Skills removed",
         description: `${selected.length} ${
-          selected.length === 1 ? kind : `${kind}s`
+          selected.length === 1 ? "skill" : "skills"
         } removed.`,
       });
       setConfirmOpen(false);
@@ -425,7 +380,7 @@ export function LevelManager({
                 onClick={() => setAddOpen(true)}
               >
                 <PlusIcon className="size-4" />
-                Add {kind}
+                Add skill
               </Button>
               <Button
                 type="button"
@@ -434,7 +389,7 @@ export function LevelManager({
                 disabled={items.length === 0}
               >
                 <Trash2Icon className="size-4" />
-                Remove {kind}s
+                Remove skills
               </Button>
             </>
           )}
@@ -488,7 +443,7 @@ export function LevelManager({
                 id="add-level-mastery"
                 name="mastery"
                 placeholder={config.levelLabel}
-                options={LEVEL_OPTIONS[kind]}
+                options={levelOptions}
                 value={addMastery || null}
                 onValueChange={(value) =>
                   addForm.setValue("mastery", value ?? "", {
@@ -570,7 +525,7 @@ export function LevelManager({
                 id="update-level-mastery"
                 name="mastery"
                 placeholder={config.levelLabel}
-                options={LEVEL_OPTIONS[kind]}
+                options={levelOptions}
                 value={updateMastery || null}
                 onValueChange={(value) =>
                   updateForm.setValue("mastery", value ?? "", {

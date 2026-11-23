@@ -1,3 +1,3 @@
 export * from "./redirect-path";
 export * from "./date-formatter";
-export * from "./levels";
+export * from "./profile-permissions";

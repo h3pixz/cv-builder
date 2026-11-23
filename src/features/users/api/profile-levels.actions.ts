@@ -3,34 +3,25 @@
 import { z } from "zod";
 
 import {
+  addMySkill,
+  addMySkillSchema,
+  deleteMySkill,
+  getUserSkills,
+  updateMySkill,
+  updateMySkillSchema,
+} from "@/features/skills";
+import {
   type ActionResult,
   forbiddenFailure,
   getCurrentUser,
   runAuthed,
 } from "@/shared/api";
+import { getProfilePermissions } from "@/shared/helpers/profile-permissions";
 
-import {
-  addLanguageSchema,
-  addSkillSchema,
-  updateLanguageSchema,
-  updateSkillSchema,
-} from "../model/level-forms";
-import { getProfilePermissions } from "../model/profile-permissions";
-import {
-  addUserLanguage,
-  addUserSkill,
-  deleteUserLanguage,
-  deleteUserSkill,
-  updateUserLanguage,
-  updateUserSkill,
-} from "./profile.mutations";
-import { getUserLanguages, getUserSkills } from "./profile.queries";
 import { revalidateUser } from "./profile-revalidate";
 
-type SkillValues = z.infer<typeof addSkillSchema>;
-type UpdateSkillValues = z.infer<typeof updateSkillSchema>;
-type LanguageValues = z.infer<typeof addLanguageSchema>;
-type UpdateLanguageValues = z.infer<typeof updateLanguageSchema>;
+type SkillValues = z.infer<typeof addMySkillSchema>;
+type UpdateSkillValues = z.infer<typeof updateMySkillSchema>;
 
 const deleteSchema = z
   .array(z.string().trim().min(1))
@@ -62,7 +53,7 @@ export async function addSkillAction(
   userId: string,
   values: SkillValues,
 ): Promise<ActionResult> {
-  const parsed = addSkillSchema.safeParse(values);
+  const parsed = addMySkillSchema.safeParse(values);
 
   if (!parsed.success) {
     return invalid(parsed.error.issues[0]?.message);
@@ -74,7 +65,7 @@ export async function addSkillAction(
 
   const data = parsed.data;
   const result = await runAuthed((accessToken) =>
-    addUserSkill(
+    addMySkill(
       {
         userId,
         name: data.name,
@@ -98,7 +89,7 @@ export async function updateSkillAction(
   userId: string,
   values: UpdateSkillValues,
 ): Promise<ActionResult> {
-  const parsed = updateSkillSchema.safeParse(values);
+  const parsed = updateMySkillSchema.safeParse(values);
 
   if (!parsed.success) {
     return invalid(parsed.error.issues[0]?.message);
@@ -114,7 +105,7 @@ export async function updateSkillAction(
     const existing = skills.find((skill) => skill.name === data.name);
 
     // The update form does not touch the category, so keep the current one.
-    return updateUserSkill(
+    return updateMySkill(
       {
         userId,
         name: data.name,
@@ -149,118 +140,7 @@ export async function deleteSkillsAction(
   }
 
   const result = await runAuthed((accessToken) =>
-    deleteUserSkill({ userId, name: parsed.data }, { accessToken }),
-  );
-
-  if (!result.success) {
-    return result;
-  }
-
-  revalidateUser(userId);
-
-  return { success: true };
-}
-
-// -----------------------------------------------------
-// LANGUAGES
-// -----------------------------------------------------
-
-export async function addLanguageAction(
-  userId: string,
-  values: LanguageValues,
-): Promise<ActionResult> {
-  const parsed = addLanguageSchema.safeParse(values);
-
-  if (!parsed.success) {
-    return invalid(parsed.error.issues[0]?.message);
-  }
-
-  if (!(await canManageProfile(userId))) {
-    return forbiddenFailure();
-  }
-
-  const data = parsed.data;
-  const result = await runAuthed((accessToken) =>
-    addUserLanguage(
-      {
-        userId,
-        name: data.name,
-        proficiency: data.mastery,
-      },
-      { accessToken },
-    ),
-  );
-
-  if (!result.success) {
-    return result;
-  }
-
-  revalidateUser(userId);
-
-  return { success: true };
-}
-
-export async function updateLanguageAction(
-  userId: string,
-  values: UpdateLanguageValues,
-): Promise<ActionResult> {
-  const parsed = updateLanguageSchema.safeParse(values);
-
-  if (!parsed.success) {
-    return invalid(parsed.error.issues[0]?.message);
-  }
-
-  if (!(await canManageProfile(userId))) {
-    return forbiddenFailure();
-  }
-
-  const data = parsed.data;
-  const result = await runAuthed(async (accessToken) => {
-    // The backend requires the whole language, not just the new level.
-    const languages = await getUserLanguages(userId, { accessToken });
-    const existing = languages.find(
-      (language) => language.name === data.name,
-    );
-
-    if (!existing) {
-      throw new Error("Language not found");
-    }
-
-    return updateUserLanguage(
-      {
-        userId,
-        name: data.name,
-        proficiency: data.mastery,
-      },
-      { accessToken },
-    );
-  });
-
-  if (!result.success) {
-    return result;
-  }
-
-  revalidateUser(userId);
-
-  return { success: true };
-}
-
-export async function deleteLanguagesAction(
-  userId: string,
-  names: string[],
-): Promise<ActionResult> {
-  const parsed = deleteSchema.safeParse(names);
-
-  if (!parsed.success) {
-    return invalid(parsed.error.issues[0]?.message);
-  }
-
-  if (!(await canManageProfile(userId))) {
-    return forbiddenFailure();
-  }
-
-  const result = await runAuthed((accessToken) =>
-    deleteUserLanguage({ userId, name: parsed.data }, { accessToken }),
+    deleteMySkill({ userId, name: parsed.data }, { accessToken }),
   );
 
   if (!result.success) {

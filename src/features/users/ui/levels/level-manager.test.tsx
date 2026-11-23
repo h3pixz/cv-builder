@@ -1,26 +1,16 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import type { LevelGroup } from "../../model/levels";
 import { LevelManager } from "./level-manager";
-import type { LevelGroup } from "@/shared/helpers";
 
-const {
-  addSkillAction,
-  addLanguageAction,
-  updateSkillAction,
-  updateLanguageAction,
-  deleteSkillsAction,
-  deleteLanguagesAction,
-  refresh,
-} = vi.hoisted(() => ({
-  addSkillAction: vi.fn(),
-  addLanguageAction: vi.fn(),
-  updateSkillAction: vi.fn(),
-  updateLanguageAction: vi.fn(),
-  deleteSkillsAction: vi.fn(),
-  deleteLanguagesAction: vi.fn(),
-  refresh: vi.fn(),
-}));
+const { addSkillAction, updateSkillAction, deleteSkillsAction, refresh } =
+  vi.hoisted(() => ({
+    addSkillAction: vi.fn(),
+    updateSkillAction: vi.fn(),
+    deleteSkillsAction: vi.fn(),
+    refresh: vi.fn(),
+  }));
 
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ refresh }),
@@ -28,11 +18,8 @@ vi.mock("next/navigation", () => ({
 
 vi.mock("../../api/profile-levels.actions", () => ({
   addSkillAction,
-  addLanguageAction,
   updateSkillAction,
-  updateLanguageAction,
   deleteSkillsAction,
-  deleteLanguagesAction,
 }));
 
 vi.mock("@/shared/ui/toast", () => ({ toast: { add: vi.fn() } }));
@@ -119,16 +106,28 @@ const skillOptions = [
   { value: "Node", label: "Node", categoryId: "backend" },
 ];
 
+const skillLevelOptions = [
+  { value: "Novice", label: "Novice" },
+  { value: "Advanced", label: "Advanced" },
+  { value: "Competent", label: "Competent" },
+  { value: "Proficient", label: "Proficient" },
+  { value: "Expert", label: "Expert" },
+];
+
 function renderSkills(
   overrides: Partial<React.ComponentProps<typeof LevelManager>> = {},
 ) {
   return render(
     <LevelManager
-      kind="skill"
       userId="user-1"
       heading="Current skills"
       groups={skillGroups}
       options={skillOptions}
+      levelOptions={skillLevelOptions}
+      formMessages={{
+        nameRequired: "Skill is required",
+        levelRequired: "Skill mastery is required",
+      }}
       canManage
       {...overrides}
     />,
@@ -301,69 +300,8 @@ describe("LevelManager", () => {
     expect(
       screen.queryByRole("button", { name: /remove \(\d\)/i }),
     ).toBeNull();
-    expect(screen.getByRole("button", { name: /add skill/i })).toBeInTheDocument();
-  });
-
-  it("uses language labels and messages", async () => {
-    addLanguageAction.mockResolvedValue({ success: true });
-
-    render(
-      <LevelManager
-        kind="language"
-        userId="user-1"
-        heading="Current Languages"
-        groups={[
-          {
-            id: "languages",
-            name: "Current Languages",
-            items: [{ name: "English", level: 7, levelLabel: "Native" }],
-          },
-        ]}
-        options={[
-          { value: "English", label: "English" },
-          { value: "German", label: "German" },
-        ]}
-        canManage
-        showGroupNames={false}
-      />,
-    );
-
-    fireEvent.click(screen.getByRole("button", { name: /add language/i }));
     expect(
-      screen.getByRole("heading", { name: "Add language" }),
+      screen.getByRole("button", { name: /add skill/i }),
     ).toBeInTheDocument();
-
-    fireEvent.change(screen.getByLabelText("Language"), {
-      target: { value: "German" },
-    });
-    fireEvent.change(screen.getByLabelText("Language Proficiency"), {
-      target: { value: "B1" },
-    });
-
-    const addButton = screen.getByRole("button", { name: "Add" });
-    await waitFor(() => expect(addButton).toBeEnabled());
-    fireEvent.click(addButton);
-
-    await waitFor(() => {
-      expect(addLanguageAction).toHaveBeenCalledWith("user-1", {
-        name: "German",
-        mastery: "B1",
-      });
-    });
-  });
-
-  it("shows the language empty state", () => {
-    render(
-      <LevelManager
-        kind="language"
-        userId="user-1"
-        heading="Current Languages"
-        groups={[]}
-        options={[]}
-        canManage={false}
-      />,
-    );
-
-    expect(screen.getByText("No languages added yet")).toBeInTheDocument();
   });
 });

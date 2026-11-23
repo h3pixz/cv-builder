@@ -7,7 +7,6 @@ import { PlusIcon, Trash2Icon } from "lucide-react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 
 import { cn } from "@/lib/utils";
-import type { LevelGroup } from "@/shared/helpers";
 import { Button } from "@/shared/ui/button";
 import { Checkbox } from "@/shared/ui/checkbox";
 import {
@@ -30,11 +29,17 @@ import {
 } from "../api/cv-skills.actions";
 import { cvSkillSchema, type CvSkillValues } from "../model/cv-skill-schema";
 
-type SkillItem = LevelGroup["items"][number];
+export type CvSkillGroup = {
+  id: string;
+  name: string;
+  items: { name: string; level: number; levelLabel: string }[];
+};
+
+type SkillItem = CvSkillGroup["items"][number];
 
 type Props = {
   cvId: string;
-  groups: LevelGroup[];
+  groups: CvSkillGroup[];
   options: SelectOption[];
 };
 
