@@ -39,6 +39,10 @@ type Documents = {
     "\n  mutation DeletePosition($position: DeletePositionInput!) {\n    deletePosition(position: $position) {\n      affected\n    }\n  }\n": typeof types.DeletePositionDocument,
     "\n  query GetPositions($params: SearchPaginationInput) {\n    positions(params: $params) {\n      items {\n        id\n        created_at\n        name\n      }\n      total\n      page\n      limit\n      total_pages\n    }\n  }\n": typeof types.GetPositionsDocument,
     "\n  query GetPositionUsage($params: SearchPaginationInput) {\n    users(params: $params) {\n      items {\n        id\n        position {\n          id\n        }\n      }\n      total\n      page\n      limit\n      total_pages\n    }\n  }\n": typeof types.GetPositionUsageDocument,
+    "\n  mutation CreateProject($project: CreateProjectInput!) {\n    createProject(project: $project) {\n      id\n      created_at\n      name\n      domain\n      start_date\n      end_date\n      description\n      environment\n    }\n  }\n": typeof types.CreateProjectDocument,
+    "\n  mutation UpdateProject($project: UpdateProjectInput!) {\n    updateProject(project: $project) {\n      id\n      created_at\n      name\n      domain\n      start_date\n      end_date\n      description\n      environment\n    }\n  }\n": typeof types.UpdateProjectDocument,
+    "\n  mutation DeleteProject($project: DeleteProjectInput!) {\n    deleteProject(project: $project) {\n      affected\n    }\n  }\n": typeof types.DeleteProjectDocument,
+    "\n  query GetProjects($params: SearchPaginationInput) {\n    projects(params: $params) {\n      items {\n        id\n        created_at\n        name\n        internal_name\n        domain\n        start_date\n        end_date\n        description\n        environment\n      }\n      total\n      page\n      limit\n      total_pages\n    }\n  }\n": typeof types.GetProjectsDocument,
     "\n  mutation CreateSkill($skill: CreateSkillInput!) {\n    createSkill(skill: $skill) {\n      id\n      name\n      category {\n        id\n        name\n      }\n    }\n  }\n": typeof types.CreateSkillDocument,
     "\n  mutation UpdateSkill($skill: UpdateSkillInput!) {\n    updateSkill(skill: $skill) {\n      id\n      name\n      category {\n        id\n        name\n      }\n    }\n  }\n": typeof types.UpdateSkillDocument,
     "\n  mutation DeleteSkill($skill: DeleteSkillInput!) {\n    deleteSkill(skill: $skill) {\n      affected\n    }\n  }\n": typeof types.DeleteSkillDocument,
@@ -95,6 +99,10 @@ const documents: Documents = {
     "\n  mutation DeletePosition($position: DeletePositionInput!) {\n    deletePosition(position: $position) {\n      affected\n    }\n  }\n": types.DeletePositionDocument,
     "\n  query GetPositions($params: SearchPaginationInput) {\n    positions(params: $params) {\n      items {\n        id\n        created_at\n        name\n      }\n      total\n      page\n      limit\n      total_pages\n    }\n  }\n": types.GetPositionsDocument,
     "\n  query GetPositionUsage($params: SearchPaginationInput) {\n    users(params: $params) {\n      items {\n        id\n        position {\n          id\n        }\n      }\n      total\n      page\n      limit\n      total_pages\n    }\n  }\n": types.GetPositionUsageDocument,
+    "\n  mutation CreateProject($project: CreateProjectInput!) {\n    createProject(project: $project) {\n      id\n      created_at\n      name\n      domain\n      start_date\n      end_date\n      description\n      environment\n    }\n  }\n": types.CreateProjectDocument,
+    "\n  mutation UpdateProject($project: UpdateProjectInput!) {\n    updateProject(project: $project) {\n      id\n      created_at\n      name\n      domain\n      start_date\n      end_date\n      description\n      environment\n    }\n  }\n": types.UpdateProjectDocument,
+    "\n  mutation DeleteProject($project: DeleteProjectInput!) {\n    deleteProject(project: $project) {\n      affected\n    }\n  }\n": types.DeleteProjectDocument,
+    "\n  query GetProjects($params: SearchPaginationInput) {\n    projects(params: $params) {\n      items {\n        id\n        created_at\n        name\n        internal_name\n        domain\n        start_date\n        end_date\n        description\n        environment\n      }\n      total\n      page\n      limit\n      total_pages\n    }\n  }\n": types.GetProjectsDocument,
     "\n  mutation CreateSkill($skill: CreateSkillInput!) {\n    createSkill(skill: $skill) {\n      id\n      name\n      category {\n        id\n        name\n      }\n    }\n  }\n": types.CreateSkillDocument,
     "\n  mutation UpdateSkill($skill: UpdateSkillInput!) {\n    updateSkill(skill: $skill) {\n      id\n      name\n      category {\n        id\n        name\n      }\n    }\n  }\n": types.UpdateSkillDocument,
     "\n  mutation DeleteSkill($skill: DeleteSkillInput!) {\n    deleteSkill(skill: $skill) {\n      affected\n    }\n  }\n": types.DeleteSkillDocument,
@@ -240,6 +248,22 @@ export function graphql(source: "\n  query GetPositions($params: SearchPaginatio
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  query GetPositionUsage($params: SearchPaginationInput) {\n    users(params: $params) {\n      items {\n        id\n        position {\n          id\n        }\n      }\n      total\n      page\n      limit\n      total_pages\n    }\n  }\n"): (typeof documents)["\n  query GetPositionUsage($params: SearchPaginationInput) {\n    users(params: $params) {\n      items {\n        id\n        position {\n          id\n        }\n      }\n      total\n      page\n      limit\n      total_pages\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation CreateProject($project: CreateProjectInput!) {\n    createProject(project: $project) {\n      id\n      created_at\n      name\n      domain\n      start_date\n      end_date\n      description\n      environment\n    }\n  }\n"): (typeof documents)["\n  mutation CreateProject($project: CreateProjectInput!) {\n    createProject(project: $project) {\n      id\n      created_at\n      name\n      domain\n      start_date\n      end_date\n      description\n      environment\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation UpdateProject($project: UpdateProjectInput!) {\n    updateProject(project: $project) {\n      id\n      created_at\n      name\n      domain\n      start_date\n      end_date\n      description\n      environment\n    }\n  }\n"): (typeof documents)["\n  mutation UpdateProject($project: UpdateProjectInput!) {\n    updateProject(project: $project) {\n      id\n      created_at\n      name\n      domain\n      start_date\n      end_date\n      description\n      environment\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation DeleteProject($project: DeleteProjectInput!) {\n    deleteProject(project: $project) {\n      affected\n    }\n  }\n"): (typeof documents)["\n  mutation DeleteProject($project: DeleteProjectInput!) {\n    deleteProject(project: $project) {\n      affected\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query GetProjects($params: SearchPaginationInput) {\n    projects(params: $params) {\n      items {\n        id\n        created_at\n        name\n        internal_name\n        domain\n        start_date\n        end_date\n        description\n        environment\n      }\n      total\n      page\n      limit\n      total_pages\n    }\n  }\n"): (typeof documents)["\n  query GetProjects($params: SearchPaginationInput) {\n    projects(params: $params) {\n      items {\n        id\n        created_at\n        name\n        internal_name\n        domain\n        start_date\n        end_date\n        description\n        environment\n      }\n      total\n      page\n      limit\n      total_pages\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
