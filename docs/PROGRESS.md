@@ -113,19 +113,9 @@
 - [x] Логика языков вынесена из `features/users`: запросы, мутации, схемы, константы Proficiency и вкладка `/users/[userId]/languages`; `LevelManager` в `users` стал менеджером только навыков, `getProfilePermissions` переехал в `shared/helpers`
 - [x] Тесты: Proficiency и схемы, Server Actions личных языков и каталога, права владельца / Admin, диалоги менеджера, пагинация каталога
 
-### Мержи
+### CVs
 
-- [x] PR #1 `feat/auth-sign-in` → `dev` смержен 2026-11-16 (rebase, `8a6e6f3`): авторизация, сессия, proxy, codegen. Проверки перед мержем: `typecheck`, 84 теста, `build`, `codegen` без дрейфа, lint без ошибок ([PR #1](https://github.com/h3pixz/cv-builder/pull/1))
-- [x] PR #2 `feat/auth-sign-in` → `dev` смержен 2026-11-17 (rebase, `bd9c993`): повторная отправка кода на `/verify-email`, inline-ошибка `accountNotFound` на `/forgot-password`, коды `accountNotFound` / `otpExpired`, лейблы полей по ТЗ, документация бэкенда. Проверки перед мержем: `typecheck`, 92 теста, `build` ([PR #2](https://github.com/h3pixz/cv-builder/pull/2))
-- [x] PR #3 `docs/record-auth-pr` → `dev` смержен 2026-11-17: запись мержа auth-PR в `docs/PROGRESS.md` ([PR #3](https://github.com/h3pixz/cv-builder/pull/3))
-- [x] PR #4 `feat/error-pages` → `dev` смержен 2026-11-18: страницы 404, No Internet и Device Error, общие guards и иллюстрация, тесты ([PR #4](https://github.com/h3pixz/cv-builder/pull/4))
-- [x] PR #5 `feat/users-table` → `dev` смержен 2026-11-18: список сотрудников, профиль и аватар, навыки и языки, CV для Admin, права и Server Actions, скиллы `.claude`, обновление документации ([PR #5](https://github.com/h3pixz/cv-builder/pull/5))
-
-## In progress
-
-### Раздел CVs
-
-Этап начат 2026-11-19. Требования — `docs/TZ.md` («Раздел CVs»), исходники — `...\cv-tz\cvs\`.
+Этап завершён 2026-11-23, смержен в `dev` (PR #10). Требования — `docs/TZ.md` («Раздел CVs»), исходники — `...\cv-tz\cvs\`.
 
 - [x] Вынести CV из `features/users` в домен `cvs` и открыть отдельный раздел `/cvs` для Admin и Employee (вкладка `/users/[userId]/cvs` осталась для Admin)
 - [x] Список CV `/cvs`: таблица `Name` / `Education` / `Employee` с описанием под строкой, поиск, сортировка по имени, пагинация
@@ -142,6 +132,15 @@
 - [x] `EXPORT PDF` через бэкенд `exportPdf`: серверная сборка HTML резюме, скачивание base64, имя файла из названия CV, кнопка неактивна без данных
 - [x] Preview: скелетон загрузки и ошибка `Failed to load CV preview` с повтором; Employee — только свои CV, Admin — любые (`canAccessCv`)
 - [x] Тесты Preview: расчёты Experience / Last Used и округление, периоды, уникальные домены, группировка навыков, экранирование HTML, имя PDF, экспорт и ошибки кнопки, рендер без должности
+
+### Мержи
+
+- [x] PR #1 `feat/auth-sign-in` → `dev` смержен 2026-11-16 (rebase, `8a6e6f3`): авторизация, сессия, proxy, codegen. Проверки перед мержем: `typecheck`, 84 теста, `build`, `codegen` без дрейфа, lint без ошибок ([PR #1](https://github.com/h3pixz/cv-builder/pull/1))
+- [x] PR #2 `feat/auth-sign-in` → `dev` смержен 2026-11-17 (rebase, `bd9c993`): повторная отправка кода на `/verify-email`, inline-ошибка `accountNotFound` на `/forgot-password`, коды `accountNotFound` / `otpExpired`, лейблы полей по ТЗ, документация бэкенда. Проверки перед мержем: `typecheck`, 92 теста, `build` ([PR #2](https://github.com/h3pixz/cv-builder/pull/2))
+- [x] PR #3 `docs/record-auth-pr` → `dev` смержен 2026-11-17: запись мержа auth-PR в `docs/PROGRESS.md` ([PR #3](https://github.com/h3pixz/cv-builder/pull/3))
+- [x] PR #4 `feat/error-pages` → `dev` смержен 2026-11-18: страницы 404, No Internet и Device Error, общие guards и иллюстрация, тесты ([PR #4](https://github.com/h3pixz/cv-builder/pull/4))
+- [x] PR #5 `feat/users-table` → `dev` смержен 2026-11-18: список сотрудников, профиль и аватар, навыки и языки, CV для Admin, права и Server Actions, скиллы `.claude`, обновление документации ([PR #5](https://github.com/h3pixz/cv-builder/pull/5))
+- [x] PR #10 `feat/cvs-section` → `dev` смержен 2026-11-23 (`8030587`): раздел CVs для Admin и Employee, страница CV с вкладками Details / Skills / Projects / Preview и `EXPORT PDF`, подсказка добавить навыки в профиль, базовый набор ролей проекта. Перед мержем ветка обновлена из `dev` с переносом CV-кода на вынесенные `features/skills` и `features/languages`. Проверки перед мержем: `typecheck`, 350 тестов, `lint`, `next build --webpack`, `codegen` без дрейфа ([PR #10](https://github.com/h3pixz/cv-builder/pull/10))
 
 ## Backlog
 
@@ -161,7 +160,7 @@
 
 - [x] Описать схему и поднять локальный GraphQL-бэкенд (`cv-backend`, Docker)
 - [x] CRUD резюме сотрудника и инвалидация кэша через `revalidatePath` (вкладка CV на странице пользователя, Admin)
-- [ ] Раздел CV (список, Details / Skills / Projects / Preview, PDF) — вынесен в «In progress → Раздел CVs»
+- [x] Раздел CV (список, Details / Skills / Projects / Preview, PDF) — `features/cvs`, смержен в `dev` (PR #10)
 - [ ] Хранить черновик резюме в Zustand (`src/store` пока не создан)
 
 ### Качество и сдача
