@@ -78,6 +78,34 @@ describe("CvDetailsForm", () => {
     await waitFor(() => expect(updateButton).toBeDisabled());
   });
 
+  it("shows a saving state while the update is in progress", async () => {
+    let resolveAction: (value: { success: boolean }) => void = () => {};
+    updateCvAction.mockReturnValue(
+      new Promise<{ success: boolean }>((resolve) => {
+        resolveAction = resolve;
+      }),
+    );
+
+    renderForm();
+
+    fireEvent.change(screen.getByLabelText("Education"), {
+      target: { value: "Applied Mathematics" },
+    });
+
+    const updateButton = screen.getByRole("button", { name: "Update" });
+    await waitFor(() => expect(updateButton).toBeEnabled());
+    fireEvent.click(updateButton);
+
+    const savingButton = await screen.findByRole("button", { name: /Saving/ });
+    expect(savingButton).toBeDisabled();
+    expect(savingButton).toHaveAttribute("aria-busy", "true");
+
+    resolveAction({ success: true });
+    await waitFor(() =>
+      expect(screen.getByRole("button", { name: "Update" })).toBeInTheDocument(),
+    );
+  });
+
   it("keeps the entered values and shows an error when saving fails", async () => {
     updateCvAction.mockResolvedValue({
       success: false,

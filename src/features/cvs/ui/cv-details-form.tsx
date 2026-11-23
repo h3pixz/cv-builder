@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader2Icon } from "lucide-react";
 import { useForm } from "react-hook-form";
 
 import { Button } from "@/shared/ui/button";
@@ -141,8 +142,12 @@ export function CvDetailsForm({ cvId, ownerUserId, values }: Props) {
           type="submit"
           variant="primary"
           disabled={!isDirty || !isValid || isSubmitting}
+          aria-busy={isSubmitting}
         >
-          Update
+          {isSubmitting && (
+            <Loader2Icon className="size-4 animate-spin" aria-hidden="true" />
+          )}
+          {isSubmitting ? "Saving..." : "Update"}
         </Button>
       </div>
     </form>
