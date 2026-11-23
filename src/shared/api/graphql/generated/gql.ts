@@ -20,6 +20,11 @@ type Documents = {
     "\n  mutation ResetPassword($auth: ResetPasswordInput!) {\n    resetPassword(auth: $auth)\n  }\n": typeof types.ResetPasswordDocument,
     "\n  mutation VerifyMail($mail: VerifyMailInput!) {\n    verifyMail(mail: $mail)\n  }\n": typeof types.VerifyMailDocument,
     "\n  mutation SendVerification($email: String!) {\n    sendVerification(email: $email)\n  }\n": typeof types.SendVerificationDocument,
+    "\n  mutation CreateDepartment($department: CreateDepartmentInput!) {\n    createDepartment(department: $department) {\n      id\n      created_at\n      name\n    }\n  }\n": typeof types.CreateDepartmentDocument,
+    "\n  mutation UpdateDepartment($department: UpdateDepartmentInput!) {\n    updateDepartment(department: $department) {\n      id\n      created_at\n      name\n    }\n  }\n": typeof types.UpdateDepartmentDocument,
+    "\n  mutation DeleteDepartment($department: DeleteDepartmentInput!) {\n    deleteDepartment(department: $department) {\n      affected\n    }\n  }\n": typeof types.DeleteDepartmentDocument,
+    "\n  query GetDepartments($params: SearchPaginationInput) {\n    departments(params: $params) {\n      items {\n        id\n        created_at\n        name\n      }\n      total\n      page\n      limit\n      total_pages\n    }\n  }\n": typeof types.GetDepartmentsDocument,
+    "\n  query GetDepartmentUsage($params: SearchPaginationInput) {\n    users(params: $params) {\n      items {\n        id\n        department {\n          id\n        }\n      }\n      total\n      page\n      limit\n      total_pages\n    }\n  }\n": typeof types.GetDepartmentUsageDocument,
     "\n  mutation CreateLanguage($language: CreateLanguageInput!) {\n    createLanguage(language: $language) {\n      id\n      iso2\n      name\n      native_name\n    }\n  }\n": typeof types.CreateLanguageDocument,
     "\n  mutation UpdateLanguage($language: UpdateLanguageInput!) {\n    updateLanguage(language: $language) {\n      id\n      iso2\n      name\n      native_name\n    }\n  }\n": typeof types.UpdateLanguageDocument,
     "\n  mutation DeleteLanguage($language: DeleteLanguageInput!) {\n    deleteLanguage(language: $language) {\n      affected\n    }\n  }\n": typeof types.DeleteLanguageDocument,
@@ -66,6 +71,11 @@ const documents: Documents = {
     "\n  mutation ResetPassword($auth: ResetPasswordInput!) {\n    resetPassword(auth: $auth)\n  }\n": types.ResetPasswordDocument,
     "\n  mutation VerifyMail($mail: VerifyMailInput!) {\n    verifyMail(mail: $mail)\n  }\n": types.VerifyMailDocument,
     "\n  mutation SendVerification($email: String!) {\n    sendVerification(email: $email)\n  }\n": types.SendVerificationDocument,
+    "\n  mutation CreateDepartment($department: CreateDepartmentInput!) {\n    createDepartment(department: $department) {\n      id\n      created_at\n      name\n    }\n  }\n": types.CreateDepartmentDocument,
+    "\n  mutation UpdateDepartment($department: UpdateDepartmentInput!) {\n    updateDepartment(department: $department) {\n      id\n      created_at\n      name\n    }\n  }\n": types.UpdateDepartmentDocument,
+    "\n  mutation DeleteDepartment($department: DeleteDepartmentInput!) {\n    deleteDepartment(department: $department) {\n      affected\n    }\n  }\n": types.DeleteDepartmentDocument,
+    "\n  query GetDepartments($params: SearchPaginationInput) {\n    departments(params: $params) {\n      items {\n        id\n        created_at\n        name\n      }\n      total\n      page\n      limit\n      total_pages\n    }\n  }\n": types.GetDepartmentsDocument,
+    "\n  query GetDepartmentUsage($params: SearchPaginationInput) {\n    users(params: $params) {\n      items {\n        id\n        department {\n          id\n        }\n      }\n      total\n      page\n      limit\n      total_pages\n    }\n  }\n": types.GetDepartmentUsageDocument,
     "\n  mutation CreateLanguage($language: CreateLanguageInput!) {\n    createLanguage(language: $language) {\n      id\n      iso2\n      name\n      native_name\n    }\n  }\n": types.CreateLanguageDocument,
     "\n  mutation UpdateLanguage($language: UpdateLanguageInput!) {\n    updateLanguage(language: $language) {\n      id\n      iso2\n      name\n      native_name\n    }\n  }\n": types.UpdateLanguageDocument,
     "\n  mutation DeleteLanguage($language: DeleteLanguageInput!) {\n    deleteLanguage(language: $language) {\n      affected\n    }\n  }\n": types.DeleteLanguageDocument,
@@ -144,6 +154,26 @@ export function graphql(source: "\n  mutation VerifyMail($mail: VerifyMailInput!
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  mutation SendVerification($email: String!) {\n    sendVerification(email: $email)\n  }\n"): (typeof documents)["\n  mutation SendVerification($email: String!) {\n    sendVerification(email: $email)\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation CreateDepartment($department: CreateDepartmentInput!) {\n    createDepartment(department: $department) {\n      id\n      created_at\n      name\n    }\n  }\n"): (typeof documents)["\n  mutation CreateDepartment($department: CreateDepartmentInput!) {\n    createDepartment(department: $department) {\n      id\n      created_at\n      name\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation UpdateDepartment($department: UpdateDepartmentInput!) {\n    updateDepartment(department: $department) {\n      id\n      created_at\n      name\n    }\n  }\n"): (typeof documents)["\n  mutation UpdateDepartment($department: UpdateDepartmentInput!) {\n    updateDepartment(department: $department) {\n      id\n      created_at\n      name\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation DeleteDepartment($department: DeleteDepartmentInput!) {\n    deleteDepartment(department: $department) {\n      affected\n    }\n  }\n"): (typeof documents)["\n  mutation DeleteDepartment($department: DeleteDepartmentInput!) {\n    deleteDepartment(department: $department) {\n      affected\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query GetDepartments($params: SearchPaginationInput) {\n    departments(params: $params) {\n      items {\n        id\n        created_at\n        name\n      }\n      total\n      page\n      limit\n      total_pages\n    }\n  }\n"): (typeof documents)["\n  query GetDepartments($params: SearchPaginationInput) {\n    departments(params: $params) {\n      items {\n        id\n        created_at\n        name\n      }\n      total\n      page\n      limit\n      total_pages\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query GetDepartmentUsage($params: SearchPaginationInput) {\n    users(params: $params) {\n      items {\n        id\n        department {\n          id\n        }\n      }\n      total\n      page\n      limit\n      total_pages\n    }\n  }\n"): (typeof documents)["\n  query GetDepartmentUsage($params: SearchPaginationInput) {\n    users(params: $params) {\n      items {\n        id\n        department {\n          id\n        }\n      }\n      total\n      page\n      limit\n      total_pages\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
