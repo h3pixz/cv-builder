@@ -1,0 +1,20 @@
+export function LanguagesManagerSkeleton() {
+  return (
+    <div className="mx-auto w-full max-w-4xl space-y-6" aria-busy="true">
+      <span className="sr-only">Loading languages...</span>
+
+      <div className="h-5 w-40 animate-pulse rounded bg-muted" />
+
+      <div className="grid grid-cols-1 gap-x-10 gap-y-2 sm:grid-cols-2">
+        {Array.from({ length: 4 }, (_, index) => (
+          <div key={index} className="h-7 animate-pulse rounded bg-muted" />
+        ))}
+      </div>
+
+      <div className="flex justify-center gap-10">
+        <div className="h-9 w-32 animate-pulse rounded-full bg-muted" />
+        <div className="h-9 w-40 animate-pulse rounded-full bg-muted" />
+      </div>
+    </div>
+  );
+}

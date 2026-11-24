@@ -1,37 +1,196 @@
 # Прогресс CV Builder
 
-Источник требований: `docs/TZ.md`.
+Источник требований: `docs/TZ.md`. Контракт бэкенда: `docs/BACKEND.md`.
 
 ## Done
+
+### Инфраструктура и UI-kit
 
 - [x] Инициализировать Next.js (App Router) + TypeScript
 - [x] Настроить ESLint и алиас `@/*`
 - [x] Добавить корневой `layout.tsx` и стартовую `page.tsx`
+- [x] Зафиксировать архитектуру FSD (`src/app` → `views` → `widgets` → `features` → `entities` → `shared`)
+- [x] Отказаться от Apollo Client в пользу Server Components + `fetch` / Server Actions (решение зафиксировано в `docs/TZ.md`)
+- [x] Подключить Tailwind CSS + shadcn (`components.json`, `globals.css`, PostCSS)
+- [x] UI-kit в `src/shared/ui`: `Button`, `Input` / `PasswordInput` / `CodeInput`, `Textarea`, `SelectField` / `MultiselectField`, `Checkbox`, `Label`, `Level`, `Avatar`, `Breadcrumb`, `Dialog`, `DropdownMenu`, `ListPagination`, `Table`, `Toaster` + `toast`
+- [x] Настроить npm-скрипты: `typecheck`, `test`, `test:watch`, `test:coverage`
+- [x] Настроить Vitest + React Testing Library + coverage (`vitest.config.mts`, `vitest.setup.ts`, тесты для `page` и `cn`)
+- [x] Добавить зависимости под данные и формы: `graphql`, `graphql-request`, `zustand`, `zod`, `react-hook-form`, `@hookform/resolvers`, `lucide-react`
+- [x] Поддержка тёмной темы по системной настройке (`prefers-color-scheme`, `localStorage.theme`), `Toaster` перенесён внутрь `<body>` (`src/app/layout.tsx`)
 
-## In progress
+### API и сессия
 
-- [ ] Согласовать с ментором UI-библиотеку, state manager и отказ от Apollo Client (Server Components + `fetch` / Server Actions)
-- [ ] Подключить Tailwind CSS и UI-библиотеку
+- [x] Описать контракт GraphQL-бэкенда: авторизация, токены, ошибки, модули API (`docs/BACKEND.md`)
+- [x] GraphQL-клиент для Server Components: `src/shared/api/graphql/graphql.ts` (`gqlRequest`, `GRAPHQL_URL` из `shared/config`, заголовки `Authorization` / `Origin`)
+- [x] Хелпер сессии: `src/shared/api/session/session.ts` (httpOnly cookie `access_token` / `refresh_token`, `refreshSession` через `updateToken`)
+- [x] Маппинг кодов ошибок бэкенда на английские тексты: `src/shared/api/errors/errors.ts` (`getGraphQLErrorCode`, `getGraphQLErrorMessage`)
+- [x] Привести структуру к канону: `src/features/auth` вместо `views`, route group `(auth)` с `/sign-in` и `/sign-up`, `shared/api/graphql`, `shared/config` (`docs/STRUCTURE.md`)
+- [x] Подключить GraphQL Code Generator: `schema.graphql` из бэкенда, `codegen.ts`, типизированные документы в `src/shared/api/graphql/generated`, скрипты `codegen` / `codegen:watch`, зависимости `@graphql-codegen/cli` / `client-preset`
+- [x] `gqlRequest` принимает `TypedDocumentNode` (перегрузка сохраняет поддержку inline-строк), результат и переменные выводятся из сгенерированного документа
+- [x] `refreshSession` читает `refresh_token` из cookie напрямую и использует сгенерированный документ `UpdateToken` — обновление токена не зависит от живого `access_token`; тест обновлён
+- [x] Proxy (Next 16, `src/proxy.ts`): `/` и `/verify-email` приватные, `/sign-in` / `/sign-up` / `/forgot-password` уводят авторизованного на `/`; refresh по `exp` access-токена (запас 30 с) и при отсутствии access-cookie; редирект на `/sign-in?next=...` без сессии; cookie-настройки — `shared/api/session-cookies.ts`
+- [x] Хелперы авторизованных запросов: `authedGqlRequest` (Server Components) и `authedGqlRequestWithRefresh` (Server Actions: refresh + один ретрай) — `shared/api/authed-request/authed-request.ts`; `protectedRequest` с редиректом при отсутствии сессии — `shared/api/protected/protected.ts`
+- [x] Распознавание истёкшей сессии `isUnauthorizedError` (код `unauthorized`, `extensions.code`, 401) — `shared/api/errors/errors.ts`
+- [x] Константы маршрутов (`shared/config/routes.ts`) и безопасный `next` без внешних редиректов (`shared/helpers/redirect-path.ts`)
+- [x] `login` запрашивает `user { is_verified }`: неподтверждённых ведёт на `/verify-email`, остальных — на `next` или `/`; `next` прокинут из `/sign-in` через страницу и форму
+- [x] Codegen сканирует `shared/api/**` — документ `UpdateToken` остаётся в сгенерированных типах
+- [x] Тесты: proxy (просроченный токен, `next`, гостевые маршруты), `login`, `authedGqlRequest*`, `isUnauthorizedError`, `isTokenExpired`, `safeRedirectPath`
+- [x] Отправка писем: Gmail SMTP с app password (`docker/.env.cv_backend`), доставка на реальную почту проверена; локальная альтернатива — Mailpit (`smtp://mailpit:1025`, UI `http://localhost:8025`)
+
+### Страницы авторизации
+
+- [x] Сверстать `/sign-in` по макету: табы sign in / sign up, форма на `Button` / `Input` / `PasswordInput` (`src/features/auth/ui`)
+- [x] `/sign-in` — клиентская валидация (Zod + React Hook Form, `model/sign-in-schema.ts`): inline-сообщения, error-состояния полей, кнопка `disabled` до валидности, тоггл пароля доступен с клавиатуры
+- [x] Сверстать `/sign-up` по макету: email + пароль + подтверждение, общие табы — `ui/components/auth-tabs.tsx`
+- [x] `/sign-up` — клиентская валидация (`model/sign-up-schema.ts`): email, пароль от 6 символов, совпадение подтверждения, inline-ошибки, disabled-кнопка
+- [x] Сверстать `/forgot-password` по макету: email + кнопка сброса + ссылка «Cancel»
+- [x] `/forgot-password` — inline-валидация email (`model/forgot-password-schema.ts`) поверх Server Action `forgotPassword` (`api/forgot-password.ts`), `Origin` из заголовков запроса, тосты успеха/ошибки
+- [x] Сверстать `/reset-password` по макету: новый пароль + подтверждение, `PasswordInput`, кнопка «Submit» и ссылка «Go to sign in»
+- [x] `/reset-password` — клиентская валидация (`model/reset-password-schema.ts`): пароль от 6 символов, совпадение подтверждения, inline-ошибки
+- [x] Сверстать `/verify-email` по макету: OTP на `CodeInput`, кнопка «Confirm», ссылка «Later»
+- [x] `/verify-email` — клиентская валидация кода (required / ровно 6 цифр) с inline-ошибкой; «Later» ведёт на главную `/`
+- [x] Общие Zod-схемы для auth-форм: `model/validation.ts` (`emailSchema`, `passwordSchema`)
+- [x] `PasswordInput` — disabled-состояние тоггла; `CodeInput` — адаптивные отступы на узких экранах
+- [x] Типизированные GraphQL-документы auth-операций (`Login`, `Signup`, `ForgotPassword`, `ResetPassword`, `VerifyMail`) — `src/features/auth/api/documents.ts`
+- [x] `/sign-in` — Server Action `login`: сохранение сессии, inline-ошибка + тост `invalidCredentials`, disabled/loading кнопки
+- [x] `/sign-up` — Server Action `signup`: `Origin` для ссылки в письме, сохранение токенов, `userAlreadyExists` inline на поле email, редирект на `/verify-email`
+- [x] `/verify-email` — проверка сессии перед рендером, `verifyMail` с access-токеном и refresh-ретраем при `unauthorized`, ошибки `mailNotFound` / `shouldBe6Digits` / истёкшая сессия, редирект на `/`
+- [x] `/verify-email` — повторная отправка кода: Server Action `resendVerification` (`sendVerification` с access-токеном и refresh-ретраем, email из токена), кнопка «Send again», тосты успеха/ошибки
+- [x] `/reset-password?token=...` — чтение `token` из query, `resetPassword` с токеном в `Authorization`, ошибки `actionExpired` / `confirmPasswordMismatch`, сообщение для отсутствующего токена
+- [x] Авто-вход после сброса пароля: email берётся из payload reset-токена, затем `login` с новым паролем; при сбое — редирект на `/sign-in`
+- [x] Общие `FormError` (form-level ошибки) и `AuthLink` (ссылки с `focus-visible`) для auth-форм
+- [x] Next 16: auth-маршруты с `cookies` / `searchParams` помечены `instant = false` (blocking prerender)
+- [x] Тесты auth-форм (Vitest + RTL): `sign-in`, `sign-up`, `verify-email`, `forgot-password`, `reset-password` — валидация, disabled-состояния, вызовы Server Actions, тосты, ссылки-переходы
+- [x] Server Action выхода `logout` — очистка cookie и редирект на `/sign-in`
+- [x] Сверка всех 5 страниц auth с ТЗ: AC закрыты, тексты ошибок совпадают с примерами из ТЗ (`shared/api/errors/errors.ts`)
+- [x] `/forgot-password` — отдельное сообщение «No account found with this email address»: код `accountNotFound` + inline-ошибка формы (`FormError`)
+- [x] `/verify-email` — срок жизни OTP 2 часа: код `otpExpired` → «Verification code has expired»; повторная отправка перевыпускает код и обновляет время выпуска
+- [x] Плейсхолдеры и доступные лейблы полей приведены к названиям из ТЗ (`Confirm Password`, `New Password`)
+- [x] Локальный патч учебного бэкенда (`C:\projects\cv-backend`, в upstream не пушился): `forgotPassword` → `accountNotFound`, `verifyMail` → проверка TTL 2 часа и `otpExpired`, `SignupDto` → пароль от 6 символов. При пересборке бэкенда из чистого upstream патч нужно накатить повторно (см. `docs/BACKEND.md`)
+
+### Страницы ошибок
+
+- [x] No Internet: страница «Oops» с иллюстрацией и кнопкой `RETRY` (`src/features/errors/ui/no-internet-page.tsx`), тексты по ТЗ, `Button variant="primary"`
+- [x] Подключение: `src/app/error.tsx` (`retry`), `src/app/global-error.tsx` (собственные `html`/`body` + `globals.css` + тема), офлайн-оверлей `OfflineGuard` в root layout (`navigator.onLine` + события `online`/`offline`)
+- [x] Общие требования для No Internet: Light/Dark темы, клавиатура и focus-visible, центрирование, адаптивность
+- [x] Тесты: `useOnlineStatus`, `NoInternetPage`, `OfflineGuard`, `app/error`, `app/global-error`
+- [x] Not Found (404): страница «Hmm…» с общей иллюстрацией `SadMonitorIllustration`, текстом по ТЗ и кнопкой `GO BACK` (`src/features/errors/ui/not-found-page.tsx`), `Button variant="primary"`
+- [x] Подключение Not Found: `src/app/not-found.tsx` (корневой `not-found` ловит несуществующие URL), возврат назад с фолбэком на `/` — `shared/helpers/go-back.ts`
+- [x] Тесты Not Found: `NotFoundPage`, `goBack`, `app/not-found`
+- [x] Device Error: страница «Oops» с иллюстрацией и текстом по ТЗ (`src/features/errors/ui/device-error-page.tsx`)
+- [x] Показ при ширине вьюпорта меньше `768px`, включая ресайз: `useMediaQuery` (`shared/hooks`) + `DeviceGuard` в root layout, контент под оверлеем `inert`
+- [x] Общие требования для Device Error: Light/Dark темы, центрирование, адаптивность
+- [x] Тесты Device Error: `useMediaQuery`, `DeviceErrorPage`, `DeviceGuard`
+
+### Сотрудники и профиль
+
+- [x] Список сотрудников `/users`: поиск, пагинация по 50, сортировка по имени, фамилии, отделу и должности через `searchParams`; скелетон таблицы в `Suspense` (`src/features/users/ui/users-page.tsx`)
+- [x] CRUD пользователей для Admin: диалоги создания, редактирования и удаления, роли Admin / Employee, справочники departments / positions; Server Actions `users.actions.ts`, zod-схемы `model/user-schema.ts`, инвалидация `/users` и layout пользователя
+- [x] Права: Employee видит список, но не управляет пользователями; Admin управляет любым профилем, Employee — только своим (`shared/helpers/profile-permissions.ts`)
+- [x] Профиль пользователя `/users/[userId]/profile`: имя и фамилия, email по роли, Server Actions `profile.actions.ts`
+- [x] Аватар: загрузка base64 через Server Action, лимит 5MB, png / jpg / gif, `serverActions.bodySizeLimit = "8mb"`
+- [x] Подтверждение email из профиля (`sendVerificationEmailAction`, только владелец профиля)
+- [x] Вкладка навыков `/users/[userId]/skills`: список с Mastery и группировкой по категориям, добавление, обновление и удаление через диалоги (`users/ui/skills/user-skills-page.tsx` + `users/ui/levels/level-manager.tsx`; данные и операции — из `features/skills`)
+- [x] Вкладка языков `/users/[userId]/languages`: список с Proficiency и CRUD через диалоги; композиция живёт в `features/languages` (`ui/user-languages-page.tsx`), права — общий `getProfilePermissions`
+- [x] Вкладка CV (только Admin): таблица с поиском и сортировкой по имени, создание, обновление и удаление CV, страница деталей `/users/[userId]/cvs/[cvId]`; Employee получает 404 (`model/cv-permissions.ts`)
+- [x] Breadcrumbs и табы пользователя (`user-breadcrumbs`, `user-tabs`), редирект `/users/[userId]` → `/profile`
+- [x] Общий авторизованный серверный транспорт с refresh-ретраем: `shared/api/run-authed.ts`
+- [x] Тесты: права профиля и CV, схемы, сортировка и пагинация, тулбар, диалоги CV, `level-manager`, Server Actions CV
+
+### Навыки
+
+- [x] Отдельная фича `src/features/skills`: модель Mastery и группировка по категориям (`model/skill-levels.ts`), zod-схемы (`model/skill-schema.ts`), запросы, мутации и Server Actions
+- [x] Личная страница `/skills`: навыки текущего пользователя, добавление, обновление Mastery и удаление (`ui/skills-page.tsx`, `ui/skills-manager.tsx`)
+- [x] Каталог навыков `/admin/skills` (только Admin): таблица с поиском и пагинацией, создание, редактирование и удаление (`ui/admin/*`)
+- [x] Логика навыков вынесена из `features/users`; вкладка `/users/[userId]/skills` остаётся композицией в `users` и импортирует `features/skills` через публичный `index.ts`
+
+### Языки
+
+- [x] Отдельная фича `src/features/languages`: модель Proficiency (`model/language-levels.ts`), zod-схемы (`model/language-schema.ts`), запросы, мутации и Server Actions
+- [x] Личная страница `/languages`: языки текущего пользователя, добавление, редактирование Proficiency и удаление (`ui/languages-page.tsx`, `ui/languages-manager.tsx`)
+- [x] Каталог языков `/admin/languages` (только Admin): таблица Name / ISO / Native Name, поиск, сортировка по Name и ISO, пагинация, создание, редактирование и удаление (`ui/admin/*`)
+- [x] Пункт `Languages` в management-навигации сайдбара виден только Admin
+- [x] Логика языков вынесена из `features/users`: запросы, мутации, схемы, константы Proficiency и вкладка `/users/[userId]/languages`; `LevelManager` в `users` стал менеджером только навыков, `getProfilePermissions` переехал в `shared/helpers`
+- [x] Тесты: Proficiency и схемы, Server Actions личных языков и каталога, права владельца / Admin, диалоги менеджера, пагинация каталога
+
+### CVs
+
+Этап завершён 2026-11-23, смержен в `dev` (PR #10). Требования — `docs/TZ.md` («Раздел CVs»), исходники — `...\cv-tz\cvs\`.
+
+- [x] Вынести CV из `features/users` в домен `cvs` и открыть отдельный раздел `/cvs` для Admin и Employee (вкладка `/users/[userId]/cvs` осталась для Admin)
+- [x] Список CV `/cvs`: таблица `Name` / `Education` / `Employee` с описанием под строкой, поиск, сортировка по имени, пагинация
+- [x] Список CV: состояния loading / empty / no results / error, `CREATE CV`, меню `View` / `Edit` / `Delete`, диалоги create / update / delete по макетам
+- [x] Страница CV `/cvs/[cvId]`: layout с breadcrumbs `CVs > {CV name} > {Tab}`, табы `Details` / `Skills` / `Projects` / `Preview`, возврат к списку; неавторизованный доступ к чужому CV — 404
+- [x] Details: форма `Name` / `Education` / `Description`, предзаполнение, inline-валидация, `UPDATE` активна только при изменениях и без ошибок валидации, сохранение через `updateCvAction`, скелетон и ошибка `Failed to load CV details` с повтором; во время сохранения кнопка блокируется, показывает спиннер и `Saving...`
+- [x] Тесты Details: табы и их активное состояние, предзаполнение, dirty-гейт кнопки, сохранение, состояние сохранения (`Saving...` + `aria-busy`), inline-ошибки, сохранение значений при сбое
+- [x] Skills: группировка по категориям, `ADD SKILL` из навыков владельца CV, `Update skill`, режим массового удаления; пустые категории скрыты, состояния loading (скелетон) / empty / error `Failed to load skills` с повтором; если у владельца нет навыков в профиле, диалог `ADD SKILL` показывает подсказку добавить их в профиль
+- [x] Тесты Skills: группировка и пустое состояние, фильтрация вариантов добавления, подсказка при отсутствии доступных навыков, inline- и системные ошибки, обновление навыка, выбор нескольких навыков и подтверждение удаления
+- [x] Projects: таблица `Name` / `Domain` / `Responsibilities` / `Start Date` / `End Date`, поиск по Name и Domain, сортировка по Name / Start Date / End Date, период «Till now»; каталог проектов (`projects`), Add / Update / Remove через диалоги, Domain / Description / Environment из каталога только для чтения, роли из активных ролей (минимум одна), даты в пределах длительности проекта; роли — базовый набор из 10 ролей плюс роли из существующих проектов CV (раньше список был пуст, пока роли не введены ни в одном CV); состояния loading (скелетон) / empty / no results / error `Failed to load projects` с повтором
+- [x] Тесты Projects: таблица и пустое состояние, фильтрация по Name / Domain, сортировка по колонкам, автозаполнение каталога, Add / Update / Remove, inline-ошибки дат, системные ошибки без сброса значений
+- [x] Projects по макету: описание проекта под названием в ячейке `Name` (line-clamp-2), одна строка на проект; диалог Add / Update шире (`max-w-2xl`) с прокручиваемым телом, `Name` / `Domain` и `Start Date` / `End Date` — по две колонки, подписи полей в стиле `SelectField` (плавающие) и `Label` (Input / Textarea); `Description` и `Environment` только для чтения, `Roles` — мультивыбор строкой через запятую (`MultiselectField display="text"`), `Responsibilities` — многострочная `Textarea` (одна обязанность на строку), кнопка Update — `UPDATE`
+- [x] Preview: резюме из профиля, языков, навыков и проектов; `Experience in Years` и `Last Used` по пересечению environment проектов CV, периоды `MM.YYYY - MM.YYYY` / `Present`; секции и категории без данных скрыты, пустое состояние `CV preview is not available`; должность необязательна — превью и экспорт доступны без неё, строка должности скрыта
+- [x] `EXPORT PDF` через бэкенд `exportPdf`: серверная сборка HTML резюме, скачивание base64, имя файла из названия CV, кнопка неактивна без данных
+- [x] Preview: скелетон загрузки и ошибка `Failed to load CV preview` с повтором; Employee — только свои CV, Admin — любые (`canAccessCv`)
+- [x] Тесты Preview: расчёты Experience / Last Used и округление, периоды, уникальные домены, группировка навыков, экранирование HTML, имя PDF, экспорт и ошибки кнопки, рендер без должности
+
+### Справочники (Departments / Positions / Projects)
+
+Глобальные каталоги для Admin в отдельных доменах `features/departments`, `features/positions`, `features/projects`.
+
+- [x] Departments `/admin/departments` (PR #8): таблица Name, поиск, сортировка, пагинация, CRUD; уникальность имени и запрет удаления используемого департамента
+- [x] Positions `/admin/positions` (PR #9): таблица Name, поиск, сортировка, пагинация, CRUD; уникальность имени и запрет удаления используемой позиции
+- [x] Projects `/admin/projects` (PR #12): таблица Name / Domain / Start Date / End Date с тегами environment и описанием под названием, поиск по Name и Domain, сортировка по Name / Start Date / End Date, пагинация, CRUD; `End Date` не раньше `Start Date`
+- [x] Каталоги доступны только Admin (для остальных — 404); Departments и Positions отдают опции селектам при создании и редактировании пользователя, Projects — каталог для вкладки CV Projects
+- [x] Тесты: схемы, права, Server Actions каталогов, пагинация
+
+### Настройки
+
+- [x] `/settings` для Admin и Employee (PR #13): тема интерфейса, язык, смена пароля
+- [x] Тема и язык хранятся в localStorage и применяются до гидрации; смена пароля — Server Action с inline-валидацией и разбором кодов бэкенда
+- [x] Тесты: схема пароля, Server Action смены пароля
+
+### Мержи
+
+- [x] PR #1 `feat/auth-sign-in` → `dev` смержен 2026-11-16 (rebase, `8a6e6f3`): авторизация, сессия, proxy, codegen. Проверки перед мержем: `typecheck`, 84 теста, `build`, `codegen` без дрейфа, lint без ошибок ([PR #1](https://github.com/h3pixz/cv-builder/pull/1))
+- [x] PR #2 `feat/auth-sign-in` → `dev` смержен 2026-11-17 (rebase, `bd9c993`): повторная отправка кода на `/verify-email`, inline-ошибка `accountNotFound` на `/forgot-password`, коды `accountNotFound` / `otpExpired`, лейблы полей по ТЗ, документация бэкенда. Проверки перед мержем: `typecheck`, 92 теста, `build` ([PR #2](https://github.com/h3pixz/cv-builder/pull/2))
+- [x] PR #3 `docs/record-auth-pr` → `dev` смержен 2026-11-17: запись мержа auth-PR в `docs/PROGRESS.md` ([PR #3](https://github.com/h3pixz/cv-builder/pull/3))
+- [x] PR #4 `feat/error-pages` → `dev` смержен 2026-11-18: страницы 404, No Internet и Device Error, общие guards и иллюстрация, тесты ([PR #4](https://github.com/h3pixz/cv-builder/pull/4))
+- [x] PR #5 `feat/users-table` → `dev` смержен 2026-11-18: список сотрудников, профиль и аватар, навыки и языки, CV для Admin, права и Server Actions, скиллы `.claude`, обновление документации ([PR #5](https://github.com/h3pixz/cv-builder/pull/5))
+- [x] PR #6 `feat/skills` → `dev` смержен 2026-11-20: вынос навыков в `features/skills`, личная страница `/skills` и каталог `/admin/skills` ([PR #6](https://github.com/h3pixz/cv-builder/pull/6))
+- [x] PR #7 `feat/languages` → `dev` смержен 2026-11-20: вынос языков в `features/languages`, страница `/languages` и каталог `/admin/languages` ([PR #7](https://github.com/h3pixz/cv-builder/pull/7))
+- [x] PR #8 `feat/departments` → `dev` смержен 2026-11-23: каталог департаментов `/admin/departments` ([PR #8](https://github.com/h3pixz/cv-builder/pull/8))
+- [x] PR #9 `feat/positions` → `dev` смержен 2026-11-23: каталог позиций `/admin/positions` ([PR #9](https://github.com/h3pixz/cv-builder/pull/9))
+- [x] PR #10 `feat/cvs-section` → `dev` смержен 2026-11-23 (`8030587`): раздел CVs для Admin и Employee, страница CV с вкладками Details / Skills / Projects / Preview и `EXPORT PDF`, подсказка добавить навыки в профиль, базовый набор ролей проекта. Перед мержем ветка обновлена из `dev` с переносом CV-кода на вынесенные `features/skills` и `features/languages`. Проверки перед мержем: `typecheck`, 350 тестов, `lint`, `next build --webpack`, `codegen` без дрейфа ([PR #10](https://github.com/h3pixz/cv-builder/pull/10))
+- [x] PR #11 `docs/record-cvs-pr` → `dev` смержен 2026-11-23: запись мержа CVs PR в `docs/PROGRESS.md` ([PR #11](https://github.com/h3pixz/cv-builder/pull/11))
+- [x] PR #12 `feat/projects` → `dev` смержен 2026-11-24: каталог проектов `/admin/projects` с тегами environment и датами ([PR #12](https://github.com/h3pixz/cv-builder/pull/12))
+- [x] PR #13 `feat-settings` → `dev` смержен 2026-11-24: страница настроек `/settings` — тема, язык, смена пароля ([PR #13](https://github.com/h3pixz/cv-builder/pull/13))
+- [x] PR #14 `fix/email-verification-ui` → `dev` смержен 2026-11-24: правки UI подтверждения email и выравнивание лейблов полей ([PR #14](https://github.com/h3pixz/cv-builder/pull/14))
 
 ## Backlog
 
-- [ ] Настроить npm-скрипты: `typecheck`, `test`, `test:coverage`
-- [ ] Настроить Vitest + React Testing Library + coverage
-- [ ] Создать общий layout: шапка, навигация, контейнер
-- [ ] Настроить маршруты: список резюме, редактор, превью
+### Маршруты и layout
+
+- [x] Создать общий layout приватной части: сайдбар, контейнер, breadcrumbs и табы пользователя
+- [x] Главная `/` перенаправляет на `/users` (стаб «Hello world» снят)
+- [x] Страницы справочников из сайдбара: `/admin/departments`, `/admin/positions`, `/admin/projects` (PR #8, #9, #12)
 - [ ] Применить SSR/SSG для страниц, где уместно
-- [ ] Настроить GraphQL-клиент для Server Components (`fetch` + кэш Next.js)
-- [ ] Описать схему и поднять локальный GraphQL-бэкенд
-- [ ] Реализовать CRUD-запросы резюме (Server Components / Server Actions) и инвалидацию кэша
-- [ ] Настроить store (Zustand/RTK) — по согласованию
-- [ ] Хранить черновик резюме в глобальном состоянии
-- [ ] Форма личных данных и контактов
-- [ ] Форма опыта работы
-- [ ] Форма образования и навыков
-- [ ] Валидация полей формы
-- [ ] Живое превью резюме
-- [ ] Сохранение и загрузка резюме через API
+
+### Авторизация — остатки
+
+- [x] Ручной переключатель темы и языка в `/settings` (PR #13); по умолчанию тема следует системной настройке
+- [ ] Поправить редиректы без сессии с несуществующего `/login` на `/sign-in` (`AuthGate`, `protectedRequest`)
+
+### Резюме
+
+- [x] Описать схему и поднять локальный GraphQL-бэкенд (`cv-backend`, Docker)
+- [x] CRUD резюме сотрудника и инвалидация кэша через `revalidatePath` (вкладка CV на странице пользователя, Admin)
+- [x] Раздел CV (список, Details / Skills / Projects / Preview, PDF) — `features/cvs`, смержен в `dev` (PR #10)
+- [ ] Хранить черновик резюме в Zustand (`src/store` пока не создан)
+
+### Качество и сдача
+
 - [ ] Адаптивная вёрстка: mobile / tablet / desktop
-- [ ] Unit-тесты компонентов и стора, покрытие > 80%
+- [ ] Покрытие unit-тестами > 80%
 - [ ] Extra: E2E-тесты ключевых сценариев (Playwright)
-- [ ] README: функционал, зависимости, установка, запуск тестов
+- [x] README: стек, зависимости, установка, запуск и тесты
+- [ ] README: структура и тест-кейсы E2E

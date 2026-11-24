@@ -11,7 +11,7 @@ description: Create git commits following the project rules. Use when the user a
    - Коммит создаётся только по просьбе пользователя. Если просьбы нет — предложи разбивку и подожди.
 
 2. Сообщение
-   - Conventional Commits на английском: `type(scope): summary` (`feat(resume-form): ...`, `fix(apollo): ...`, `refactor(layout): ...`, `test(store): ...`).
+   - Conventional Commits на английском: `type: summary` — без scope в скобках (`feat: add resume form`, `fix: refresh token retry`, `refactor: extract session cookie options`).
    - В теле — почему изменение сделано, а не пересказ диффа.
    - Не добавляй `Co-Authored-By: Claude ...` и любые другие подписи об авторстве — ни в заголовок, ни в тело коммита.
 

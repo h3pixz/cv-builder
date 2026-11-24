@@ -1,0 +1,101 @@
+"use client"
+
+import { useState } from "react"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
+import { Button } from "@/shared/ui/button"
+import { Input } from "@/shared/ui/input"
+import { toast } from "@/shared/ui/toast"
+import { forgotPassword } from "../../api/forgot-password"
+import {
+  forgotPasswordSchema,
+  type ForgotPasswordValues,
+} from "../../model/forgot-password-schema"
+import { AuthLink } from "./auth-link"
+import { FormError } from "./form-error"
+
+export function ForgotPasswordForm() {
+  const [formError, setFormError] = useState<string | null>(null)
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isValid, isSubmitting },
+  } = useForm<ForgotPasswordValues>({
+    resolver: zodResolver(forgotPasswordSchema),
+    mode: "onTouched",
+    reValidateMode: "onChange",
+    defaultValues: { email: "" },
+  })
+
+  async function onSubmit(values: ForgotPasswordValues) {
+    setFormError(null)
+
+    const result = await forgotPassword(values.email)
+
+    if (result.success) {
+      toast.add({
+        type: "success",
+        title: "Email sent",
+        description: "Check your inbox for the password reset link",
+      })
+      reset()
+    } else {
+      setFormError(result.error)
+      toast.add({
+        type: "error",
+        title: "Could not send the email",
+        description: result.error,
+      })
+    }
+  }
+
+  const emailError = errors.email?.message
+
+  return (
+    <form
+      className="flex w-full flex-col items-center"
+      noValidate
+      onSubmit={handleSubmit(onSubmit)}
+    >
+      <div className="mb-10 w-full text-left">
+        <label
+          htmlFor="email"
+          className="mb-1 ml-0.5 block text-xs text-text-secondary"
+        >
+          Email
+        </label>
+        <Input
+          id="email"
+          type="email"
+          autoComplete="email"
+          variant={emailError ? "error" : "default"}
+          aria-invalid={emailError ? true : undefined}
+          aria-describedby={emailError ? "email-error" : undefined}
+          className="h-11 px-4 text-sm"
+          {...register("email")}
+        />
+        {emailError && (
+          <p id="email-error" role="alert" className="mt-1 text-xs text-error">
+            {emailError}
+          </p>
+        )}
+      </div>
+
+      <Button
+        type="submit"
+        variant="primary"
+        disabled={!isValid || isSubmitting}
+        className="h-11 w-60 text-xs font-semibold tracking-wider"
+      >
+        Reset Password
+      </Button>
+
+      <FormError message={formError} />
+
+      <div className="mt-2 text-center">
+        <AuthLink href="/sign-in">Cancel</AuthLink>
+      </div>
+    </form>
+  )
+}
