@@ -30,8 +30,6 @@ export function UsersToolbar({
   const [createOpen, setCreateOpen] = useState(false);
   const previousUrlSearch = useRef(urlSearch);
 
-  // Follow external URL changes (Back/Forward) without clobbering what the user
-  // is currently typing.
   useEffect(() => {
     if (urlSearch === previousUrlSearch.current) return;
 
@@ -44,8 +42,6 @@ export function UsersToolbar({
   useEffect(() => {
     const trimmed = value.trim();
 
-    // The input already matches the URL: this is a mount, a page/sort change or
-    // any other navigation — pushing a URL update here would reset the page.
     if (trimmed === urlSearch) return;
 
     const timeoutId = setTimeout(() => {
@@ -57,7 +53,6 @@ export function UsersToolbar({
         params.delete("search");
       }
 
-      // A new filter always starts from the first page.
       params.delete("page");
 
       const next = params.toString();

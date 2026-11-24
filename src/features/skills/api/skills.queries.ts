@@ -14,9 +14,6 @@ import type {
   GetSkillsCatalogQueryVariables,
 } from "@/shared/api/graphql/generated/graphql";
 
-// -----------------------------------------------------
-// MY SKILLS
-// -----------------------------------------------------
 
 export const GetMySkillsDocument = graphql(`
   query GetMySkills {
@@ -41,7 +38,6 @@ export async function getMySkills(options?: GraphQLRequestOptions) {
   return data.me.skills;
 }
 
-/** Server Actions have to pass the access token explicitly. */
 export async function getMySkillsWithToken(accessToken: string) {
   const data = await gqlRequest(GetMySkillsDocument, undefined, {
     accessToken,
@@ -50,9 +46,6 @@ export async function getMySkillsWithToken(accessToken: string) {
   return data.me.skills;
 }
 
-// -----------------------------------------------------
-// USER SKILLS
-// -----------------------------------------------------
 
 export const GetUserSkillsDocument = graphql(`
   query GetUserSkills($userId: ID!) {
@@ -80,9 +73,6 @@ export async function getUserSkills(
   return data.profile.skills;
 }
 
-// -----------------------------------------------------
-// SKILLS CATALOG
-// -----------------------------------------------------
 
 export const GetSkillsCatalogDocument = graphql(`
   query GetSkillsCatalog($params: SearchPaginationInput) {
@@ -124,14 +114,9 @@ export async function getSkillsCatalog(
 
 type FindSkillOptions = {
   accessToken: string;
-  /** Skip this id when checking for a duplicate (edit mode). */
   excludeId?: string;
 };
 
-/**
- * Looks for an exact, case-insensitive name match in the catalog. The backend
- * search is used to narrow the list down to the relevant names.
- */
 export async function findSkillByName(
   name: string,
   { accessToken, excludeId }: FindSkillOptions,
@@ -161,9 +146,6 @@ export async function findSkillByName(
   );
 }
 
-// -----------------------------------------------------
-// SKILL CATEGORIES
-// -----------------------------------------------------
 
 export const OPTIONS_LIMIT = 100;
 
@@ -188,7 +170,6 @@ export const getSkillCategories = cache(async () => {
   return data.skillCategories;
 });
 
-/** All catalog skills offered by the "Add skill" dialog. */
 export async function getSkillOptions(options?: GraphQLRequestOptions) {
   const result = await getSkillsCatalog(
     { page: 1, limit: OPTIONS_LIMIT },

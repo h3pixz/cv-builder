@@ -1,4 +1,3 @@
-// shared/ui/pagination/list-pagination.tsx
 import { cn } from "@/lib/utils";
 import {
   Pagination,
@@ -15,7 +14,6 @@ type PageItem = number | "start-ellipsis" | "end-ellipsis";
 const range = (from: number, to: number) =>
   Array.from({ length: to - from + 1 }, (_, i) => from + i);
 
-/** Always 7 slots when there are more than 7 pages, so the width doesn't jump. */
 export function getPageItems(page: number, totalPages: number): PageItem[] {
   if (totalPages <= 7) return range(1, totalPages);
   if (page <= 4) return [...range(1, 5), "end-ellipsis", totalPages];
@@ -36,7 +34,6 @@ export function getPageItems(page: number, totalPages: number): PageItem[] {
 type ListPaginationProps = {
   page: number;
   totalPages: number;
-  /** Builds the URL for a page number. Keep other query params in it. */
   getHref: (page: number) => string;
   label?: string;
   className?: string;

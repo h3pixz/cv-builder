@@ -9,7 +9,6 @@ export const POSITION_MESSAGES = {
   inUse: "Position cannot be deleted because it is currently in use",
 } as const;
 
-/** Schema for the admin position catalog create/edit dialog. */
 export const catalogPositionSchema = z.object({
   name: z
     .string()

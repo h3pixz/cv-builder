@@ -29,8 +29,6 @@ function getServerSnapshot(): Theme {
 }
 
 export function useTheme() {
-  // Reading through an external store keeps the select in sync with the value
-  // the pre-hydration script already applied, without a setState in an effect.
   const theme = useSyncExternalStore(
     subscribe,
     readStoredTheme,
@@ -43,7 +41,6 @@ export function useTheme() {
     emit();
   }, []);
 
-  // "Device settings" follows the OS preference live.
   useEffect(() => {
     if (theme !== "device") {
       return;

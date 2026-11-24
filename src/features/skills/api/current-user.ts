@@ -17,10 +17,6 @@ function toRole(value: string | null): SkillRole | null {
   return null;
 }
 
-/**
- * The user id comes from the access token claims: `me.id` is the profile id,
- * while profile mutations expect the user id.
- */
 export const getCurrentUser = cache(async (): Promise<SkillsSessionUser> => {
   const session = await getSession();
 

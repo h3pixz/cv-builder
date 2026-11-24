@@ -45,9 +45,6 @@ async function canManageProfile(userId: string): Promise<boolean> {
   }).canEdit;
 }
 
-// -----------------------------------------------------
-// SKILLS
-// -----------------------------------------------------
 
 export async function addSkillAction(
   userId: string,
@@ -104,7 +101,6 @@ export async function updateSkillAction(
     const skills = await getUserSkills(userId, { accessToken });
     const existing = skills.find((skill) => skill.name === data.name);
 
-    // The update form does not touch the category, so keep the current one.
     return updateMySkill(
       {
         userId,

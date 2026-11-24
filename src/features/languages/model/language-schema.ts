@@ -17,7 +17,6 @@ export const LANGUAGE_MESSAGES = {
   duplicateIso: "ISO code already exists",
 } as const;
 
-/** Client-side schema for the "Add language" and "Edit language" dialogs. */
 export const languageFormSchema = z.object({
   name: z.string().trim().min(1, LANGUAGE_MESSAGES.nameRequired),
   mastery: z.string().min(1, LANGUAGE_MESSAGES.proficiencyRequired),
@@ -25,7 +24,6 @@ export const languageFormSchema = z.object({
 
 export type LanguageFormValues = z.infer<typeof languageFormSchema>;
 
-/** Server-side schema used when adding a language to the signed-in profile. */
 export const addMyLanguageSchema = z.object({
   name: z.string().trim().min(1, LANGUAGE_MESSAGES.nameRequired),
   mastery: z.enum(LANGUAGE_PROFICIENCY_VALUES, {
@@ -35,12 +33,10 @@ export const addMyLanguageSchema = z.object({
 
 export type AddMyLanguageValues = z.infer<typeof addMyLanguageSchema>;
 
-/** The "Edit language" dialog only changes the proficiency level. */
 export const updateMyLanguageSchema = addMyLanguageSchema;
 
 export type UpdateMyLanguageValues = z.infer<typeof updateMyLanguageSchema>;
 
-/** Schema for the admin language catalog create/edit dialog. */
 export const catalogLanguageSchema = z.object({
   name: z
     .string()

@@ -2,10 +2,6 @@ import type { ComponentProps } from "react";
 
 import { cn } from "@/lib/utils";
 
-/**
- * Outlined pill used for read-only values such as a project's environment.
- * Long values wrap instead of overflowing their container.
- */
 export function Tag({ className, ...props }: ComponentProps<"span">) {
   return (
     <span

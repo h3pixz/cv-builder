@@ -41,12 +41,9 @@ type Props = {
   heading: string;
   groups: LevelGroup[];
   options: LevelOption[];
-  /** Mastery values offered by the level select. */
   levelOptions: SelectOption[];
-  /** Plain strings so the schema can be built on the client. */
   formMessages: { nameRequired: string; levelRequired: string };
   canManage: boolean;
-  /** Skills are grouped by category; hide the group titles when not needed. */
   showGroupNames?: boolean;
 };
 

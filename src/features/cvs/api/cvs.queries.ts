@@ -17,9 +17,6 @@ import { CV_FALLBACK_ROLES } from "../model/cv-project-roles";
 
 const OPTIONS_LIMIT = 100;
 
-// -----------------------------------------------------
-// CV LISTS
-// -----------------------------------------------------
 
 export const GetCvsDocument = graphql(`
   query GetCvs($params: SearchPaginationInput) {
@@ -86,9 +83,6 @@ export async function getCvsByUserId(
   return data.cvsByUserId;
 }
 
-// -----------------------------------------------------
-// SINGLE CV
-// -----------------------------------------------------
 
 export const GetCvDocument = graphql(`
   query GetCv($cvId: ID!) {
@@ -177,9 +171,6 @@ export const getCvContext = cache(async (cvId: string) => {
   return { cv, me };
 });
 
-// -----------------------------------------------------
-// REFERENCE DATA
-// -----------------------------------------------------
 
 export const GetCvRoleOptionsDocument = graphql(`
   query GetCvRoleOptions($params: SearchPaginationInput) {

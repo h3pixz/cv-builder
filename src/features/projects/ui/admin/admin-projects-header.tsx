@@ -28,8 +28,6 @@ export function AdminProjectsHeader({
   const [isPending, startTransition] = useTransition();
   const previousUrlSearch = useRef(urlSearch);
 
-  // Follow external URL changes (Back/Forward) without clobbering what the user
-  // is currently typing.
   useEffect(() => {
     if (urlSearch === previousUrlSearch.current) return;
 
@@ -53,7 +51,6 @@ export function AdminProjectsHeader({
         params.delete("search");
       }
 
-      // A new filter always starts from the first page.
       params.delete("page");
 
       const next = params.toString();

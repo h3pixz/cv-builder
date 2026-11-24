@@ -31,7 +31,7 @@ function readAsDataUrl(file: File): Promise<string> {
         reject(new Error("Unexpected file reader result"));
         return;
       }
-      resolve(reader.result); // keep "data:image/jpeg;base64,..." intact
+      resolve(reader.result);
     };
     reader.onerror = () => reject(reader.error ?? new Error("Read failed"));
 

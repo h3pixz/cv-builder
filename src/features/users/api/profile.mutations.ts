@@ -4,9 +4,6 @@ import { gqlRequest, type GraphQLRequestOptions } from "@/shared/api/graphql/gra
 import { graphql } from "@/shared/api/graphql/generated/gql";
 import type { VariablesOf } from "@graphql-typed-document-node/core";
 
-// -----------------------------------------------------
-// PROFILE
-// -----------------------------------------------------
 
 export const UpdateUserProfileDocument = graphql(`
   mutation UpdateUserProfile($profile: UpdateProfileInput!) {
@@ -36,9 +33,6 @@ export async function updateUserProfile(
   return data.updateProfile;
 }
 
-// -----------------------------------------------------
-// AVATAR
-// -----------------------------------------------------
 
 export const UploadUserAvatarDocument = graphql(`
   mutation UploadUserAvatar($avatar: UploadAvatarInput!) {
@@ -55,7 +49,6 @@ export async function uploadUserAvatar(
   return data.uploadAvatar;
 }
 
-// -----------------------------------------------------
 
 export const DeleteUserAvatarDocument = graphql(`
   mutation DeleteUserAvatar($avatar: DeleteAvatarInput!) {
@@ -72,9 +65,6 @@ export async function deleteUserAvatar(
   return data.deleteAvatar;
 }
 
-// -----------------------------------------------------
-// EMAIL VERIFICATION
-// -----------------------------------------------------
 
 export const SendVerificationDocument = graphql(`
   mutation SendVerification($email: String!) {

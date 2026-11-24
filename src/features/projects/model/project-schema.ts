@@ -16,10 +16,6 @@ export const PROJECT_MESSAGES = {
   descriptionTooLong: `Description must be at most ${PROJECT_DESCRIPTION_MAX} characters`,
 } as const;
 
-/**
- * Schema for the admin project catalog create/edit dialog. Dates are native
- * date-input values (`YYYY-MM-DD`), so they can be compared as strings.
- */
 export const projectSchema = z
   .object({
     name: z
@@ -42,7 +38,6 @@ export const projectSchema = z
     environment: z.array(z.string()),
   })
   .superRefine((values, ctx) => {
-    // The end date may equal the start date, only an earlier one is rejected.
     if (
       values.startDate &&
       values.endDate &&

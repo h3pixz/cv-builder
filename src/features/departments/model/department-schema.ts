@@ -9,7 +9,6 @@ export const DEPARTMENT_MESSAGES = {
   inUse: "Department cannot be deleted because it is currently in use",
 } as const;
 
-/** Schema for the admin department catalog create/edit dialog. */
 export const catalogDepartmentSchema = z.object({
   name: z
     .string()

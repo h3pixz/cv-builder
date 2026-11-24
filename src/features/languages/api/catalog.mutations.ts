@@ -8,9 +8,6 @@ import {
 } from "@/shared/api";
 import { graphql } from "@/shared/api/graphql/generated/gql";
 
-// -----------------------------------------------------
-// LANGUAGE CATALOG CRUD
-// -----------------------------------------------------
 
 export const CreateLanguageDocument = graphql(`
   mutation CreateLanguage($language: CreateLanguageInput!) {
@@ -36,7 +33,6 @@ export async function createLanguage(
   return data.createLanguage;
 }
 
-// -----------------------------------------------------
 
 export const UpdateLanguageDocument = graphql(`
   mutation UpdateLanguage($language: UpdateLanguageInput!) {
@@ -62,7 +58,6 @@ export async function updateLanguage(
   return data.updateLanguage;
 }
 
-// -----------------------------------------------------
 
 export const DeleteLanguageDocument = graphql(`
   mutation DeleteLanguage($language: DeleteLanguageInput!) {

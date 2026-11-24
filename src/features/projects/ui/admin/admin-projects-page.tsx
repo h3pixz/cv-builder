@@ -102,7 +102,6 @@ export async function AdminProjectsPage({
 }: AdminProjectsPageProps) {
   const me = await getCurrentUser();
 
-  // Non-admins must not have access to the catalog page.
   if (!canManageProjectCatalog(me.role)) {
     notFound();
   }

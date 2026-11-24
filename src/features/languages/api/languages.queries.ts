@@ -15,9 +15,6 @@ import type {
 
 export const OPTIONS_LIMIT = 100;
 
-// -----------------------------------------------------
-// MY LANGUAGES
-// -----------------------------------------------------
 
 export const GetMyLanguagesDocument = graphql(`
   query GetMyLanguages {
@@ -41,7 +38,6 @@ export async function getMyLanguages(options?: GraphQLRequestOptions) {
   return data.me.languages;
 }
 
-/** Server Actions have to pass the access token explicitly. */
 export async function getMyLanguagesWithToken(accessToken: string) {
   const data = await gqlRequest(GetMyLanguagesDocument, undefined, {
     accessToken,
@@ -50,9 +46,6 @@ export async function getMyLanguagesWithToken(accessToken: string) {
   return data.me.languages;
 }
 
-// -----------------------------------------------------
-// LANGUAGES OF A USER
-// -----------------------------------------------------
 
 export const GetUserLanguagesDocument = graphql(`
   query GetUserLanguages($userId: ID!) {
@@ -79,7 +72,6 @@ export async function getUserLanguages(
   return data.profile.languages;
 }
 
-/** Server Actions have to pass the access token explicitly. */
 export async function getUserLanguagesWithToken(
   userId: string,
   accessToken: string,
@@ -93,9 +85,6 @@ export async function getUserLanguagesWithToken(
   return data.profile.languages;
 }
 
-// -----------------------------------------------------
-// LANGUAGES CATALOG
-// -----------------------------------------------------
 
 export const GetLanguagesCatalogDocument = graphql(`
   query GetLanguagesCatalog($params: SearchPaginationInput) {
@@ -129,14 +118,9 @@ export async function getLanguagesCatalog(
 
 type FindLanguageOptions = {
   accessToken: string;
-  /** Skip this id when checking for a duplicate (edit mode). */
   excludeId?: string;
 };
 
-/**
- * Looks for an exact, case-insensitive name match in the catalog. The backend
- * search is used to narrow the list down to the relevant names.
- */
 export async function findLanguageByName(
   name: string,
   { accessToken, excludeId }: FindLanguageOptions,
@@ -167,11 +151,6 @@ export async function findLanguageByName(
   );
 }
 
-/**
- * The backend search matches names, so the ISO check walks the catalog pages.
- * The catalog is small enough for an admin form; the loop stops at the last
- * page reported by the backend.
- */
 export async function findLanguageByIso(
   iso2: string,
   { accessToken, excludeId }: FindLanguageOptions,
@@ -202,7 +181,6 @@ export async function findLanguageByIso(
   }
 }
 
-/** All catalog languages offered by the "Add language" dialog. */
 export async function getLanguageOptions(options?: GraphQLRequestOptions) {
   const result = await getLanguagesCatalog(
     { page: 1, limit: OPTIONS_LIMIT },

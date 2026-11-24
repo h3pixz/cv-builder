@@ -8,9 +8,6 @@ import {
 } from "@/shared/api";
 import { graphql } from "@/shared/api/graphql/generated/gql";
 
-// -----------------------------------------------------
-// PROJECTS CATALOG
-// -----------------------------------------------------
 
 export const GetProjectsDocument = graphql(`
   query GetProjects($params: SearchPaginationInput) {

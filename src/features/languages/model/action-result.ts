@@ -12,7 +12,6 @@ export type LanguagesActionResult =
       success: false;
       error: string;
       code: GraphQLErrorCode | null;
-      /** The field the error belongs to, so forms can show it inline. */
       field?: LanguageField;
     };
 

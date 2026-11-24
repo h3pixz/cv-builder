@@ -8,9 +8,6 @@ import {
   type GraphQLRequestOptions,
 } from "@/shared/api/graphql/graphql";
 
-// -----------------------------------------------------
-// CV CRUD
-// -----------------------------------------------------
 
 export const CreateCvDocument = graphql(`
   mutation CreateCv($cv: CreateCvInput!) {
@@ -71,9 +68,6 @@ export async function deleteCv(
   return data.deleteCv;
 }
 
-// -----------------------------------------------------
-// CV SKILLS
-// -----------------------------------------------------
 
 export const AddCvSkillDocument = graphql(`
   mutation AddCvSkill($skill: AddCvSkillInput!) {
@@ -131,9 +125,6 @@ export async function deleteCvSkill(
   return data.deleteCvSkill;
 }
 
-// -----------------------------------------------------
-// CV PROJECTS
-// -----------------------------------------------------
 
 export const AddCvProjectDocument = graphql(`
   mutation AddCvProject($project: AddCvProjectInput!) {
@@ -191,9 +182,6 @@ export async function removeCvProject(
   return data.removeCvProject;
 }
 
-// -----------------------------------------------------
-// PDF EXPORT
-// -----------------------------------------------------
 
 export const ExportCvPdfDocument = graphql(`
   mutation ExportCvPdf($pdf: ExportPdfInput!) {

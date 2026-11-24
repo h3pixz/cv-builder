@@ -14,7 +14,6 @@ export type PositionsActionResult =
       success: false;
       error: string;
       code: GraphQLErrorCode | null;
-      /** The field the error belongs to, so forms can show it inline. */
       field?: PositionField;
     };
 
@@ -24,11 +23,6 @@ type GraphQLErrorLike = {
   };
 };
 
-/**
- * The backend rejects deleting a position that is still referenced by
- * employees or other entities. Its exact error code is not part of the shared
- * error map, so related messages are recognised by their text.
- */
 const POSITION_IN_USE_PATTERN =
   /in.?use|has.?relation|foreign.?key|cannot be deleted|referenc|assigned|position.*(employee|department|project)/i;
 

@@ -8,9 +8,6 @@ import {
 } from "@/shared/api";
 import { graphql } from "@/shared/api/graphql/generated/gql";
 
-// -----------------------------------------------------
-// DEPARTMENT CATALOG CRUD
-// -----------------------------------------------------
 
 export const CreateDepartmentDocument = graphql(`
   mutation CreateDepartment($department: CreateDepartmentInput!) {
@@ -35,7 +32,6 @@ export async function createDepartment(
   return data.createDepartment;
 }
 
-// -----------------------------------------------------
 
 export const UpdateDepartmentDocument = graphql(`
   mutation UpdateDepartment($department: UpdateDepartmentInput!) {
@@ -60,7 +56,6 @@ export async function updateDepartment(
   return data.updateDepartment;
 }
 
-// -----------------------------------------------------
 
 export const DeleteDepartmentDocument = graphql(`
   mutation DeleteDepartment($department: DeleteDepartmentInput!) {

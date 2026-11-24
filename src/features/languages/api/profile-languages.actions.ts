@@ -48,7 +48,6 @@ function fieldFromPath(path?: PropertyKey[]): Field | undefined {
   return key === "name" || key === "mastery" ? key : undefined;
 }
 
-/** The backend reports a duplicate assignment; the spec uses a shorter text. */
 function normalizeDuplicate(
   result: LanguagesActionResult,
 ): LanguagesActionResult {
@@ -64,7 +63,6 @@ function normalizeDuplicate(
   return result;
 }
 
-/** The signed-in user may change their own languages, an Admin — anyone's. */
 async function checkProfileAccess(
   userId: string,
 ): Promise<Extract<LanguagesActionResult, { success: false }> | null> {

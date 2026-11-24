@@ -26,7 +26,6 @@ function prefersDark(): boolean {
   return window.matchMedia("(prefers-color-scheme: dark)").matches;
 }
 
-/** The concrete theme a selection resolves to when the device preference is taken into account. */
 export function resolveTheme(theme: Theme): "light" | "dark" {
   return theme === "device" ? (prefersDark() ? "dark" : "light") : theme;
 }
@@ -52,8 +51,6 @@ export function storeTheme(theme: Theme): void {
   try {
     window.localStorage.setItem(THEME_STORAGE_KEY, theme);
   } catch {
-    // Storage can be unavailable (private mode, blocked cookies); the theme
-    // still applies for the current session.
   }
 }
 

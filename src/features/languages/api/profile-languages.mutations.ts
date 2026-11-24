@@ -8,9 +8,6 @@ import {
 } from "@/shared/api";
 import { graphql } from "@/shared/api/graphql/generated/gql";
 
-// -----------------------------------------------------
-// PROFILE LANGUAGES
-// -----------------------------------------------------
 
 export const AddMyLanguageDocument = graphql(`
   mutation AddMyLanguage($language: AddProfileLanguageInput!) {
@@ -33,7 +30,6 @@ export async function addMyLanguage(
   return data.addProfileLanguage;
 }
 
-// -----------------------------------------------------
 
 export const UpdateMyLanguageDocument = graphql(`
   mutation UpdateMyLanguage($language: UpdateProfileLanguageInput!) {
@@ -60,7 +56,6 @@ export async function updateMyLanguage(
   return data.updateProfileLanguage;
 }
 
-// -----------------------------------------------------
 
 export const DeleteMyLanguageDocument = graphql(`
   mutation DeleteMyLanguage($language: DeleteProfileLanguageInput!) {

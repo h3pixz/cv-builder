@@ -17,9 +17,6 @@ import type {
 
 export const OPTIONS_LIMIT = 100;
 
-// -----------------------------------------------------
-// POSITIONS CATALOG
-// -----------------------------------------------------
 
 export const GetPositionsDocument = graphql(`
   query GetPositions($params: SearchPaginationInput) {
@@ -52,14 +49,9 @@ export async function getPositionsCatalog(
 
 type FindPositionOptions = {
   accessToken: string;
-  /** Skip this id when checking for a duplicate (edit mode). */
   excludeId?: string;
 };
 
-/**
- * Looks for an exact, case-insensitive name match in the catalog. The backend
- * search is used to narrow the list down to the relevant names.
- */
 export async function findPositionByName(
   name: string,
   { accessToken, excludeId }: FindPositionOptions,
@@ -90,9 +82,6 @@ export async function findPositionByName(
   );
 }
 
-// -----------------------------------------------------
-// USAGE CHECK
-// -----------------------------------------------------
 
 export const GetPositionUsageDocument = graphql(`
   query GetPositionUsage($params: SearchPaginationInput) {
@@ -111,10 +100,6 @@ export const GetPositionUsageDocument = graphql(`
   }
 `);
 
-/**
- * A position referenced by an employee cannot be deleted. The backend has no
- * filter by position, so the users pages are walked until a match is found.
- */
 export async function isPositionInUse(
   positionId: string,
   { accessToken }: { accessToken: string },

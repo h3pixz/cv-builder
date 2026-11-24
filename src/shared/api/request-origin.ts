@@ -2,7 +2,6 @@ import "server-only";
 
 import { headers } from "next/headers";
 
-/** Public origin of the current request, needed for links the backend puts in emails. */
 export async function getRequestOrigin(): Promise<string | undefined> {
   const requestHeaders = await headers();
   const host =

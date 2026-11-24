@@ -92,7 +92,6 @@ export async function AdminLanguagesPage({
 }: AdminLanguagesPageProps) {
   const me = await getCurrentUser();
 
-  // Non-admins must not have access to the catalog page.
   if (!canManageLanguageCatalog(me.role)) {
     notFound();
   }

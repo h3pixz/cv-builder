@@ -17,9 +17,6 @@ import type {
 
 export const OPTIONS_LIMIT = 100;
 
-// -----------------------------------------------------
-// DEPARTMENTS CATALOG
-// -----------------------------------------------------
 
 export const GetDepartmentsDocument = graphql(`
   query GetDepartments($params: SearchPaginationInput) {
@@ -52,14 +49,9 @@ export async function getDepartmentsCatalog(
 
 type FindDepartmentOptions = {
   accessToken: string;
-  /** Skip this id when checking for a duplicate (edit mode). */
   excludeId?: string;
 };
 
-/**
- * Looks for an exact, case-insensitive name match in the catalog. The backend
- * search is used to narrow the list down to the relevant names.
- */
 export async function findDepartmentByName(
   name: string,
   { accessToken, excludeId }: FindDepartmentOptions,
@@ -90,9 +82,6 @@ export async function findDepartmentByName(
   );
 }
 
-// -----------------------------------------------------
-// USAGE CHECK
-// -----------------------------------------------------
 
 export const GetDepartmentUsageDocument = graphql(`
   query GetDepartmentUsage($params: SearchPaginationInput) {
@@ -111,10 +100,6 @@ export const GetDepartmentUsageDocument = graphql(`
   }
 `);
 
-/**
- * A department referenced by an employee cannot be deleted. The backend has no
- * filter by department, so the users pages are walked until a match is found.
- */
 export async function isDepartmentInUse(
   departmentId: string,
   { accessToken }: { accessToken: string },

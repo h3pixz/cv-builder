@@ -203,7 +203,6 @@ describe("guest routes", () => {
   });
 });
 
-// Approximation: Next compiles matchers itself, but this pattern is plain regex.
 describe("matcher", () => {
   const [pattern] = config.matcher;
   const matches = (path: string) => new RegExp(`^${pattern}$`).test(path);

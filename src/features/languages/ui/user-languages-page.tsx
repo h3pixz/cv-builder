@@ -9,7 +9,6 @@ import {
 import { proficiencyLevel } from "../model/language-levels";
 import { LanguagesManager } from "./languages-manager";
 
-/** Languages tab of a user profile; the owner and Admins can manage them. */
 export async function UserLanguagesPage({ userId }: { userId: string }) {
   const session = await getSession();
   const accessToken = session?.access_token;

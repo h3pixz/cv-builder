@@ -21,8 +21,6 @@ export function proficiencyLevel(value: string): number {
 
 export type LanguageItem = {
   name: string;
-  /** Numeric level used by the `Level` meter. */
   level: number;
-  /** Raw proficiency value shown next to the meter. */
   levelLabel: string;
 };

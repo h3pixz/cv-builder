@@ -90,7 +90,6 @@ export async function AdminPositionsPage({
 }: AdminPositionsPageProps) {
   const me = await getCurrentUser();
 
-  // Non-admins must not have access to the catalog page.
   if (!canManagePositionCatalog(me.role)) {
     notFound();
   }

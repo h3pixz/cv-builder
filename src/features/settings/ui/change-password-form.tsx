@@ -42,7 +42,6 @@ export function ChangePasswordForm() {
     const result = await changePasswordAction(values);
 
     if (!result.success) {
-      // Keep the entered values on failure so the user can fix the field.
       setFormError(result.error);
       toast.add({
         type: "error",

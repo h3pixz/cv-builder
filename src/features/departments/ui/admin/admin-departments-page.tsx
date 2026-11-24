@@ -90,7 +90,6 @@ export async function AdminDepartmentsPage({
 }: AdminDepartmentsPageProps) {
   const me = await getCurrentUser();
 
-  // Non-admins must not have access to the catalog page.
   if (!canManageDepartmentCatalog(me.role)) {
     notFound();
   }

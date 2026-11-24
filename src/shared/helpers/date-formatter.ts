@@ -7,10 +7,6 @@ export const formatDate = (timestamp: number | string) => {
   }).format(new Date(Number(timestamp)));
 };
 
-/**
- * Formats a date-only value (`YYYY-MM-DD`) or a timestamp as MM/DD/YYYY.
- * Dates are pinned to UTC so a date-only value never shifts to another day.
- */
 export const formatDateOnly = (
   value: string | number | null | undefined,
 ): string => {

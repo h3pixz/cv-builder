@@ -5,9 +5,6 @@ import type { VariablesOf } from "@graphql-typed-document-node/core";
 import { gqlRequest, type GraphQLRequestOptions } from "@/shared/api";
 import { graphql } from "@/shared/api/graphql/generated/gql";
 
-// -----------------------------------------------------
-// PROJECT CATALOG CRUD
-// -----------------------------------------------------
 
 export const CreateProjectDocument = graphql(`
   mutation CreateProject($project: CreateProjectInput!) {
@@ -33,7 +30,6 @@ export async function createProject(
   return data.createProject;
 }
 
-// -----------------------------------------------------
 
 export const UpdateProjectDocument = graphql(`
   mutation UpdateProject($project: UpdateProjectInput!) {
@@ -59,7 +55,6 @@ export async function updateProject(
   return data.updateProject;
 }
 
-// -----------------------------------------------------
 
 export const DeleteProjectDocument = graphql(`
   mutation DeleteProject($project: DeleteProjectInput!) {

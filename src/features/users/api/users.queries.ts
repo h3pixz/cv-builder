@@ -6,9 +6,6 @@ import type { VariablesOf } from "@graphql-typed-document-node/core";
 import { type GraphQLRequestOptions, protectedRequest } from "@/shared/api";
 import { graphql } from "@/shared/api/graphql/generated/gql";
 
-// -----------------------------------------------------
-// USERS LIST
-// -----------------------------------------------------
 
 export const GetUsersDocument = graphql(`
   query GetUsers($params: SearchPaginationInput) {
@@ -52,9 +49,6 @@ export async function getUsers(
   return data.users;
 }
 
-// -----------------------------------------------------
-// SINGLE USER
-// -----------------------------------------------------
 
 export const GetUserDocument = graphql(`
   query GetUser($userId: ID!) {
@@ -94,9 +88,6 @@ export async function getUser(
   return data.user;
 }
 
-// -----------------------------------------------------
-// REFERENCE DATA (FORM OPTIONS)
-// -----------------------------------------------------
 
 const OPTIONS_LIMIT = 100;
 

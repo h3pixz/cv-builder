@@ -8,9 +8,6 @@ import {
 } from "@/shared/api";
 import { graphql } from "@/shared/api/graphql/generated/gql";
 
-// -----------------------------------------------------
-// POSITION CATALOG CRUD
-// -----------------------------------------------------
 
 export const CreatePositionDocument = graphql(`
   mutation CreatePosition($position: CreatePositionInput!) {
@@ -35,7 +32,6 @@ export async function createPosition(
   return data.createPosition;
 }
 
-// -----------------------------------------------------
 
 export const UpdatePositionDocument = graphql(`
   mutation UpdatePosition($position: UpdatePositionInput!) {
@@ -60,7 +56,6 @@ export async function updatePosition(
   return data.updatePosition;
 }
 
-// -----------------------------------------------------
 
 export const DeletePositionDocument = graphql(`
   mutation DeletePosition($position: DeletePositionInput!) {

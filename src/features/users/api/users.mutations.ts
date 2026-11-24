@@ -4,9 +4,6 @@ import { gqlRequest, type GraphQLRequestOptions } from "@/shared/api/graphql/gra
 import { graphql } from "@/shared/api/graphql/generated/gql";
 import type { VariablesOf } from "@graphql-typed-document-node/core";
 
-// -----------------------------------------------------
-// USER CRUD
-// -----------------------------------------------------
 
 export const CreateUserDocument = graphql(`
   mutation CreateUser($user: CreateUserInput!) {
@@ -44,7 +41,6 @@ export async function createUser(
   return data.createUser;
 }
 
-// -----------------------------------------------------
 
 export const UpdateUserDocument = graphql(`
   mutation UpdateUser($user: UpdateUserInput!) {
@@ -82,7 +78,6 @@ export async function updateUser(
   return data.updateUser;
 }
 
-// -----------------------------------------------------
 
 export const DeleteUserDocument = graphql(`
   mutation DeleteUser($userId: ID!) {
@@ -101,9 +96,6 @@ export async function deleteUser(
   return data.deleteUser;
 }
 
-// -----------------------------------------------------
-// PASSWORD
-// -----------------------------------------------------
 
 export const ChangeUserPasswordDocument = graphql(`
   mutation ChangeUserPassword($args: ChangePasswordInput!) {

@@ -1,11 +1,8 @@
 import type { UserRoleValue } from "@/shared/types/user-role";
 
 export type ProfilePermissions = {
-  /** First/last name, department and position fields can be changed. */
   canEdit: boolean;
-  /** The avatar upload control is available. */
   canUploadAvatar: boolean;
-  /** The verify email action is available. */
   canVerifyEmail: boolean;
 };
 
@@ -15,10 +12,6 @@ type ProfileAccessArgs = {
   targetUserId: string;
 };
 
-/**
- * Mirrors the backend guards: `OwnProfileGuard` on updateProfile/uploadAvatar
- * (Admin or the profile owner) and owner-only email verification.
- */
 export function getProfilePermissions({
   currentUserId,
   currentUserRole,

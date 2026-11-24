@@ -116,7 +116,6 @@ export async function updateMySkillAction(
       return "missing" as const;
     }
 
-    // The update dialog does not touch the category, so keep the current one.
     await updateMySkill(
       {
         userId,

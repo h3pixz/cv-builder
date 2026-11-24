@@ -8,9 +8,6 @@ import {
 } from "@/shared/api";
 import { graphql } from "@/shared/api/graphql/generated/gql";
 
-// -----------------------------------------------------
-// SKILL CATALOG CRUD
-// -----------------------------------------------------
 
 export const CreateSkillDocument = graphql(`
   mutation CreateSkill($skill: CreateSkillInput!) {
@@ -34,7 +31,6 @@ export async function createSkill(
   return data.createSkill;
 }
 
-// -----------------------------------------------------
 
 export const UpdateSkillDocument = graphql(`
   mutation UpdateSkill($skill: UpdateSkillInput!) {
@@ -58,7 +54,6 @@ export async function updateSkill(
   return data.updateSkill;
 }
 
-// -----------------------------------------------------
 
 export const DeleteSkillDocument = graphql(`
   mutation DeleteSkill($skill: DeleteSkillInput!) {

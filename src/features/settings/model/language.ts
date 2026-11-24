@@ -61,6 +61,5 @@ export function storeLanguage(language: AppLanguage): void {
   try {
     window.localStorage.setItem(LANGUAGE_STORAGE_KEY, language);
   } catch {
-    // See storeTheme: persistence is best-effort on the client.
   }
 }

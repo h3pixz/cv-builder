@@ -70,8 +70,6 @@ export async function updateProfileAction(
       { accessToken },
     );
 
-    // Department and position live on the user, not the profile. The role is
-    // required by the input, so keep the current one.
     await updateUser(
       {
         userId,

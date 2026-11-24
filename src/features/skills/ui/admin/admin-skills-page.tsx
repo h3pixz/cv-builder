@@ -119,7 +119,6 @@ export async function AdminSkillsPage({
 }: AdminSkillsPageProps) {
   const me = await getCurrentUser();
 
-  // Non-admins must not have access to the catalog page.
   if (!canManageSkillCatalog(me.role)) {
     notFound();
   }

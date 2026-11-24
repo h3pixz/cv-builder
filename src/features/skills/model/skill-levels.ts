@@ -30,10 +30,6 @@ export type SkillGroup = {
 type CategoryMeta = { id: string; name: string; order: number };
 type Category = CategoryMeta & { children: CategoryMeta[] };
 
-/**
- * Groups the user's skills by category. Categories without skills never make
- * it into the result, so empty sections are not rendered.
- */
 export function groupSkills(
   skills: SkillMastery[],
   categories: Category[],

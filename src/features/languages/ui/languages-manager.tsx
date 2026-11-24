@@ -47,14 +47,11 @@ import {
 } from "../model/language-schema";
 
 type Props = {
-  /** Owner of the languages: the signed-in user or the employee tab target. */
   userId: string;
   items: LanguageItem[];
   options: SelectOption[];
-  /** Admins manage other people's languages too; employees see their own only. */
   canManage?: boolean;
   heading?: string;
-  /** The user tab sits under a page title, so it keeps its smaller heading. */
   headingAs?: "h1" | "h2";
 };
 

@@ -5,9 +5,6 @@ import { cache } from "react";
 import { type GraphQLRequestOptions, protectedRequest } from "@/shared/api";
 import { graphql } from "@/shared/api/graphql/generated/gql";
 
-// -----------------------------------------------------
-// CURRENT USER PROFILE
-// -----------------------------------------------------
 
 export const GetCurrentProfileDocument = graphql(`
   query GetCurrentProfile {
@@ -44,9 +41,6 @@ export async function getCurrentProfile(options?: GraphQLRequestOptions) {
   return data.me;
 }
 
-// -----------------------------------------------------
-// CURRENT USER ROLE
-// -----------------------------------------------------
 
 export const GetCurrentUserRoleDocument = graphql(`
   query GetCurrentUserRole {

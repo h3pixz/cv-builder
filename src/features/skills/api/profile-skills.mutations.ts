@@ -8,9 +8,6 @@ import {
 } from "@/shared/api";
 import { graphql } from "@/shared/api/graphql/generated/gql";
 
-// -----------------------------------------------------
-// PROFILE SKILLS
-// -----------------------------------------------------
 
 export const AddMySkillDocument = graphql(`
   mutation AddMySkill($skill: AddProfileSkillInput!) {
@@ -34,7 +31,6 @@ export async function addMySkill(
   return data.addProfileSkill;
 }
 
-// -----------------------------------------------------
 
 export const UpdateMySkillDocument = graphql(`
   mutation UpdateMySkill($skill: UpdateProfileSkillInput!) {
@@ -58,7 +54,6 @@ export async function updateMySkill(
   return data.updateProfileSkill;
 }
 
-// -----------------------------------------------------
 
 export const DeleteMySkillDocument = graphql(`
   mutation DeleteMySkill($skill: DeleteProfileSkillInput!) {

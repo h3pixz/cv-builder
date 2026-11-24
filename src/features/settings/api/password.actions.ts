@@ -9,8 +9,6 @@ import {
   type ChangePasswordValues,
 } from "../model/password-schema";
 
-// The backend reports a wrong current password as a GraphQL error code. Codes
-// differ per endpoint, so accept the known spellings and the wording itself.
 const WRONG_CURRENT_PASSWORD_CODES = new Set([
   "invalidOldPassword",
   "oldPasswordMismatch",

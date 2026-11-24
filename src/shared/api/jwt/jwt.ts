@@ -26,7 +26,6 @@ function readString(value: unknown): string | null {
   return typeof value === "string" ? value : null;
 }
 
-/** `sub` can be serialized as a number, but the app uses it as a string id. */
 function readId(value: unknown): string | null {
   if (typeof value === "number" && Number.isFinite(value)) {
     return String(value);
@@ -35,7 +34,6 @@ function readId(value: unknown): string | null {
   return readString(value);
 }
 
-/** Claims the backend puts into the access token. */
 export function getTokenPayload(token: string) {
   const payload = decodePayload(token);
 
@@ -46,7 +44,6 @@ export function getTokenPayload(token: string) {
   };
 }
 
-/** The backend puts the user id in `sub`. */
 export function getTokenSubject(token: string): string | null {
   return getTokenPayload(token).sub;
 }
