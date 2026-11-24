@@ -81,14 +81,13 @@ export type SidebarUser = {
 const menuItemClassName =
   "cursor-pointer gap-2 hover:bg-accent hover:text-accent-foreground";
 
-/** Pure rendering: no hooks, so it can be used as the Suspense fallback too. */
 function NavLinks({
   items,
   pathname,
   isCollapsed,
 }: {
   items: NavItems;
-  pathname: string | null; // null = not known yet (fallback)
+  pathname: string | null;
   isCollapsed: boolean;
 }) {
   return items.map(({ label, href, icon: Icon }) => {
@@ -117,7 +116,6 @@ function NavLinks({
   });
 }
 
-/** The only component that reads usePathname(). */
 function ActiveNavLinks(props: { items: NavItems; isCollapsed: boolean }) {
   const pathname = usePathname();
   return <NavLinks {...props} pathname={pathname} />;
@@ -232,9 +230,8 @@ export function Sidebar({
         )}
       >
         <Link href="/" className="flex min-w-0 items-center gap-3">
-          {/* Logo mark */}
-          <div className="relative flex size-8 shrink-0 items-center justify-center rounded-md bg-[#2E2E2E]">
-            <span className="h-4 w-1.5 rounded-sm bg-white" />
+          <div className="relative flex size-8 shrink-0 items-center justify-center rounded-md bg-foreground">
+            <span className="h-4 w-1.5 rounded-sm bg-background" />
             <span className="absolute right-1.5 top-1.5 size-1.5 rounded-full bg-primary" />
           </div>
 
@@ -270,7 +267,9 @@ export function Sidebar({
 
       <nav className="flex-1 overflow-y-auto py-3">
         <NavGroup items={mainNavigation} isCollapsed={isCollapsed} />
-        <div className="mx-4 my-5 border-t border-sidebar-border" />
+        {managementItems.length !== 0 && (
+          <div className="mx-4 my-5 border-t border-sidebar-border" />
+        )}
         <NavGroup items={managementItems} isCollapsed={isCollapsed} />
       </nav>
 
