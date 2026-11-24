@@ -1,12 +1,12 @@
-import { redirect } from "next/navigation"
-import { getSession } from "@/shared/api"
-import { VerifyEmailForm } from "./components/verify-email-form"
+import { redirect } from "next/navigation";
+import { verifyEmailAction } from "../api/verify-email.action";
+import { VerifyEmailForm } from "./components/verify-email-form";
 
 export async function VerifyEmailPage() {
-  const session = await getSession()
+  const session = await verifyEmailAction();
 
   if (!session) {
-    redirect("/sign-in")
+    redirect("/sign-in");
   }
 
   return (
@@ -26,5 +26,5 @@ export async function VerifyEmailPage() {
         </div>
       </main>
     </div>
-  )
+  );
 }

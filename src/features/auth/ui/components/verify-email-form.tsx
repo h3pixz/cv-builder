@@ -1,81 +1,89 @@
-"use client"
+"use client";
 
-import { FormEvent, useState } from "react"
-import { Button } from "@/shared/ui/button"
-import { CodeInput } from "@/shared/ui/input"
-import { toast } from "@/shared/ui/toast"
-import { resendVerification, verifyEmail } from "../../api/verify-email"
-import { AuthLink } from "./auth-link"
+import { FormEvent, useState } from "react";
+import { Button } from "@/shared/ui/button";
+import { CodeInput } from "@/shared/ui/input";
+import { toast } from "@/shared/ui/toast";
+import { resendVerification, verifyEmail } from "../../api/verify-email";
+import { AuthLink } from "./auth-link";
 
-const CODE_LENGTH = 6
+const CODE_LENGTH = 6;
 
 function getCodeError(code: string): string | null {
   if (code.length === 0) {
-    return "Verification code is required"
+    return "Verification code is required";
   }
 
   if (code.length !== CODE_LENGTH) {
-    return "Please enter a valid 6-digit code"
+    return "Please enter a valid 6-digit code";
   }
 
-  return null
+  return null;
 }
 
 export function VerifyEmailForm() {
-  const [code, setCode] = useState("")
-  const [error, setError] = useState<string | null>(null)
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [isResending, setIsResending] = useState(false)
+  const [code, setCode] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isResending, setIsResending] = useState(false);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault()
+    event.preventDefault();
 
-    const validationError = getCodeError(code)
+    const validationError = getCodeError(code);
 
     if (validationError) {
-      setError(validationError)
-      return
+      setError(validationError);
+      return;
     }
 
-    setError(null)
-    setIsSubmitting(true)
+    setError(null);
+    setIsSubmitting(true);
 
-    const result = await verifyEmail(code)
+    const result = await verifyEmail(code);
 
-    setIsSubmitting(false)
+    setIsSubmitting(false);
 
     if (!result.success) {
-      setError(result.error)
+      setError(result.error);
+      return;
     }
+
+    setCode("");
+    toast.add({
+      type: "success",
+      title: "Email verified",
+      description: "Your email is verified successfully",
+    });
   }
 
   function handleCodeChange(value: string) {
-    setCode(value)
+    setCode(value);
 
     if (error) {
-      setError(null)
+      setError(null);
     }
   }
 
   async function handleResend() {
-    setIsResending(true)
+    setIsResending(true);
 
-    const result = await resendVerification()
+    const result = await resendVerification();
 
-    setIsResending(false)
+    setIsResending(false);
 
     if (result.success) {
       toast.add({
         type: "success",
         title: "Code sent",
         description: "Check your inbox for a new verification code",
-      })
+      });
     } else {
       toast.add({
         type: "error",
         title: "Could not send the email",
         description: result.error,
-      })
+      });
     }
   }
 
@@ -126,5 +134,5 @@ export function VerifyEmailForm() {
         <AuthLink href="/">Later</AuthLink>
       </div>
     </form>
-  )
+  );
 }

@@ -192,7 +192,7 @@ export function UserProfileForm({
         <div className="space-y-1">
           <Label
             htmlFor="profile-first-name"
-            className="text-[10px] text-muted-foreground"
+            className="text-xs text-muted-foreground"
           >
             First Name
           </Label>
@@ -213,7 +213,7 @@ export function UserProfileForm({
         <div className="space-y-1">
           <Label
             htmlFor="profile-last-name"
-            className="text-[10px] text-muted-foreground"
+            className="text-xs text-muted-foreground"
           >
             Last Name
           </Label>
