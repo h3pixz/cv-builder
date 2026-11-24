@@ -133,6 +133,22 @@
 - [x] Preview: скелетон загрузки и ошибка `Failed to load CV preview` с повтором; Employee — только свои CV, Admin — любые (`canAccessCv`)
 - [x] Тесты Preview: расчёты Experience / Last Used и округление, периоды, уникальные домены, группировка навыков, экранирование HTML, имя PDF, экспорт и ошибки кнопки, рендер без должности
 
+### Справочники (Departments / Positions / Projects)
+
+Глобальные каталоги для Admin в отдельных доменах `features/departments`, `features/positions`, `features/projects`.
+
+- [x] Departments `/admin/departments` (PR #8): таблица Name, поиск, сортировка, пагинация, CRUD; уникальность имени и запрет удаления используемого департамента
+- [x] Positions `/admin/positions` (PR #9): таблица Name, поиск, сортировка, пагинация, CRUD; уникальность имени и запрет удаления используемой позиции
+- [x] Projects `/admin/projects` (PR #12): таблица Name / Domain / Start Date / End Date с тегами environment и описанием под названием, поиск по Name и Domain, сортировка по Name / Start Date / End Date, пагинация, CRUD; `End Date` не раньше `Start Date`
+- [x] Каталоги доступны только Admin (для остальных — 404); Departments и Positions отдают опции селектам при создании и редактировании пользователя, Projects — каталог для вкладки CV Projects
+- [x] Тесты: схемы, права, Server Actions каталогов, пагинация
+
+### Настройки
+
+- [x] `/settings` для Admin и Employee (PR #13): тема интерфейса, язык, смена пароля
+- [x] Тема и язык хранятся в localStorage и применяются до гидрации; смена пароля — Server Action с inline-валидацией и разбором кодов бэкенда
+- [x] Тесты: схема пароля, Server Action смены пароля
+
 ### Мержи
 
 - [x] PR #1 `feat/auth-sign-in` → `dev` смержен 2026-11-16 (rebase, `8a6e6f3`): авторизация, сессия, proxy, codegen. Проверки перед мержем: `typecheck`, 84 теста, `build`, `codegen` без дрейфа, lint без ошибок ([PR #1](https://github.com/h3pixz/cv-builder/pull/1))
@@ -140,7 +156,15 @@
 - [x] PR #3 `docs/record-auth-pr` → `dev` смержен 2026-11-17: запись мержа auth-PR в `docs/PROGRESS.md` ([PR #3](https://github.com/h3pixz/cv-builder/pull/3))
 - [x] PR #4 `feat/error-pages` → `dev` смержен 2026-11-18: страницы 404, No Internet и Device Error, общие guards и иллюстрация, тесты ([PR #4](https://github.com/h3pixz/cv-builder/pull/4))
 - [x] PR #5 `feat/users-table` → `dev` смержен 2026-11-18: список сотрудников, профиль и аватар, навыки и языки, CV для Admin, права и Server Actions, скиллы `.claude`, обновление документации ([PR #5](https://github.com/h3pixz/cv-builder/pull/5))
+- [x] PR #6 `feat/skills` → `dev` смержен 2026-11-20: вынос навыков в `features/skills`, личная страница `/skills` и каталог `/admin/skills` ([PR #6](https://github.com/h3pixz/cv-builder/pull/6))
+- [x] PR #7 `feat/languages` → `dev` смержен 2026-11-20: вынос языков в `features/languages`, страница `/languages` и каталог `/admin/languages` ([PR #7](https://github.com/h3pixz/cv-builder/pull/7))
+- [x] PR #8 `feat/departments` → `dev` смержен 2026-11-23: каталог департаментов `/admin/departments` ([PR #8](https://github.com/h3pixz/cv-builder/pull/8))
+- [x] PR #9 `feat/positions` → `dev` смержен 2026-11-23: каталог позиций `/admin/positions` ([PR #9](https://github.com/h3pixz/cv-builder/pull/9))
 - [x] PR #10 `feat/cvs-section` → `dev` смержен 2026-11-23 (`8030587`): раздел CVs для Admin и Employee, страница CV с вкладками Details / Skills / Projects / Preview и `EXPORT PDF`, подсказка добавить навыки в профиль, базовый набор ролей проекта. Перед мержем ветка обновлена из `dev` с переносом CV-кода на вынесенные `features/skills` и `features/languages`. Проверки перед мержем: `typecheck`, 350 тестов, `lint`, `next build --webpack`, `codegen` без дрейфа ([PR #10](https://github.com/h3pixz/cv-builder/pull/10))
+- [x] PR #11 `docs/record-cvs-pr` → `dev` смержен 2026-11-23: запись мержа CVs PR в `docs/PROGRESS.md` ([PR #11](https://github.com/h3pixz/cv-builder/pull/11))
+- [x] PR #12 `feat/projects` → `dev` смержен 2026-11-24: каталог проектов `/admin/projects` с тегами environment и датами ([PR #12](https://github.com/h3pixz/cv-builder/pull/12))
+- [x] PR #13 `feat-settings` → `dev` смержен 2026-11-24: страница настроек `/settings` — тема, язык, смена пароля ([PR #13](https://github.com/h3pixz/cv-builder/pull/13))
+- [x] PR #14 `fix/email-verification-ui` → `dev` смержен 2026-11-24: правки UI подтверждения email и выравнивание лейблов полей ([PR #14](https://github.com/h3pixz/cv-builder/pull/14))
 
 ## Backlog
 
@@ -148,12 +172,12 @@
 
 - [x] Создать общий layout приватной части: сайдбар, контейнер, breadcrumbs и табы пользователя
 - [x] Главная `/` перенаправляет на `/users` (стаб «Hello world» снят)
-- [ ] Добавить страницы разделов из сайдбара: `/departments`, `/positions`, `/projects`
+- [x] Страницы справочников из сайдбара: `/admin/departments`, `/admin/positions`, `/admin/projects` (PR #8, #9, #12)
 - [ ] Применить SSR/SSG для страниц, где уместно
 
 ### Авторизация — остатки
 
-- [ ] Ручной переключатель темы (сейчас тема следует системной настройке)
+- [x] Ручной переключатель темы и языка в `/settings` (PR #13); по умолчанию тема следует системной настройке
 - [ ] Поправить редиректы без сессии с несуществующего `/login` на `/sign-in` (`AuthGate`, `protectedRequest`)
 
 ### Резюме

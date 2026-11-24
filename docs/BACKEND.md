@@ -224,9 +224,9 @@ type User {
 - `src/app/(platform)/layout.tsx` — `AuthGate` без сессии редиректит на `/login`; реальный маршрут входа — `/sign-in`, поэтому редирект требует правки на `SIGN_IN_ROUTE`.
 - Модуль пользователей: список и CRUD (Admin), профиль и аватар — `src/features/users`; навыки и каталог навыков — `src/features/skills` (вкладка `/users/[userId]/skills` остаётся композицией в `users`); личные языки `/languages`, каталог `/admin/languages` и вкладка `/users/[userId]/languages` — `src/features/languages`.
 - Модуль CV: список `/cvs` для Admin и Employee, создание, обновление и удаление, вкладка CV сотрудника (Admin), страница CV `/cvs/[cvId]` с вкладками Details / Skills / Projects / Preview и экспортом PDF — `src/features/cvs`.
+- Справочники для Admin: каталоги департаментов, позиций, проектов (`/admin/departments`, `/admin/positions`, `/admin/projects`) — `src/features/departments`, `positions`, `projects`. Departments и Positions питают селекты пользователя, Projects — каталог вкладки CV Projects.
+- Настройки: `/settings` — тема, язык и смена пароля (мутация `changePassword` модуля `users`) — `src/features/settings`.
 
 ## Что ещё нужно реализовать
 
-- Страницы разделов из сайдбара: `/departments`, `/positions`, `/projects`.
-- Остальные админские справочники и настройки (`/settings`).
 - Поправить серверные редиректы с несуществующего `/login` на `/sign-in` (`AuthGate`, `protectedRequest`).

@@ -3,7 +3,7 @@
 - FSD-подход: `app` (тонкие маршруты) → `features/<domain>/{ui,api,model}` (страницы и сценарии) → `shared/{ui,api,config,helpers,hooks,types}` → `lib`; импорты только вниз. Канон структуры — `docs/STRUCTURE.md`, обоснование — `docs/TZ.md`.
 - Команда: 2 разработчика, работа в паре.
 - Сейчас реально используются `app`, `widgets`, `features`, `shared`. Слоёв `views`, `entities`, `store` пока нет: композиция страниц лежит в `src/features/<name>/ui`, а файлы `src/app/**` только собирают её. Новые страницы можно класть туда же, пока `views` не выделен.
-- Домены фич: `auth`, `users`, `cvs`, `errors`, `skills`, `languages`. Навыки живут в `features/skills` (`/skills`, `/admin/skills`, вкладка `/users/[userId]/skills` — обёртка в `users`), языки — в `features/languages` (`/languages`, `/admin/languages`, вкладка `/users/[userId]/languages`); CV — в `features/cvs`.
+- Домены фич: `auth`, `users`, `cvs`, `errors`, `skills`, `languages`, `departments`, `positions`, `projects`, `settings`. Навыки живут в `features/skills` (`/skills`, `/admin/skills`, вкладка `/users/[userId]/skills` — обёртка в `users`), языки — в `features/languages` (`/languages`, `/admin/languages`, вкладка `/users/[userId]/languages`); CV — в `features/cvs`; глобальные справочники Departments / Positions / Projects — в `features/departments` / `positions` / `projects` (маршруты `/admin/*`); настройки пользователя — в `features/settings` (`/settings`).
 - Next.js 16 (App Router) + React 19. `params` и `searchParams` — `Promise`, их нужно `await`. В `next.config.ts` включены `cacheComponents` и `partialPrefetching`.
 - Компоненты, читающие `params`, `searchParams`, `cookies()` или `headers()`, обёрнуты в `<Suspense>` в файлах маршрутов — иначе Next 16 падает с blocking-prerender.
 - `experimental.serverActions.bodySizeLimit = "8mb"` — аватар уходит в Server Action как base64 (файл до 5MB).
@@ -35,6 +35,10 @@
 - `(platform)/languages/page.tsx` — личные языки текущего пользователя;
 - `(platform)/admin/skills/page.tsx` — каталог навыков, только Admin: таблица, создание, редактирование, удаление;
 - `(platform)/admin/languages/page.tsx` — каталог языков, только Admin: поиск, сортировка по Name и ISO, пагинация, CRUD;
+- `(platform)/admin/departments/page.tsx` — каталог департаментов, только Admin: поиск, сортировка по Name, пагинация, CRUD, запрет удаления используемого департамента;
+- `(platform)/admin/positions/page.tsx` — каталог позиций, только Admin: поиск, сортировка по Name, пагинация, CRUD, запрет удаления используемой позиции;
+- `(platform)/admin/projects/page.tsx` — каталог проектов, только Admin: таблица Name / Domain / Start Date / End Date с тегами environment, поиск по Name и Domain, сортировка по Name / Start Date / End Date, пагинация, CRUD;
+- `(platform)/settings/page.tsx` — настройки (Admin и Employee): тема, язык интерфейса, смена пароля;
 - `(platform)/cvs/page.tsx` — раздел CV для Admin и Employee, читает `search`, `page`, `sort_by`, `sort_order`;
 - `(platform)/cvs/[cvId]/layout.tsx` — breadcrumbs `CVs > {CV name} > {tab}`, табы Details / Skills / Projects / Preview и возврат к списку;
 - `(platform)/cvs/[cvId]/page.tsx` — редирект на `/cvs/[cvId]/details`;
@@ -42,13 +46,12 @@
 - `(platform)/cvs/[cvId]/skills/page.tsx` — вкладка Skills: навыки CV по категориям, добавление из навыков владельца, обновление и массовое удаление;
 - `(platform)/cvs/[cvId]/projects/page.tsx` — вкладка Projects: проекты CV с поиском и сортировкой, добавление из каталога, обновление и удаление;
 - `(platform)/cvs/[cvId]/preview/page.tsx` — вкладка Preview: резюме из CV, профиля, языков и навыков, расчёт Experience / Last Used и `EXPORT PDF` через бэкенд; при нехватке данных — `CV preview is not available`;
-- локальные `error.tsx` — у `/users`, `/cvs`, `/cvs/[cvId]/details`, `/cvs/[cvId]/skills`, `/cvs/[cvId]/projects`, `/cvs/[cvId]/preview`, `/users/[userId]/cvs`, `/users/[userId]/skills`, `/users/[userId]/languages`, `/skills`, `/languages`, `/admin/skills`, `/admin/languages`.
+- локальные `error.tsx` — у `/users`, `/cvs`, `/cvs/[cvId]/details`, `/cvs/[cvId]/skills`, `/cvs/[cvId]/projects`, `/cvs/[cvId]/preview`, `/users/[userId]/cvs`, `/users/[userId]/skills`, `/users/[userId]/languages`, `/skills`, `/languages`, `/admin/skills`, `/admin/languages`, `/admin/departments`, `/admin/positions`, `/admin/projects`.
 
 `src/proxy.ts` — защита маршрутов: приватные требуют валидную сессию (при истёкшем access-токене обновляет пару через refresh-токен), гостевые (`GUEST_ROUTES`: `/sign-in`, `/sign-up`, `/forgot-password`) отправляют авторизованного на `HOME_ROUTE`. Matcher — все страницы приложения, кроме API и статики (`api`, `_next`, картинки/иконки), поэтому новые маршруты защищены по умолчанию. Тесты — `src/proxy.test.ts`.
 
 Известные пробелы:
 
-- страниц `/departments`, `/positions`, `/projects`, на которые ведут ссылки сайдбара, пока нет (каталоги `/admin/departments`, `/admin/positions` есть);
 - серверная проверка сессии в `(platform)/layout.tsx` (`AuthGate`) и `protectedRequest` редиректят на `/login`, хотя реальный маршрут входа — `/sign-in`; это известный баг, требующий правки кода;
 - `scripts/export-schema.mjs`, на который ссылаются старые инструкции, в репозитории отсутствует (папки `scripts/` нет).
 
@@ -135,6 +138,22 @@
 
 `languages` не импортирует `users`. Вкладка `/users/[userId]/languages` — композиция внутри `languages` (`ui/user-languages-page.tsx`); `users` использует языки только через публичный `index.ts` (например, `proficiencyLevel` в деталях CV). Права профиля — общий `getProfilePermissions` из `src/shared/helpers/profile-permissions.ts`.
 
+`src/features/departments/`, `src/features/positions/`, `src/features/projects/` — глобальные справочники, только Admin:
+
+- `api/<entity>.queries.ts` — `getDepartmentsCatalog` / `getPositionsCatalog` / `getProjectsCatalog`, поиск по точному имени для проверки дубликатов, проверка использования перед удалением (`isDepartmentInUse` / `isPositionInUse`);
+- `api/catalog.mutations.ts`, `api/catalog.actions.ts` — CRUD каталога (Admin) с серверной проверкой уникальности и запретом удаления используемой сущности;
+- `api/<entity>-revalidate.ts` — инвалидация каталога и зависимых форм/таблиц;
+- `api/current-user.ts`, `api/run-authed.ts`, `model/action-result.ts` — собственный серверный транспорт фичи (по образцу `skills` / `languages`);
+- `model/` — zod-схемы (`*-schema.ts`), типы записей (`*-record.ts`), права Admin (`*-permissions.ts`);
+- `ui/admin/*` — страница каталога: header с поиском и `CREATE …`, таблица с сортировкой и пагинацией, меню действий, диалоги create / update / delete. Departments и Positions — колонка Name; Projects — Name / Domain / Start Date / End Date, теги environment и описание под названием;
+- `index.ts` — публичный экспорт.
+
+`src/features/settings/` — настройки пользователя (`/settings`, доступны Admin и Employee):
+
+- `ui/settings-page.tsx` — секции Theme, Language и Change password;
+- `model/theme.ts`, `model/language.ts`, `ui/use-theme.ts`, `ui/use-language.ts` — клиентские предпочтения в localStorage, тема применяется до гидрации;
+- `ui/change-password-form.tsx`, `api/password.actions.ts`, `model/password-schema.ts` — смена пароля через Server Action с inline-валидацией и проверкой кодов бэкенда.
+
 ### Widgets
 
 - `src/widgets/sidebar/` — боковое меню (`"use client"`): collapse, активный пункт по `usePathname`, ссылки на Employees / Skills / Languages / CVs и Departments / Positions / Projects; пункты Skills и Languages в management-группе видны только Admin. Новых виджетов не добавляем (см. «Куда класть новое»).
@@ -178,9 +197,13 @@ UI-kit — `src/shared/ui/<component>/`, экспорт через `index.ts`:
 - `avatar` — `Avatar`, `AvatarImage`, `AvatarFallback`, `AvatarGroup`, `AvatarBadge`;
 - `breadcrumb` — `Breadcrumb*`;
 - `dropdown-menu` — `DropdownMenu*`;
+- `combobox` — `Combobox*` (выбор с поиском, на Base UI);
+- `calendar` / `date-picker` — `Calendar`, `CalendarDayButton`, `DatePicker` (на базе `react-day-picker`, для дат проектов);
+- `popover` — `Popover*`;
 - `dialog` — `Dialog*` (`Dialog`, `DialogContent`, `DialogHeader`, `DialogTitle`, `DialogFooter`, ...);
 - `pagination` — `ListPagination` (из `list-pagination.tsx`);
 - `table` — `Table*`;
+- `tag` — `Tag` (чип для read-only значений, например environment проекта);
 - `toast` — `Toaster`, `toast`, варианты success / error / warning / info.
 
 `src/lib/utils.ts` только реэкспортирует `cn` из пакета `cn`. В новых файлах импортируй `cn` из `@/lib/utils`; часть UI-компонентов исторически импортирует его напрямую из `"cn"`.
@@ -188,7 +211,7 @@ UI-kit — `src/shared/ui/<component>/`, экспорт через `index.ts`:
 ### Куда класть новое
 
 - страница и её сценарии → `src/features/<domain>/ui/`, запросы и Server Actions → `api/`, типы и схемы → `model/`, публичный экспорт → `index.ts`;
-- домены: `auth`, `users`, `cvs`, `errors`, `skills`, `languages`; планируемые — `admin`, `settings`;
+- домены: `auth`, `users`, `cvs`, `errors`, `skills`, `languages`, `departments`, `positions`, `projects`, `settings`; админские каталоги живут в `ui/admin` своего домена (отдельного домена `admin` нет);
 - маршрут → тонкий `src/app/<route-group>/<route>/page.tsx` (приватные — в `(platform)`, гостевые — в `(auth)`);
 - `views` не выделен: композиция страниц живёт в `features/<domain>/ui`;
 - `widgets` — только существующий `sidebar`; новые блоки интерфейса кладём в `features/<domain>/ui` или `shared`;

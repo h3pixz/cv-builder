@@ -248,6 +248,27 @@ Other exports: `Toast`, `ToastTitle`, `ToastDescription`, `ToastAction`, `ToastC
 
 `ListPagination` из `shared/ui/pagination` — постраничная навигация для таблиц. Props: `page`, `totalPages`, `getHref(page)` (собирает URL и сохраняет остальные query-параметры), `label` (по умолчанию `"Pagination"`), `className`. При `totalPages <= 1` не рендерится. Также экспортирует `getPageItems` и тип `PageItem`; раскладка всегда 7 слотов, чтобы ширина не скакала.
 
+## tag
+
+Outlined pill for read-only values (e.g. a project's environment stack). `shared/ui/tag/tag.tsx`.
+
+- `Tag` — a `span` styled as a chip; extends `ComponentProps<"span">` (`className`, `children`, ...). Tokens: `border-control-border`, `text-foreground`, `rounded-full`, `px-3 py-1 text-xs`. Long values wrap (`break-words`, `max-w-full`).
+
+## popover
+
+Anchored floating panel on Base UI (`shared/ui/popover/`, `"use client"`). Used internally by `DatePicker`.
+
+- Exports: `Popover`, `PopoverTrigger`, `PopoverContent`, `PopoverHeader`, `PopoverTitle`, `PopoverDescription`.
+- `PopoverContent` props: `align` (`center`), `alignOffset` (`0`), `side` (`bottom`), `sideOffset` (`4`), plus primitive props (portal + positioner + popup).
+
+## calendar / date-picker
+
+Date UI for the Projects catalog, built on `react-day-picker`. `shared/ui/calendar/`, `shared/ui/date-picker/` (`"use client"`).
+
+- `Calendar` — wrapper over `DayPicker` (`React.ComponentProps<typeof DayPicker>` + `buttonVariant`, default `"ghost"`); `showOutsideDays` defaults to `true`, `captionLayout` `"label"`. Also exports `CalendarDayButton`.
+- `DatePicker` — input-like trigger + `Popover` + `Calendar` with day / month / year views. Props: `value?: Date`, `onChange?(date: Date | undefined)`, `onBlur?()`, `placeholder` (`"Select date"`), `disabledDates?: Matcher | Matcher[]`, `disabled`, `invalid`, `id`, `name`, `locale?: Partial<Locale>`, `className`. Type `DatePickerProps` is exported.
+- Values are native `Date`; convert to/from `YYYY-MM-DD` strings for forms (date-only, no timezone shift).
+
 ## Tokens
 
 Semantic classes only: `bg-background`, `text-foreground`, `text-muted-foreground`, `text-text-secondary`, `text-text-tertiary`, `border-control-border`, `bg-disabled`, `text-disabled-foreground`, `text-primary`, `bg-primary`, `border-destructive`, `bg-secondary-hover`, `bg-secondary-active`, `bg-success|error|warning|info`, `bg-sidebar`, `bg-sidebar-accent`, `border-sidebar-border`. No raw hex except the logo mark.

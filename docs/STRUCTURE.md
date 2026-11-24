@@ -34,6 +34,9 @@ cv-builder/
 │   │   │   │   ├── positions/
 │   │   │   │   │   ├── page.tsx        # каталог позиций, только Admin
 │   │   │   │   │   └── error.tsx
+│   │   │   │   ├── projects/
+│   │   │   │   │   ├── page.tsx        # каталог проектов, только Admin
+│   │   │   │   │   └── error.tsx
 │   │   │   │   └── skills/
 │   │   │   │       ├── page.tsx        # каталог навыков, только Admin
 │   │   │   │       └── error.tsx
@@ -61,7 +64,7 @@ cv-builder/
 │   │   │   ├── skills/
 │   │   │   │   ├── page.tsx            # личные навыки текущего пользователя
 │   │   │   │   └── error.tsx
-│   │   │   └── users/
+│   │   │   ├── users/
 │   │   │       ├── page.tsx            # список сотрудников
 │   │   │       ├── error.tsx
 │   │   │       └── [userId]/
@@ -80,6 +83,8 @@ cv-builder/
 │   │   │               ├── error.tsx
 │   │   │               └── [cvId]/
 │   │   │                   └── page.tsx # редирект на /cvs/[cvId]/details
+│   │   │   └── settings/
+│   │   │       └── page.tsx            # настройки: тема, язык, смена пароля
 │   │   │
 │   │   ├── layout.tsx                  # шрифт, тема, guards, Toaster
 │   │   ├── page.tsx
@@ -315,25 +320,37 @@ cv-builder/
 │   │   │   ├── model/
 │   │   │   └── index.ts
 │   │   │
-
-│   │   ├── admin/                      # план
-│   │   └── settings/                   # план
+│   │   ├── projects/
+│   │   │   ├── ui/admin/
+│   │   │   ├── api/
+│   │   │   ├── model/
+│   │   │   └── index.ts
+│   │   │
+│   │   └── settings/
+│   │       ├── ui/
+│   │       ├── api/
+│   │       ├── model/
+│   │       └── index.ts
 │   │
 │   ├── shared/
 │   │   ├── ui/
 │   │   │   ├── avatar/
 │   │   │   ├── breadcrumb/
 │   │   │   ├── button/
+│   │   │   ├── calendar/
 │   │   │   ├── checkbox/
 │   │   │   ├── combobox/
+│   │   │   ├── date-picker/
 │   │   │   ├── dialog/
 │   │   │   ├── dropdown-menu/
 │   │   │   ├── input/
 │   │   │   ├── label/
 │   │   │   ├── level/
 │   │   │   ├── pagination/
+│   │   │   ├── popover/
 │   │   │   ├── select/
 │   │   │   ├── table/
+│   │   │   ├── tag/
 │   │   │   ├── textarea/
 │   │   │   └── toast/
 │   │   ├── api/

@@ -228,6 +228,22 @@
 
 ---
 
+## 👥 Сотрудники, навыки, языки, справочники и настройки
+
+Помимо страниц ошибок и CV в приложении реализованы остальные модули из таблицы доступа:
+
+- **Авторизация** (публичная): `/sign-in`, `/sign-up`, `/forgot-password`, `/reset-password`, `/verify-email` — 6-значный OTP со сроком 2 часа и повторной отправкой. Валидация: email обязателен и валиден, пароль от 6 символов, подтверждение совпадает; ошибки бэкенда (`invalidCredentials`, `userAlreadyExists`, `accountNotFound`, `otpExpired`, `actionExpired`) показываются inline и системно.
+- **Сотрудники** `/users` (Admin, Employee): таблица Avatar / First Name / Last Name / Email / Department / Position, поиск по имени и email, сортировка по имени, фамилии, отделу и должности, пагинация. Admin создаёт, редактирует и удаляет пользователей (email и пароль при редактировании заблокированы); Employee только просматривает список и открывает профиль.
+- **Профиль** `/users/[userId]/profile`: аватар (png / jpg / jpeg / gif, до 5MB), имя и фамилия, отдел и должность; Email и Member Since только для чтения. Владелец и Admin правят профиль и меняют аватар, Employee чужой профиль только читает; `VERIFY EMAIL` доступен только владельцу.
+- **Вкладки пользователя**: Skills и Languages (владелец и Admin управляют, остальные только читают) и CV (только Admin).
+- **Личные навыки** `/skills` и **языки** `/languages` (User и Admin): навыки сгруппированы по категориям с уровнем mastery, языки — с уровнем A1…Native; добавление, изменение и массовое удаление с подтверждением.
+- **Админские каталоги** (только Admin): Skills `/admin/skills` (Name / Type / Category), Languages `/admin/languages` (Name / ISO / Native Name; ISO в верхнем регистре до 2 символов, сортировка по Name и ISO), Departments `/admin/departments`, Positions `/admin/positions`, Projects `/admin/projects` (Name / Domain / Start Date / End Date, теги environment). Везде поиск, сортировка, пагинация и CRUD; имена уникальны; используемые департамент или позицию удалить нельзя.
+- **Настройки** `/settings` (User и Admin): тема (светлая / тёмная / системная), язык интерфейса, смена пароля.
+
+Общие требования ко всем экранам: Light / Dark темы, адаптивность desktop / tablet, состояния loading / empty / error с повтором, inline-валидация, системные ошибки без сброса введённых значений, доступность с клавиатуры и focus-visible.
+
+---
+
 ## 📤 Формат сдачи задачи
 
 1. **GitHub-репозиторий:**
