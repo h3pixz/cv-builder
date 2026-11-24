@@ -216,18 +216,18 @@ function SelectFieldShell({
   return (
     <div
       data-slot="select-field"
-      className={cn("relative w-full pt-4", className)}
+      className={cn("relative w-full pt-5", className)}
     >
       {label && (
-        <span
+        <p
           className={cn(
-            "pointer-events-none absolute top-0 left-2.5 text-xs leading-4 text-foreground transition-opacity",
+            "pointer-events-none absolute top-0 text-xs mb-1 leading-4 text-muted-foreground transition-opacity",
             disabled && "text-text-tertiary",
             floated ? "opacity-100" : "opacity-0",
           )}
         >
           {label}
-        </span>
+        </p>
       )}
       {children}
       {error && (
