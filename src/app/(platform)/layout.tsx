@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { redirect } from "next/navigation";
 
+import { getCurrentProfile } from "@/features/users";
 import { getCurrentUser, getSession } from "@/shared/api";
 import { Sidebar } from "@/widgets/sidebar";
 
@@ -13,7 +14,22 @@ async function AuthGate({ children }: { children: React.ReactNode }) {
 async function SidebarWithRole() {
   const me = await getCurrentUser();
 
-  return <Sidebar isAdmin={me.role === "Admin"} />;
+  if (!me.id) {
+    return <Sidebar />;
+  }
+
+  const profile = await getCurrentProfile();
+
+  return (
+    <Sidebar
+      isAdmin={me.role === "Admin"}
+      user={{
+        id: me.id,
+        fullName: profile.full_name ?? profile.email ?? "",
+        avatar: profile.avatar,
+      }}
+    />
+  );
 }
 
 export default function PlatformLayout({

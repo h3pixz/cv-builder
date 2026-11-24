@@ -1,4 +1,3 @@
-// widgets/sidebar/ui/sidebar.tsx
 "use client";
 
 import { Suspense, useState } from "react";
@@ -11,11 +10,23 @@ import {
   FileUser,
   Folder,
   Languages,
+  LogOut,
+  Settings,
   TrendingUp,
+  UserRound,
   Users,
 } from "lucide-react";
 
 import { cn } from "cn";
+import { logout } from "@/features/auth";
+import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/shared/ui/dropdown-menu";
 
 const mainNavigation = [
   { label: "Employees", href: "/users", icon: Users },
@@ -60,6 +71,15 @@ type NavItem = {
 };
 
 type NavItems = NavItem[];
+
+export type SidebarUser = {
+  id: string;
+  fullName: string;
+  avatar: string | null;
+};
+
+const menuItemClassName =
+  "cursor-pointer gap-2 hover:bg-accent hover:text-accent-foreground";
 
 /** Pure rendering: no hooks, so it can be used as the Suspense fallback too. */
 function NavLinks({
@@ -113,7 +133,84 @@ function NavGroup(props: { items: NavItems; isCollapsed: boolean }) {
   );
 }
 
-export function Sidebar({ isAdmin = false }: { isAdmin?: boolean }) {
+function ProfileMenu({
+  user,
+  isCollapsed,
+}: {
+  user: SidebarUser;
+  isCollapsed: boolean;
+}) {
+  const initial = (user.fullName.trim() || "?").charAt(0).toUpperCase();
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger
+        aria-label={`Account menu for ${user.fullName}`}
+        className={cn(
+          "flex w-full items-center gap-3 rounded-md p-2 text-left transition-colors",
+          "text-sidebar-foreground hover:bg-sidebar-accent",
+          "focus-visible:bg-sidebar-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring/40",
+          isCollapsed && "justify-center",
+        )}
+      >
+        <Avatar className="size-9 shrink-0">
+          {user.avatar && <AvatarImage src={user.avatar} alt="" />}
+          <AvatarFallback>{initial}</AvatarFallback>
+        </Avatar>
+
+        {!isCollapsed && (
+          <span className="min-w-0 truncate text-sm font-medium">
+            {user.fullName}
+          </span>
+        )}
+      </DropdownMenuTrigger>
+
+      <DropdownMenuContent
+        side="top"
+        align="start"
+        sideOffset={8}
+        className="w-56"
+      >
+        <DropdownMenuItem
+          className={menuItemClassName}
+          render={<Link href={`/users/${user.id}/profile`} />}
+        >
+          <UserRound className="size-4" />
+          Profile
+        </DropdownMenuItem>
+
+        <DropdownMenuItem
+          className={menuItemClassName}
+          render={<Link href="/settings" />}
+        >
+          <Settings className="size-4" />
+          Settings
+        </DropdownMenuItem>
+
+        <DropdownMenuSeparator />
+
+        <DropdownMenuItem
+          variant="destructive"
+          className="cursor-pointer gap-2 hover:bg-destructive/10 hover:text-destructive"
+          onClick={() => {
+            void logout();
+          }}
+        >
+          <LogOut className="size-4" />
+          Logout
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+
+export function Sidebar({
+  isAdmin = false,
+  user = null,
+}: {
+  isAdmin?: boolean;
+  user?: SidebarUser | null;
+}) {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const managementItems = managementNavigation.filter(
     (item) => !item.adminOnly || isAdmin,
@@ -176,6 +273,12 @@ export function Sidebar({ isAdmin = false }: { isAdmin?: boolean }) {
         <div className="mx-4 my-5 border-t border-sidebar-border" />
         <NavGroup items={managementItems} isCollapsed={isCollapsed} />
       </nav>
+
+      {user && (
+        <div className="mt-auto border-t border-sidebar-border p-3">
+          <ProfileMenu user={user} isCollapsed={isCollapsed} />
+        </div>
+      )}
     </aside>
   );
 }
