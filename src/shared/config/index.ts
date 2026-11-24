@@ -1,5 +1,5 @@
 export { getGraphQLUrl } from "./env";
-export { THEME_SCRIPT } from "./theme-script";
+export { THEME_SCRIPT, THEME_STORAGE_KEY } from "./theme-script";
 export {
   FORGOT_PASSWORD_ROUTE,
   GUEST_ROUTES,

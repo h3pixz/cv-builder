@@ -1,3 +1,6 @@
+export { changeUserPassword } from "./api/users.mutations";
+export { getCurrentProfile } from "./api/profile.queries";
+
 export * from "./ui/users-page";
 export * from "./ui/user-layout";
 export { UserProfilePage } from "./ui/profile/user-profile-page";

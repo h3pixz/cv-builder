@@ -30,6 +30,7 @@ export interface SelectFieldProps {
   name?: string;
   id?: string;
   className?: string;
+  ariaLabel?: string;
 }
 
 function SelectField({
@@ -45,6 +46,7 @@ function SelectField({
   name,
   id,
   className,
+  ariaLabel,
 }: SelectFieldProps) {
   const [internal, setInternal] = useState<string | null>(defaultValue);
   const [open, setOpen] = useState(false);
@@ -78,6 +80,7 @@ function SelectField({
       >
         <SelectTrigger
           id={id}
+          aria-label={ariaLabel}
           aria-invalid={error ? true : undefined}
           aria-describedby={error ? errorId : undefined}
         >
