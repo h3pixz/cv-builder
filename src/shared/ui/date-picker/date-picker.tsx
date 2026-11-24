@@ -157,7 +157,7 @@ function DatePicker({
                 variant="icon"
                 aria-label="Previous"
                 onClick={() => shift(-1)}
-                className="size-8 rounded-full p-0"
+                className="size-8 rounded-full p-0 border-muted-foreground"
               >
                 <ChevronLeftIcon className="size-4" />
               </Button>
@@ -166,14 +166,14 @@ function DatePicker({
                 variant="icon"
                 aria-label="Next"
                 onClick={() => shift(1)}
-                className="size-8 rounded-full p-0"
+                className="size-8 rounded-full p-0 border border-muted-foreground"
               >
                 <ChevronRightIcon className="size-4" />
               </Button>
             </div>
           </div>
 
-          <div className="min-h-70">
+          <div>
             {view === "days" && (
               <Calendar
                 mode="single"
