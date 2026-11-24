@@ -37,7 +37,12 @@ const managementNavigation = [
     icon: BriefcaseBusiness,
     adminOnly: true,
   },
-  { label: "Projects", href: "/projects", icon: Folder },
+  {
+    label: "Projects",
+    href: "/admin/projects",
+    icon: Folder,
+    adminOnly: true,
+  },
   { label: "Skills", href: "/admin/skills", icon: TrendingUp, adminOnly: true },
   {
     label: "Languages",
